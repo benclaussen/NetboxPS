@@ -1,0 +1,31 @@
+﻿<Project Synchronized="False" SyncFilter="*.ps1;*.psm1;*.psd1;*.ps1xml;*.psf;*.pss;*.xml;*.help.txt">
+  <Version>2.0</Version>
+  <FileID>bba9b06c-49c8-47cf-8358-aca7c4e78896</FileID>
+  <ProjectType>1</ProjectType>
+  <Folders>
+    <Folder>Functions</Folder>
+    <Folder>Functions\DCIM</Folder>
+    <Folder>Functions\Extras</Folder>
+    <Folder>Functions\Circuits</Folder>
+    <Folder>Tests</Folder>
+    <Folder>Functions\Virtualization</Folder>
+    <Folder>Functions\IPAM</Folder>
+  </Folders>
+  <Files>
+    <File Build="2">NetboxPS.psd1</File>
+    <File Build="0">NetboxPS.psm1</File>
+    <File Build="1" Shared="False" ReferenceFunction="Invoke-Test-Module_ps1">Test-Module.ps1</File>
+    <File Build="1">.gitignore</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Helpers_ps1">Functions\Helpers.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Setup_ps1">Functions\Setup.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Extras_ps1">Functions\Extras\Extras.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Circuits_ps1">Functions\Circuits\Circuits.ps1</File>
+    <File Build="1" Shared="False" ReferenceFunction="Invoke-Setup_Tests_ps1">Tests\Setup.Tests.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-Helpers_Tests_ps1">Tests\Helpers.Tests.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Virtualization_ps1">Functions\Virtualization\Virtualization.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-Virtualization_Tests_ps1">Tests\Virtualization.Tests.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-IPAM_Tests_ps1">Tests\IPAM.Tests.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-IPAM_ps1">Functions\IPAM\IPAM.ps1</File>
+  </Files>
+  <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
+</Project>
