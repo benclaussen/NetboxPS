@@ -56,6 +56,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/aggregates/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
             
             It "Should request with limit and offset" {
@@ -66,6 +67,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/aggregates/?offset=12&limit=10'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
             
             It "Should request with a query" {
@@ -76,6 +78,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/aggregates/?q=10.10.0.0'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
             
             It "Should request with an escaped query" {
@@ -86,6 +89,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/aggregates/?q=my+aggregate'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
             
             It "Should request with a single ID" {
@@ -96,6 +100,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/aggregates/10/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
             
             It "Should request with multiple IDs" {
@@ -106,6 +111,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/aggregates/?id__in=10,12,15'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
         }
         
@@ -118,6 +124,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
             
             It "Should request with limit and offset" {
@@ -128,6 +135,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/?offset=12&limit=10'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
             
             It "Should request with a query" {
@@ -138,6 +146,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/?q=10.10.10.10'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
             
             It "Should request with an escaped query" {
@@ -148,6 +157,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/?q=my+ip+address'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
             
             It "Should request with a single ID" {
@@ -158,6 +168,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/10/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
             
             It "Should request with multiple IDs" {
@@ -168,6 +179,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/?id__in=10,12,15'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
             }
             
             #region TODO: Figure out how to mock/test Verification appropriately...
@@ -197,8 +209,140 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
             #endregion
         }
         
-        Context -Name "Get-NetboxIPAMPrefix" {
+        Context -Name "Get-NetboxIPAMAvailableIP" -Fixture {
+            It "Should request the default number of available IPs" {
+                $Result = Get-NetboxIPAMAvailableIP -Prefix_Id 10
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/10/available-ips/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
+            }
             
+            It "Should request 10 available IPs" {
+                $Result = Get-NetboxIPAMAvailableIP -Prefix_Id 1504 -NumberOfIPs 10
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/1504/available-ips/?limit=10'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
+            }
+        }
+        
+        Context -Name "Get-NetboxIPAMPrefix" {
+            It "Should request the default number of prefixes" {
+                $Result = Get-NetboxIPAMPrefix
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
+            }
+            
+            It "Should request with limit and offset" {
+                $Result = Get-NetboxIPAMPrefix -Limit 10 -Offset 12
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/?offset=12&limit=10'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
+            }
+            
+            It "Should request with a query" {
+                $Result = Get-NetboxIPAMPrefix -Query '10.10.10.10'
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/?q=10.10.10.10'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
+            }
+            
+            It "Should request with an escaped query" {
+                $Result = Get-NetboxIPAMPrefix -Query 'my ip address'
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/?q=my+ip+address'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
+            }
+            
+            It "Should request with a single ID" {
+                $Result = Get-NetboxIPAMPrefix -Id 10
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/10/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
+            }
+            
+            It "Should request with multiple IDs" {
+                $Result = Get-NetboxIPAMPrefix -Id 10, 12, 15
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/?id__in=10,12,15'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
+            }
+            
+            It "Should request with VLAN vID" {
+                $Result = Get-NetboxIPAMPrefix -VLAN_VID 10
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/?vlan_vid=10'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
+            }
+            
+            <#
+            It "Should request with family of 4" {
+                Mock -CommandName "VerifyIPAMChoices" -ModuleName 'NetboxPS' -MockWith {
+                    return 4
+                } -Verifiable
+                $Result = Get-NetboxIPAMPrefix -Family 4
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/?family=4'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
+            }
+            #>
+            
+            It "Should request with mask length 24" {
+                $Result = Get-NetboxIPAMPrefix -Mask_length 24
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/?mask_length=24'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Headers.Authorization | Should -Be "Token faketoken"
+            }
+            
+            It "Should throw because the mask length is too large" {
+                {
+                    Get-NetboxIPAMPrefix -Mask_length 128
+                } | Should -Throw
+            }
         }
     }
 }

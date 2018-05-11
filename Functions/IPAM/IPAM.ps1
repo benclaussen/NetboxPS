@@ -113,6 +113,10 @@ function VerifyIPAMChoices {
     
     $ValidValues = New-Object System.Collections.ArrayList
     
+    if (-not $script:NetboxConfig.Choices.IPAM.$($PSCmdlet.ParameterSetName)) {
+        throw "Missing choices for $($PSCmdlet.ParameterSetName)"
+    }
+    
     [void]$ValidValues.AddRange($script:NetboxConfig.Choices.IPAM.$($PSCmdlet.ParameterSetName).value)
     [void]$ValidValues.AddRange($script:NetboxConfig.Choices.IPAM.$($PSCmdlet.ParameterSetName).label)
     
@@ -274,7 +278,7 @@ function Get-NetboxIPAMAddress {
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
 
-function Get-NetboxIPAMAvaiableIP {
+function Get-NetboxIPAMAvailableIP {
 <#
     .SYNOPSIS
         A convenience method for returning available IP addresses within a prefix
@@ -289,6 +293,9 @@ function Get-NetboxIPAMAvaiableIP {
     .PARAMETER NumberOfIPs
         A description of the NumberOfIPs parameter.
     
+    .PARAMETER Raw
+        A description of the Raw parameter.
+    
     .EXAMPLE
         PS C:\> Get-NetboxIPAMAvaiableIP -Prefix_ID $value1
     
@@ -302,6 +309,7 @@ function Get-NetboxIPAMAvaiableIP {
         [Parameter(Mandatory = $true)]
         [uint16]$Prefix_ID,
         
+        [Alias('Limit')]
         [uint16]$NumberOfIPs,
         
         [switch]$Raw
@@ -321,6 +329,86 @@ function Get-NetboxIPAMAvaiableIP {
 }
 
 function Get-NetboxIPAMPrefix {
+<#
+    .SYNOPSIS
+        A brief description of the Get-NetboxIPAMPrefix function.
+    
+    .DESCRIPTION
+        A detailed description of the Get-NetboxIPAMPrefix function.
+    
+    .PARAMETER Limit
+        A description of the Limit parameter.
+    
+    .PARAMETER Offset
+        A description of the Offset parameter.
+    
+    .PARAMETER Family
+        A description of the Family parameter.
+    
+    .PARAMETER Is_Pool
+        A description of the Is_Pool parameter.
+    
+    .PARAMETER Id
+        A description of the Id parameter.
+    
+    .PARAMETER Query
+        A description of the Query parameter.
+    
+    .PARAMETER Within
+        Should be a CIDR notation prefix such as '10.0.0.0/16'
+    
+    .PARAMETER Within_Include
+        Should be a CIDR notation prefix such as '10.0.0.0/16'
+    
+    .PARAMETER Contains
+        A description of the Contains parameter.
+    
+    .PARAMETER Mask_Length
+        CIDR mask length value
+    
+    .PARAMETER VRF
+        A description of the VRF parameter.
+    
+    .PARAMETER VRF_Id
+        A description of the VRF_Id parameter.
+    
+    .PARAMETER Tenant
+        A description of the Tenant parameter.
+    
+    .PARAMETER Tenant_Id
+        A description of the Tenant_Id parameter.
+    
+    .PARAMETER Site
+        A description of the Site parameter.
+    
+    .PARAMETER Site_Id
+        A description of the Site_Id parameter.
+    
+    .PARAMETER Vlan_VId
+        A description of the Vlan_VId parameter.
+    
+    .PARAMETER Vlan_Id
+        A description of the Vlan_Id parameter.
+    
+    .PARAMETER Status
+        A description of the Status parameter.
+    
+    .PARAMETER Role
+        A description of the Role parameter.
+    
+    .PARAMETER Role_Id
+        A description of the Role_Id parameter.
+    
+    .PARAMETER Raw
+        A description of the Raw parameter.
+    
+    .EXAMPLE
+        		PS C:\> Get-NetboxIPAMPrefix
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
     [CmdletBinding()]
     param
     (
@@ -330,16 +418,19 @@ function Get-NetboxIPAMPrefix {
         
         [object]$Family,
         
+        [boolean]$Is_Pool,
+        
         [uint16[]]$Id,
         
         [string]$Query,
         
-        #[string]$Within,
-
-        #[string]$Within_Include,
-
+        [string]$Within,
+        
+        [string]$Within_Include,
+        
         [string]$Contains,
         
+        [ValidateRange(0, 127)]
         [byte]$Mask_Length,
         
         [string]$VRF,
@@ -377,7 +468,8 @@ function Get-NetboxIPAMPrefix {
     
     $uriSegments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes'))
     
-    $URIParameters = @{}
+    $URIParameters = @{
+    }
     
     foreach ($CmdletParameterName in $PSBoundParameters.Keys) {
         if ($CmdletParameterName -in $CommonParameterNames) {
