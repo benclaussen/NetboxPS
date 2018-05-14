@@ -11,6 +11,70 @@
 		Virtualization object functions
 #>
 
+function VerifyVirtualizationChoices {
+<#
+    .SYNOPSIS
+        Internal function to verify provided values for static choices
+    
+    .DESCRIPTION
+        When users connect to the API, choices for each major object are cached to the config variable. 
+        These values are then utilized to verify if the provided value from a user is valid.
+    
+    .PARAMETER ProvidedValue
+        The value to validate against static choices
+    
+    .PARAMETER AggregateFamily
+        Verify against aggregate family values
+    
+    .PARAMETER PrefixFamily
+        Verify against prefix family values
+    
+    .PARAMETER PrefixStatus
+        Verify against prefix status values
+    
+    .PARAMETER IPAddressFamily
+        Verify against ip-address family values
+    
+    .PARAMETER IPAddressStatus
+        Verify against ip-address status values
+    
+    .PARAMETER IPAddressRole
+        Verify against ip-address role values
+    
+    .PARAMETER VLANStatus
+        Verify against VLAN status values
+    
+    .PARAMETER ServiceProtocol
+        Verify against service protocol values
+    
+    .EXAMPLE
+        PS C:\> VerifyIPAMChoices -ProvidedValue 'loopback' -IPAddressRole
+    
+    .EXAMPLE
+        PS C:\> VerifyIPAMChoices -ProvidedValue 'Loopback' -IPAddressFamily
+                >> Invalid value Loopback for ip-address:family. Must be one of: 4, 6, IPv4, IPv6
+    
+    .FUNCTIONALITY
+        This cmdlet is intended to be used internally and not exposed to the user
+    
+    .OUTPUT
+        This function returns nothing if the value is valid. Otherwise, it will throw an error.
+#>
+    
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [object]$ProvidedValue,
+        
+        [Parameter(ParameterSetName = 'virtual-machine:status',
+                   Mandatory = $true)]
+        [switch]$VirtualMachineStatus
+    )
+        
+    ValidateChoice -MajorObject 'Virtualization' -ChoiceName $PSCmdlet.ParameterSetName
+}
+
 #region GET commands
 
 function Get-NetboxVirtualizationChoices {
@@ -123,7 +187,7 @@ function Get-NetboxVirtualMachine {
         [Alias('id__in')]
         [uint16[]]$Id,
         
-        [NetboxVirtualMachineStatus]$Status,
+        [object]$Status,
         
         [string]$Tenant,
         
@@ -154,34 +218,15 @@ function Get-NetboxVirtualMachine {
         [switch]$Raw
     )
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
-    
-    $URIParameters = @{}
-    
-    foreach ($CmdletParameterName in $PSBoundParameters.Keys) {
-        if ($CmdletParameterName -in $CommonParameterNames) {
-            # These are common parameters and should not be appended to the URI
-            Write-Debug "Skipping parameter $CmdletParameterName"
-            continue
-        }
-        
-        if ($CmdletParameterName -eq 'Id') {
-            # Check if there is one or more values for Id and build a URI or query as appropriate
-            if (@($PSBoundParameters[$CmdletParameterName]).Count -gt 1) {
-                $URIParameters['id__in'] = $Id -join ','
-            } else {
-                [void]$uriSegments.Add($PSBoundParameters[$CmdletParameterName])
-            }
-        } elseif ($CmdletParameterName -eq 'Query') {
-            $URIParameters['q'] = $PSBoundParameters[$CmdletParameterName]
-        } elseif ($CmdletParameterName -eq 'Status') {
-            $URIParameters[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName].value__
-        } else {
-            $URIParameters[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName]
-        }
+    if ($Status -ne $null) {
+        $PSBoundParameters.Status = VerifyVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
     }
     
-    $uri = BuildNewURI -Segments $uriSegments -Parameters $URIParameters
+    $uriSegments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
+    
+    $URIComponents = BuildURIComponents -URISegments $uriSegments -ParametersDictionary $PSBoundParameters
+    
+    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
@@ -457,7 +502,7 @@ function Add-NetboxVirtualMachine {
         
         [uint16]$Tenant,
         
-        [NetboxVirtualMachineStatus]$Status = 'Active',
+        [object]$Status = 'Active',
         
         [uint16]$Role,
         
@@ -474,31 +519,17 @@ function Add-NetboxVirtualMachine {
         [string]$Comments
     )
     
+    if ($Status -ne $null) {
+        $PSBoundParameters.Status = VerifyVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
+    }
+    
     $uriSegments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
     
-    $Body = @{}
+    $URIComponents = BuildURIComponents -URISegments $uriSegments -ParametersDictionary $PSBoundParameters
     
-    if (-not $PSBoundParameters.ContainsKey('Status')) {
-        [void]$PSBoundParameters.Add('Status', $Status)
-    }
+    $uri = BuildNewURI -Segments $URIComponents.Segments
     
-    foreach ($CmdletParameterName in $PSBoundParameters.Keys) {
-        if ($CmdletParameterName -in $CommonParameterNames) {
-            # These are common parameters and should not be appended to the URI
-            Write-Debug "Skipping parameter $CmdletParameterName"
-            continue
-        }
-        
-        if ($CmdletParameterName -eq 'Status') {
-            $Body[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName].value__
-        } else {
-            $Body[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName]
-        }
-    }
-    
-    $uri = BuildNewURI -Segments $uriSegments
-    
-    InvokeNetboxRequest -URI $uri -Method POST -Body $Body
+    InvokeNetboxRequest -URI $uri -Method POST -Body $URIComponents.Parameters
 }
 
 function Add-NetboxVirtualInterface {

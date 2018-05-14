@@ -89,17 +89,17 @@ function BuildNewURI {
     }
     
     if ($HTTPS) {
-        Write-Verbose "Setting scheme to HTTPS"
+        Write-Verbose " Setting scheme to HTTPS"
         $Scheme = 'https'
     } else {
-        Write-Warning "Connecting via non-secure HTTP is not-recommended"
+        Write-Warning " Connecting via non-secure HTTP is not-recommended"
         
-        Write-Verbose "Setting scheme to HTTP"
+        Write-Verbose " Setting scheme to HTTP"
         $Scheme = 'http'
         
         if (-not $PSBoundParameters.ContainsKey('Port')) {
             # Set the port to 80 if the user did not supply it
-            Write-Verbose "Setting port to 80 as default because it was not supplied by the user"
+            Write-Verbose " Setting port to 80 as default because it was not supplied by the user"
             $Port = 80
         }
     }
@@ -110,24 +110,141 @@ function BuildNewURI {
     # Generate the path by trimming excess slashes and whitespace from the $segments[] and joining together
     $uriBuilder.Path = "api/{0}/" -f ($Segments.ForEach({$_.trim('/').trim()}) -join '/')
     
-    Write-Verbose "URIPath: $($uriBuilder.Path)"
+    Write-Verbose " URIPath: $($uriBuilder.Path)"
     
     if ($parameters) {
         # Loop through the parameters and use the HttpUtility to create a Query string
         [System.Collections.Specialized.NameValueCollection]$URIParams = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
         
         foreach ($param in $Parameters.GetEnumerator()) {
-            Write-Verbose "Adding URI parameter $($param.Key):$($param.Value)"
+            Write-Verbose " Adding URI parameter $($param.Key):$($param.Value)"
             $URIParams[$param.Key] = $param.Value
         }
         
         $uriBuilder.Query = $URIParams.ToString()
     }
     
-    Write-Verbose "Completed building URIBuilder"
+    Write-Verbose " Completed building URIBuilder"
     # Return the entire UriBuilder object
     $uriBuilder
 }
+
+function BuildURIComponents {
+    [CmdletBinding()]
+    [OutputType([hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.ArrayList]$URISegments,
+        
+        [Parameter(Mandatory = $true)]
+        [object]$ParametersDictionary,
+        
+        [string[]]$SkipParameterByName
+    )
+    
+    Write-Verbose "Building URI components"
+    
+    $URIParameters = [System.Collections.Hashtable]::new()
+    
+    foreach ($CmdletParameterName in $ParametersDictionary.Keys) {
+        if ($CmdletParameterName -in $CommonParameterNames) {
+            # These are common parameters and should not be appended to the URI
+            Write-Debug "Skipping parameter $CmdletParameterName"
+            continue
+        }
+        
+        if ($CmdletParameterName -in $SkipParameterByName) {
+            Write-Debug "Skipping parameter $CmdletParameterName"
+            continue
+        }
+        
+        if ($CmdletParameterName -eq 'Id') {
+            # Check if there is one or more values for Id and build a URI or query as appropriate
+            if (@($ParametersDictionary[$CmdletParameterName]).Count -gt 1) {
+                Write-Verbose " Joining IDs for parameter"
+                $URIParameters['id__in'] = $Id -join ','
+            } else {
+                Write-Verbose " Adding ID to segments"
+                [void]$uriSegments.Add($ParametersDictionary[$CmdletParameterName])
+            }
+        } elseif ($CmdletParameterName -eq 'Query') {
+            Write-Verbose " Adding query parameter"
+            $URIParameters['q'] = $ParametersDictionary[$CmdletParameterName]
+        } else {
+            Write-Verbose " Adding $($CmdletParameterName.ToLower()) parameter"
+            $URIParameters[$CmdletParameterName.ToLower()] = $ParametersDictionary[$CmdletParameterName]
+        }
+    }
+    
+    return @{
+        'Segments' = [System.Collections.ArrayList]$URISegments
+        'Parameters' = $URIParameters
+    }
+}
+
+function GetChoiceValidValues {
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$MajorObject,
+        
+        [Parameter(Mandatory = $true)]
+        [object]$Choice
+    )
+    
+    $ValidValues = New-Object System.Collections.ArrayList
+    
+    if (-not $script:NetboxConfig.Choices.$MajorObject.$Choice) {
+        throw "Missing choices for $Choice"
+    }
+    
+    [void]$ValidValues.AddRange($script:NetboxConfig.Choices.$MajorObject.$Choice.value)
+    [void]$ValidValues.AddRange($script:NetboxConfig.Choices.$MajorObject.$Choice.label)
+    
+    if ($ValidValues.Count -eq 0) {
+        throw "Missing valid values for $MajorObject.$Choice"
+    }
+    
+    return [System.Collections.ArrayList]$ValidValues
+}
+
+function ValidateChoice {
+    [CmdletBinding()]
+    [OutputType([uint16])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Circuits', 'Extras', 'IPAM', 'Virtualization', IgnoreCase = $true)]
+        [string]$MajorObject,
+        
+        [Parameter(Mandatory = $true)]
+        [string]$ChoiceName
+    )
+    
+    $ValidValues = GetChoiceValidValues -MajorObject $MajorObject -Choice $ChoiceName
+    
+    Write-Verbose "Validating $ChoiceName"
+    Write-Verbose "Checking '$ProvidedValue' against $($ValidValues -join ', ')"
+    
+    if ($ValidValues -inotcontains $ProvidedValue) {
+        throw "Invalid value '$ProvidedValue' for '$ChoiceName'. Must be one of: $($ValidValues -join ', ')"
+    }
+    
+    # Convert the ProvidedValue to the integer value
+    try {
+        $intVal = [uint16]"$ProvidedValue"
+    } catch {
+        # It must not be a number, get the value from the label
+        $intVal = [uint16]$script:NetboxConfig.Choices.$MajorObject.$ChoiceName.Where({
+                $_.Label -eq $ProvidedValue
+            }).Value
+    }
+    
+    return $intVal
+}
+
 
 function GetNetboxAPIErrorBody {
     param
@@ -233,8 +350,13 @@ function InvokeNetboxRequest {
             Write-Verbose "Did NOT find results property on data, returning raw result"
             return $result
         }
-    }    
+    }
 }
+
+
+
+
+#region Troubleshooting commands
 
 function ThrowNetboxRESTError {
     $uriSegments = [System.Collections.ArrayList]::new(@('fake', 'url'))
@@ -246,8 +368,33 @@ function ThrowNetboxRESTError {
     InvokeNetboxRequest -URI $uri -Raw
 }
 
+function CreateEnum {
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$EnumName,
+        
+        [Parameter(Mandatory = $true)]
+        [pscustomobject]$Values,
+        
+        [switch]$PassThru
+    )
+    
+    $definition = @"
+public enum $EnumName
+{`n$(foreach ($value in $values) {"`t$($value.label) = $($value.value),`n"})
+}
+"@
+    if (-not ([System.Management.Automation.PSTypeName]"$EnumName").Type) {
+        #Write-Host $definition -ForegroundColor Green
+        Add-Type -TypeDefinition $definition -PassThru:$PassThru
+    } else {
+        Write-Warning "EnumType $EnumName already exists."
+    }
+}
 
-
+#endregion Troubleshooting commands
 
 
 

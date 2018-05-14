@@ -6,16 +6,16 @@ $script:CommonParameterNames = New-Object System.Collections.ArrayList
 
 SetupNetboxConfigVariable
 
-if (-not ([System.Management.Automation.PSTypeName]'NetboxVirtualMachineStatus').Type) {
-    Add-Type -TypeDefinition @"
-public enum NetboxVirtualMachineStatus
-{
-    Offline = 0,
-    Active = 1,
-    Staged = 3
-}
-"@
-}
+#if (-not ([System.Management.Automation.PSTypeName]'NetboxVirtualMachineStatus').Type) {
+#    Add-Type -TypeDefinition @"
+#public enum NetboxVirtualMachineStatus
+#{
+#    Offline = 0,
+#    Active = 1,
+#    Staged = 3
+#}
+#"@
+#}
 
 
 Export-ModuleMember -Function *

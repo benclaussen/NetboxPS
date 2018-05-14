@@ -28,7 +28,7 @@ function VerifyIPAMChoices {
         Internal function to verify provided values for static choices
     
     .DESCRIPTION
-        When users connect to the API, choices for each major object are cached to the config variable. 
+        When users connect to the API, choices for each major object are cached to the config variable.
         These values are then utilized to verify if the provided value from a user is valid.
     
     .PARAMETER ProvidedValue
@@ -63,16 +63,20 @@ function VerifyIPAMChoices {
     
     .EXAMPLE
         PS C:\> VerifyIPAMChoices -ProvidedValue 'Loopback' -IPAddressFamily
-                >> Invalid value Loopback for ip-address:family. Must be one of: 4, 6, IPv4, IPv6
+        >> Invalid value Loopback for ip-address:family. Must be one of: 4, 6, IPv4, IPv6
+    
+    .OUTPUTS
+        This function returns the integer value if valid. Otherwise, it will throw an error.
+    
+    .NOTES
+        Additional information about the function.
     
     .FUNCTIONALITY
         This cmdlet is intended to be used internally and not exposed to the user
-    
-    .OUTPUT
-        This function returns nothing if the value is valid. Otherwise, it will throw an error.
 #>
     
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'service:protocol')]
+    [OutputType([uint16])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -111,32 +115,7 @@ function VerifyIPAMChoices {
         [switch]$ServiceProtocol
     )
     
-    $ValidValues = New-Object System.Collections.ArrayList
-    
-    if (-not $script:NetboxConfig.Choices.IPAM.$($PSCmdlet.ParameterSetName)) {
-        throw "Missing choices for $($PSCmdlet.ParameterSetName)"
-    }
-    
-    [void]$ValidValues.AddRange($script:NetboxConfig.Choices.IPAM.$($PSCmdlet.ParameterSetName).value)
-    [void]$ValidValues.AddRange($script:NetboxConfig.Choices.IPAM.$($PSCmdlet.ParameterSetName).label)
-    
-    if ($ValidValues.Count -eq 0) {
-        throw "Missing valid values for $($PSCmdlet.ParameterSetName)"
-    }
-    
-    if ($ValidValues -inotcontains $ProvidedValue) {
-        throw "Invalid value '$ProvidedValue' for '$($PSCmdlet.ParameterSetName)'. Must be one of: $($ValidValues -join ', ')"
-    }
-    
-    # Convert the ProvidedValue to the integer value
-    try {
-        $intVal = [uint16]"$ProvidedValue"
-    } catch {
-        # It must not be a number, get the value from the label
-        $intVal = [uint16]$script:NetboxConfig.Choices.IPAM.$($PSCmdlet.ParameterSetName).Where({$_.Label -eq $ProvidedValue}).Value
-    }
-    
-    return $intVal
+    ValidateChoice -MajorObject 'IPAM' -ChoiceName $PSCmdlet.ParameterSetName
 }
 
 
@@ -148,7 +127,8 @@ function Get-NetboxIPAMAggregate {
         
         [uint16]$Offset,
         
-        [string]$Family,
+        [ValidateNotNullOrEmpty()]
+        [object]$Family,
         
         [datetime]$Date_Added,
         
@@ -163,32 +143,15 @@ function Get-NetboxIPAMAggregate {
         [switch]$Raw
     )
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('ipam', 'aggregates'))
-    
-    $URIParameters = @{}
-    
-    foreach ($CmdletParameterName in $PSBoundParameters.Keys) {
-        if ($CmdletParameterName -in $CommonParameterNames) {
-            # These are common parameters and should not be appended to the URI
-            Write-Debug "Skipping parameter $CmdletParameterName"
-            continue
-        }
-        
-        if ($CmdletParameterName -eq 'Id') {
-            # Check if there is one or more values for Id and build a URI or query as appropriate
-            if (@($PSBoundParameters[$CmdletParameterName]).Count -gt 1) {
-                $URIParameters['id__in'] = $Id -join ','
-            } else {
-                [void]$uriSegments.Add($PSBoundParameters[$CmdletParameterName])
-            }
-        } elseif ($CmdletParameterName -eq 'Query') {
-            $URIParameters['q'] = $PSBoundParameters[$CmdletParameterName]
-        } else {
-            $URIParameters[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName]
-        }
+    if ($Family -ne $null) {
+        $PSBoundParameters.Family = VerifyIPAMChoices -ProvidedValue $Family -AggregateFamily
     }
     
-    $uri = BuildNewURI -Segments $uriSegments -Parameters $URIParameters
+    $uriSegments = [System.Collections.ArrayList]::new(@('ipam', 'aggregates'))
+    
+    $URIComponents = BuildURIComponents -URISegments $uriSegments -ParametersDictionary $PSBoundParameters
+    
+    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
@@ -236,44 +199,23 @@ function Get-NetboxIPAMAddress {
         [switch]$Raw
     )
     
-    if ($Family) {
+    if ($Family -ne $null) {
         $PSBoundParameters.Family = VerifyIPAMChoices -ProvidedValue $Family -IPAddressFamily   
     }
     
-    if ($Status) {
+    if ($Status -ne $null) {
         $PSBoundParameters.Status = VerifyIPAMChoices -ProvidedValue $Status -IPAddressStatus
     }
     
-    if ($Role) {
+    if ($Role -ne $null) {
         $PSBoundParameters.Role = VerifyIPAMChoices -ProvidedValue $Role -IPAddressRole
     }
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
+    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
     
-    $URIParameters = @{}
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
     
-    foreach ($CmdletParameterName in $PSBoundParameters.Keys) {
-        if ($CmdletParameterName -in $CommonParameterNames) {
-            # These are common parameters and should not be appended to the URI
-            Write-Debug "Skipping parameter $CmdletParameterName"
-            continue
-        }
-        
-        if ($CmdletParameterName -eq 'Id') {
-            # Check if there is one or more values for Id and build a URI or query as appropriate
-            if (@($PSBoundParameters[$CmdletParameterName]).Count -gt 1) {
-                $URIParameters['id__in'] = $Id -join ','
-            } else {
-                [void]$uriSegments.Add($PSBoundParameters[$CmdletParameterName])
-            }
-        } elseif ($CmdletParameterName -eq 'Query') {
-            $URIParameters['q'] = $PSBoundParameters[$CmdletParameterName]
-        } else {
-            $URIParameters[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName]
-        }
-    }
-    
-    $uri = BuildNewURI -Segments $uriSegments -Parameters $URIParameters
+    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
@@ -309,21 +251,17 @@ function Get-NetboxIPAMAvailableIP {
         [Parameter(Mandatory = $true)]
         [uint16]$Prefix_ID,
         
-        [Alias('Limit')]
-        [uint16]$NumberOfIPs,
+        [Alias('NumberOfIPs')]
+        [uint16]$Limit,
         
         [switch]$Raw
     )
     
     $uriSegments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes', $Prefix_ID, 'available-ips'))
     
-    $uriParameters = @{}
+    $URIComponents = BuildURIComponents -URISegments $uriSegments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'prefix_id'
     
-    if ($NumberOfIPs) {
-        [void]$uriParameters.Add('limit', $NumberOfIPs)
-    }
-    
-    $uri = BuildNewURI -Segments $uriSegments -Parameters $uriParameters
+    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
@@ -458,49 +396,64 @@ function Get-NetboxIPAMPrefix {
         [switch]$Raw
     )
     
-    if ($Family) {
+    if ($Family -ne $null) {
         $PSBoundParameters.Family = VerifyIPAMChoices -ProvidedValue $Family -PrefixFamily
     }
     
-    if ($Status) {
+    if ($Status -ne $null) {
         $PSBoundParameters.Status = VerifyIPAMChoices -ProvidedValue $Status -PrefixStatus
     }
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes'))
+    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes'))
     
-    $URIParameters = @{
-    }
+    $URIComponents = BuildURIComponents -ParametersDictionary $PSBoundParameters -URISegments $Segments
     
-    foreach ($CmdletParameterName in $PSBoundParameters.Keys) {
-        if ($CmdletParameterName -in $CommonParameterNames) {
-            # These are common parameters and should not be appended to the URI
-            Write-Debug "Skipping parameter $CmdletParameterName"
-            continue
-        }
-        
-        if ($CmdletParameterName -eq 'Id') {
-            # Check if there is one or more values for Id and build a URI or query as appropriate
-            if (@($PSBoundParameters[$CmdletParameterName]).Count -gt 1) {
-                $URIParameters['id__in'] = $Id -join ','
-            } else {
-                [void]$uriSegments.Add($PSBoundParameters[$CmdletParameterName])
-            }
-        } elseif ($CmdletParameterName -eq 'Query') {
-            $URIParameters['q'] = $PSBoundParameters[$CmdletParameterName]
-        } else {
-            $URIParameters[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName]
-        }
-    }
-    
-    $uri = BuildNewURI -Segments $uriSegments -Parameters $URIParameters
+    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
 
-
-
-
-
+function Add-NetboxIPAMAddress {
+    [CmdletBinding(DefaultParameterSetName = 'CIDR')]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$Address,
+        
+        [object]$Status = 'Active',
+        
+        [uint16]$Tenant,
+        
+        [uint16]$VRF,
+        
+        [object]$Role,
+        
+        [uint16]$NAT_Inside,
+        
+        [hashtable]$Custom_Fields,
+        
+        [uint16]$Interface,
+        
+        [string]$Description,
+        
+        [switch]$Raw
+    )
+    
+    $segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
+    
+    $PSBoundParameters.Status = VerifyIPAMChoices -ProvidedValue $Status -IPAddressStatus
+    
+    if ($Role) {
+        $PSBoundParameters.Role = VerifyIPAMChoices -ProvidedValue $Role -IPAddressRole
+    }
+        
+    $URIComponents = BuildURIComponents -URISegments $segments -ParametersDictionary $PSBoundParameters
+    
+    $URI = BuildNewURI -Segments $URIComponents.Segments
+    
+    InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
+}
 
 
 

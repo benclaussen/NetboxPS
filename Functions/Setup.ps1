@@ -24,15 +24,7 @@ function SetupNetboxConfigVariable {
         Write-Verbose "Creating NetboxConfig hashtable"
         $script:NetboxConfig = @{
             'Connected' = $false
-            'Choices' = @{
-                'Circuits' = $null
-                'DCIM' = $null
-                'Extras' = $null
-                'IPAM' = $null
-                'Secrets' = $null
-                'Tenancy' = $null
-                'Virtualization' = $null
-            }
+            'Choices' = @{}
         }
     }
     
@@ -183,16 +175,17 @@ function Connect-NetboxAPI {
         }
     }
     
+    Write-Verbose "Caching static choices"
     $script:NetboxConfig.Choices.Circuits = Get-NetboxCircuitsChoices
-    #$script:NetboxConfig.Choices.DCIM = Get-NetboxDCIMChoices
+    #$script:NetboxConfig.Choices.DCIM = Get-NetboxDCIMChoices          # Not completed yet
     $script:NetboxConfig.Choices.Extras = Get-NetboxExtrasChoices
     $script:NetboxConfig.Choices.IPAM = Get-NetboxIPAMChoices
-    #$script:NetboxConfig.Choices.Secrets = Get-NetboxSecretsChoices
-    #$script:NetboxConfig.Choices.Tenancy = Get-NetboxTenancyChoices
+    #$script:NetboxConfig.Choices.Secrets = Get-NetboxSecretsChoices    # Not completed yet
+    #$script:NetboxConfig.Choices.Tenancy = Get-NetboxTenancyChoices    # Not completed yet
     $script:NetboxConfig.Choices.Virtualization = Get-NetboxVirtualizationChoices
     
+    Write-Verbose "Connection process completed"
 }
-
 
 
 

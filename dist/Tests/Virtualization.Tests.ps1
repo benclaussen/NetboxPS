@@ -46,6 +46,8 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
     }
     
     InModuleScope -ModuleName 'NetboxPS' -ScriptBlock {
+        $script:NetboxConfig.Choices.Virtualization = (Get-Content "$PSScriptRoot\VirtualizationChoices.json" -ErrorAction Stop | ConvertFrom-Json)
+        
         Context -Name "Get-NetboxVirtualMachine" -Fixture {
             It "Should request the default number of VMs" {
                 $Result = Get-NetboxVirtualMachine
@@ -305,6 +307,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
         }
         
         Context -Name "Add-NetboxVirtualMachine" -Fixture {
+            
             It "Should add a basic VM" {
                 $Result = Add-NetboxVirtualMachine -Name 'testvm' -Cluster 1
                 
@@ -313,7 +316,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Method | Should -Be 'POST'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
-                $Result.Body | Should -Be '{"cluster":1,"name":"testvm","status":1}'
+                $Result.Body | Should -Be '{"name":"testvm","cluster":1,"status":1}'
             }
             
             It "Should add a VM with CPUs, Memory, Disk, tenancy, and comments" {
@@ -324,7 +327,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Method | Should -Be 'POST'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
-                $Result.Body | Should -Be '{"tenant":11,"comments":"these are comments","disk":50,"memory":4096,"name":"testvm","cluster":1,"status":1,"vcpus":4}'
+                $Result.Body | Should -Be '{"tenant":11,"name":"testvm","comments":"these are comments","cluster":1,"status":1,"memory":4096,"vcpus":4,"disk":50}'
             }
         }
         
