@@ -127,7 +127,6 @@ function Get-NetboxIPAMAggregate {
         
         [uint16]$Offset,
         
-        [ValidateNotNullOrEmpty()]
         [object]$Family,
         
         [datetime]$Date_Added,
@@ -147,9 +146,9 @@ function Get-NetboxIPAMAggregate {
         $PSBoundParameters.Family = VerifyIPAMChoices -ProvidedValue $Family -AggregateFamily
     }
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('ipam', 'aggregates'))
+    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'aggregates'))
     
-    $URIComponents = BuildURIComponents -URISegments $uriSegments -ParametersDictionary $PSBoundParameters
+    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
     
     $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
@@ -200,7 +199,7 @@ function Get-NetboxIPAMAddress {
     )
     
     if ($Family -ne $null) {
-        $PSBoundParameters.Family = VerifyIPAMChoices -ProvidedValue $Family -IPAddressFamily   
+        $PSBoundParameters.Family = VerifyIPAMChoices -ProvidedValue $Family -IPAddressFamily
     }
     
     if ($Status -ne $null) {
@@ -257,9 +256,9 @@ function Get-NetboxIPAMAvailableIP {
         [switch]$Raw
     )
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes', $Prefix_ID, 'available-ips'))
+    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes', $Prefix_ID, 'available-ips'))
     
-    $URIComponents = BuildURIComponents -URISegments $uriSegments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'prefix_id'
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'prefix_id'
     
     $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
@@ -406,7 +405,7 @@ function Get-NetboxIPAMPrefix {
     
     $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes'))
     
-    $URIComponents = BuildURIComponents -ParametersDictionary $PSBoundParameters -URISegments $Segments
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
     
     $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
@@ -414,7 +413,51 @@ function Get-NetboxIPAMPrefix {
 }
 
 function Add-NetboxIPAMAddress {
-    [CmdletBinding(DefaultParameterSetName = 'CIDR')]
+<#
+    .SYNOPSIS
+        Add a new IP address to Netbox
+    
+    .DESCRIPTION
+        Adds a new IP address to Netbox with a status of Active by default.
+    
+    .PARAMETER Address
+        IP address in CIDR notation: 192.168.1.1/24
+    
+    .PARAMETER Status
+        Status of the IP. Defaults to Active
+    
+    .PARAMETER Tenant
+        Tenant ID
+    
+    .PARAMETER VRF
+        VRF ID
+    
+    .PARAMETER Role
+        Role such as anycast, loopback, etc... Defaults to nothing
+    
+    .PARAMETER NAT_Inside
+        ID of IP for NAT
+    
+    .PARAMETER Custom_Fields
+        Custom field hash table. Will be validated by the API service
+    
+    .PARAMETER Interface
+        ID of interface to apply IP
+    
+    .PARAMETER Description
+        Description of IP address
+    
+    .PARAMETER Raw
+        Return raw results from API service
+    
+    .EXAMPLE
+        PS C:\> Add-NetboxIPAMAddress
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding()]
     [OutputType([pscustomobject])]
     param
     (
@@ -440,14 +483,14 @@ function Add-NetboxIPAMAddress {
         [switch]$Raw
     )
     
-    $segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
-    
     $PSBoundParameters.Status = VerifyIPAMChoices -ProvidedValue $Status -IPAddressStatus
     
-    if ($Role) {
+    if ($Role -ne $null) {
         $PSBoundParameters.Role = VerifyIPAMChoices -ProvidedValue $Role -IPAddressRole
     }
-        
+    
+    $segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
+    
     $URIComponents = BuildURIComponents -URISegments $segments -ParametersDictionary $PSBoundParameters
     
     $URI = BuildNewURI -Segments $URIComponents.Segments
@@ -455,7 +498,104 @@ function Add-NetboxIPAMAddress {
     InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
 }
 
+function Remove-NetboxIPAMAddress {
+<#
+    .SYNOPSIS
+        Remove an IP address from Netbox
+    
+    .DESCRIPTION
+        Removes/deletes an IP address from Netbox by ID and optional other filters
+    
+    .PARAMETER Id
+        A description of the Id parameter.
+    
+    .PARAMETER Force
+        A description of the Force parameter.
+    
+    .PARAMETER Query
+        A description of the Query parameter.
+    
+    .EXAMPLE
+        PS C:\> Remove-NetboxIPAMAddress -Id $value1
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(ConfirmImpact = 'High',
+                   SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [uint16[]]$Id,
+        
+        [switch]$Force
+    )
+    
+    $CurrentIPs = @(Get-NetboxIPAMAddress -Id $Id -ErrorAction Stop)
+    
+    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
+    
+    foreach ($IP in $CurrentIPs) {
+        if ($Force -or $pscmdlet.ShouldProcess($IP.Address, "Delete")) {
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary @{'id' = $IP.Id}
+            
+            $URI = BuildNewURI -Segments $URIComponents.Segments
+            
+            InvokeNetboxRequest -URI $URI -Method DELETE
+        }
+    }
+}
 
+function Set-NetboxIPAMAddress {
+    [CmdletBinding(ConfirmImpact = 'High',
+                   SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint16]$Id,
+        
+        [string]$Address,
+        
+        [object]$Status = 'Active',
+        
+        [uint16]$Tenant,
+        
+        [uint16]$VRF,
+        
+        [object]$Role,
+        
+        [uint16]$NAT_Inside,
+        
+        [hashtable]$Custom_Fields,
+        
+        [uint16]$Interface,
+        
+        [string]$Description,
+        
+        [switch]$Force
+    )
+    
+    $PSBoundParameters.Status = VerifyIPAMChoices -ProvidedValue $Status -IPAddressStatus
+    
+    if ($Role) {
+        $PSBoundParameters.Role = VerifyIPAMChoices -ProvidedValue $Role -IPAddressRole
+    }
+    
+    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $Id))
+    
+    Write-Verbose "Obtaining IPs from ID $Id"
+    $CurrentIP = Get-NetboxIPAMAddress -Id $Id -ErrorAction Stop
+    
+    if ($Force -or $PSCmdlet.ShouldProcess($($CurrentIP | Select-Object -ExpandProperty 'Address'), 'Set')) {
+        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+        
+        $URI = BuildNewURI -Segments $URIComponents.Segments
+        
+        InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+    }
+}
 
 
 

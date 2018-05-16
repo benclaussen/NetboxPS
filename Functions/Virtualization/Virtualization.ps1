@@ -83,7 +83,7 @@ function Get-NetboxVirtualizationChoices {
     
     $uriSegments = [System.Collections.ArrayList]::new(@('virtualization', '_choices'))
     
-    $uri = BuildNewURI -Segments $uriSegments -Parameters $Parameters
+    $uri = BuildNewURI -Segments $uriSegments
     
     InvokeNetboxRequest -URI $uri
 }
@@ -184,7 +184,6 @@ function Get-NetboxVirtualMachine {
         
         [string]$Name,
         
-        [Alias('id__in')]
         [uint16[]]$Id,
         
         [object]$Status,
@@ -222,9 +221,9 @@ function Get-NetboxVirtualMachine {
         $PSBoundParameters.Status = VerifyVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
     }
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
+    $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
     
-    $URIComponents = BuildURIComponents -URISegments $uriSegments -ParametersDictionary $PSBoundParameters
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
     
     $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
@@ -279,61 +278,33 @@ function Get-NetboxVirtualMachineInterface {
     [CmdletBinding()]
     param
     (
-        [Parameter(ValueFromPipeline = $true,
-                   ValueFromPipelineByPropertyName = $true)]
         [uint16]$Limit,
         
-        [Parameter(ValueFromPipeline = $true,
-                   ValueFromPipelineByPropertyName = $true)]
         [uint16]$Offset,
         
         [Parameter(ValueFromPipeline = $true)]
         [uint16]$Id,
         
-        [Parameter(ValueFromPipeline = $true)]
         [string]$Name,
         
-        [Parameter(ValueFromPipeline = $true)]
         [boolean]$Enabled,
         
-        [Parameter(ValueFromPipeline = $true)]
         [uint16]$MTU,
         
-        [Parameter(ValueFromPipeline = $true)]
         [uint16]$Virtual_Machine_Id,
         
-        [Parameter(ValueFromPipeline = $true)]
         [string]$Virtual_Machine,
         
-        [Parameter(ValueFromPipeline = $true)]
         [string]$MAC_Address,
         
-        [Parameter(ValueFromPipeline = $true,
-                   ValueFromPipelineByPropertyName = $true)]
         [switch]$Raw
     )
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('virtualization', 'interfaces'))
+    $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'interfaces'))
     
-    $URIParameters = @{}
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
     
-    foreach ($CmdletParameterName in $PSBoundParameters.Keys) {
-        if ($CmdletParameterName -in $CommonParameterNames) {
-            # These are common parameters and should not be appended to the URI
-            Write-Debug "Skipping parameter $CmdletParameterName"
-            continue
-        }
-        
-        if ($CmdletParameterName -eq 'Id') {
-            [void]$uriSegments.Add($PSBoundParameters[$CmdletParameterName])
-        } elseif ($CmdletParameterName -eq 'Enabled') {
-            $URIParameters[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName].ToString().ToLower()
-        } else {
-            $URIParameters[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName]
-        }
-    }
-    
-    $uri = BuildNewURI -Segments $uriSegments -Parameters $URIParameters
+    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
@@ -519,17 +490,15 @@ function Add-NetboxVirtualMachine {
         [string]$Comments
     )
     
-    if ($Status -ne $null) {
-        $PSBoundParameters.Status = VerifyVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
-    }
+    $PSBoundParameters.Status = VerifyVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
+    $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
     
-    $URIComponents = BuildURIComponents -URISegments $uriSegments -ParametersDictionary $PSBoundParameters
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
     
-    $uri = BuildNewURI -Segments $URIComponents.Segments
+    $URI = BuildNewURI -Segments $URIComponents.Segments
     
-    InvokeNetboxRequest -URI $uri -Method POST -Body $URIComponents.Parameters
+    InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters
 }
 
 function Add-NetboxVirtualInterface {
@@ -553,27 +522,15 @@ function Add-NetboxVirtualInterface {
         [switch]$Raw
     )
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('virtualization', 'interfaces'))
+    $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'interfaces'))
     
-    $Body = @{}
+    $PSBoundParameters.Enabled = $Enabled
     
-    if (-not $PSBoundParameters.ContainsKey('Enabled')) {
-        [void]$PSBoundParameters.Add('enabled', $Enabled)
-    }
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
     
-    foreach ($CmdletParameterName in $PSBoundParameters.Keys) {
-        if ($CmdletParameterName -in $CommonParameterNames) {
-            # These are common parameters and should not be appended to the URI
-            Write-Debug "Skipping parameter $CmdletParameterName"
-            continue
-        }
-        
-        $Body[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName]
-    }
+    $uri = BuildNewURI -Segments $URIComponents.Segments
     
-    $uri = BuildNewURI -Segments $uriSegments
-    
-    InvokeNetboxRequest -URI $uri -Method POST -Body $Body
+    InvokeNetboxRequest -URI $uri -Method POST -Body $URIComponents.Parameters
 }
 
 

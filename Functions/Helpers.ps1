@@ -340,7 +340,7 @@ function InvokeNetboxRequest {
     
     # If the user wants the raw value from the API... otherwise return only the actual result
     if ($Raw) {
-        Write-Verbose "Returning raw result"
+        Write-Verbose "Returning raw result by choice"
         return $result
     } else {
         if ($result.psobject.Properties.Name.Contains('results')) {

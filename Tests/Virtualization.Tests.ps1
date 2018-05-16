@@ -130,7 +130,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
             }
         }
         
-        Context -Name "Get-VirtualMachineInterface" -Fixture {
+        Context -Name "Get-NetboxVirtualMachineInterface" -Fixture {
             It "Should request the default number of interfaces" {
                 $Result = Get-NetboxVirtualMachineInterface
                 
@@ -192,7 +192,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
             }
         }
         
-        Context -Name "Get-VirtualMachineCluster" -Fixture {
+        Context -Name "Get-NetboxVirtualMachineCluster" -Fixture {
             It "Should request the default number of clusters" {
                 $Result = Get-NetboxVirtualizationCluster
                 
@@ -264,7 +264,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
             }
         }
         
-        Context -Name "Get-VirtualMachineClusterGroup" -Fixture {
+        Context -Name "Get-NetboxVirtualMachineClusterGroup" -Fixture {
             It "Should request the default number of cluster groups" {
                 $Result = Get-NetboxVirtualizationClusterGroup
                 
@@ -340,7 +340,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Method | Should -Be 'POST'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/virtualization/interfaces/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
-                $Result.Body | Should -Be '{"virtual_machine":10,"name":"Ethernet0","enabled":true}'
+                $Result.Body | Should -Be '{"virtual_machine":10,"enabled":true,"name":"Ethernet0"}'
             }
             
             It "Should add an interface with a MAC, MTU, and Description" {
@@ -351,7 +351,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Method | Should -Be 'POST'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/virtualization/interfaces/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
-                $Result.Body | Should -Be '{"mtu":1500,"description":"Test description","enabled":true,"virtual_machine":10,"name":"Ethernet0","mac_address":"11:22:33:44:55:66"}'
+                $Result.Body | Should -Be '{"description":"Test description","virtual_machine":10,"enabled":true,"name":"Ethernet0","mtu":1500,"mac_address":"11:22:33:44:55:66"}'
             }
         }
     }

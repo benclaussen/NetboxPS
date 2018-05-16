@@ -382,6 +382,84 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Body | Should -Be '{"status":1,"role":10,"address":"10.0.1.1/24"}'
             }
         }
+        
+        Context -Name "Remove-NetboxIPAMAddress" -Fixture {
+            It "Should remove a single IP" {
+                Mock -CommandName "Get-NetboxIPAMAddress" -ModuleName NetboxPS -MockWith {
+                    return @{
+                        'address' = '10.1.1.1/24'
+                        'id' = 4109
+                    }
+                }
+                
+                $Result = Remove-NetboxIPAMAddress -Id '4109' -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName "Get-NetboxIPAMAddress" -Times 1
+                
+                $Result.Method | Should -Be 'DELETE'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/4109/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be $null
+            }
+            
+            It "Should remove multiple IPs" {
+                Mock -CommandName "Get-NetboxIPAMAddress" -ModuleName NetboxPS -MockWith {
+                    return @(
+                        @{
+                            'address' = '10.1.1.1/24'
+                            'id' = 4109
+                        },
+                        @{
+                            'address' = '10.1.1.2/24'
+                            'id' = 4110
+                        }
+                    )
+                }
+                
+                $Result = Remove-NetboxIPAMAddress -Id 4109, 4110 -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName "Get-NetboxIPAMAddress" -Times 2
+                
+                $Result.Method | Should -Be 'DELETE', 'DELETE'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/4109/', 'https://netbox.domain.com/api/ipam/ip-addresses/4110/'
+                $Result.Headers.Keys.Count | Should -BeExactly 2
+            }
+        }
+        
+        Context -Name "Set-NetboxIPAMAddress" -Fixture {
+            It "Should set an IP with a new status" {
+                Mock -CommandName "Get-NetboxIPAMAddress" -ModuleName NetboxPS -MockWith {
+                    return @{
+                        'address' = '10.1.1.1/24'
+                        'id' = 4109
+                    }
+                }
+                
+                $Result = Set-NetboxIPAMAddress -Id '4109' -Status 2 -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName "Get-NetboxIPAMAddress" -Times 1
+                
+                $Result.Method | Should -Be 'PATCH'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/4109/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"status":2}'
+            }
+            
+            It "Should set an IP with VRF, Tenant, and Description" {
+                $Result = Set-NetboxIPAMAddress -Id 4109 -VRF 10 -Tenant 14 -Description 'Test description' -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName "Get-NetboxIPAMAddress" -Times 1
+                
+                $Result.Method | Should -Be 'PATCH'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/4109/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"description":"Test description","status":1,"tenant":14,"vrf":10}'
+            }
+        }
     }
 }
 
