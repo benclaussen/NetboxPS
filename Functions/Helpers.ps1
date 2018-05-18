@@ -145,7 +145,7 @@ function BuildURIComponents {
     
     Write-Verbose "Building URI components"
     
-    $URIParameters = [System.Collections.Hashtable]::new()
+    $URIParameters = @{}
     
     foreach ($CmdletParameterName in $ParametersDictionary.Keys) {
         if ($CmdletParameterName -in $CommonParameterNames) {
@@ -163,7 +163,7 @@ function BuildURIComponents {
             # Check if there is one or more values for Id and build a URI or query as appropriate
             if (@($ParametersDictionary[$CmdletParameterName]).Count -gt 1) {
                 Write-Verbose " Joining IDs for parameter"
-                $URIParameters['id__in'] = $Id -join ','
+                $URIParameters['id__in'] = $ParametersDictionary[$CmdletParameterName] -join ','
             } else {
                 Write-Verbose " Adding ID to segments"
                 [void]$uriSegments.Add($ParametersDictionary[$CmdletParameterName])
@@ -185,6 +185,7 @@ function BuildURIComponents {
 
 function GetChoiceValidValues {
     [CmdletBinding()]
+    [OutputType([System.Collections.ArrayList])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -220,13 +221,16 @@ function ValidateChoice {
         [string]$MajorObject,
         
         [Parameter(Mandatory = $true)]
-        [string]$ChoiceName
+        [string]$ChoiceName,
+        
+        [Parameter(Mandatory = $true)]
+        [object]$ProvidedValue
     )
     
     $ValidValues = GetChoiceValidValues -MajorObject $MajorObject -Choice $ChoiceName
     
     Write-Verbose "Validating $ChoiceName"
-    Write-Verbose "Checking '$ProvidedValue' against $($ValidValues -join ', ')"
+    Write-Verbose "Checking '$ProvidedValue' against [$($ValidValues -join ', ')]"
     
     if ($ValidValues -inotcontains $ProvidedValue) {
         throw "Invalid value '$ProvidedValue' for '$ChoiceName'. Must be one of: $($ValidValues -join ', ')"
@@ -263,7 +267,7 @@ function GetNetboxAPIErrorBody {
 }
 
 function InvokeNetboxRequest {
-    [CmdletBinding(SupportsShouldProcess = $true)]
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]

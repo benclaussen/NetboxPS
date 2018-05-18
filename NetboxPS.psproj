@@ -26,7 +26,8 @@
     <File Build="2" Shared="True" ReferenceFunction="Invoke-Virtualization_Tests_ps1">Tests\Virtualization.Tests.ps1</File>
     <File Build="2" Shared="True" ReferenceFunction="Invoke-IPAM_Tests_ps1">Tests\IPAM.Tests.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-IPAM_ps1">Functions\IPAM\IPAM.ps1</File>
-    <File Build="2">Tests\IPAMChoices.json.txt</File>
+    <File Build="2">Tests\IPAMChoices.json</File>
+    <File Build="2">Tests\VirtualizationChoices.json</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>

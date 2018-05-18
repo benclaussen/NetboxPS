@@ -31,8 +31,8 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
         return $true
     } -ModuleName 'NetboxPS'
     
-    Context "Building URI tests" {
-        InModuleScope -ModuleName 'NetboxPS' -ScriptBlock {
+    InModuleScope -ModuleName 'NetboxPS' -ScriptBlock {
+        Context -Name "Building URIBuilder" -Fixture {
             It "Should give a basic URI object" {
                 BuildNewURI -HostName 'netbox.domain.com' | Should -BeOfType [System.UriBuilder]
             }
@@ -85,10 +85,70 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
                 $URIBuilder.URI.AbsoluteURI | Should -BeExactly 'https://netbox.domain.com/api/seg1/seg2/?param1=paramval1&param2=paramval2'
             }
         }
-    }
-    
-    Context "Invoking request tests" {
-        InModuleScope -ModuleName 'NetboxPS' -ScriptBlock {
+        
+        Context -Name "Building URI components" -Fixture {
+            It "Should give a basic hashtable" {
+                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'param1' = 1}
+                
+                $URIComponents | Should -BeOfType [hashtable]
+                $URIComponents.Keys.Count | Should -BeExactly 2
+                $URIComponents.Keys | Should -Be @("Segments", "Parameters")
+                $URIComponents.Segments | Should -Be @("segment1", "segment2")
+                $URIComponents.Parameters.Count | Should -BeExactly 1
+                $URIComponents.Parameters | Should -BeOfType [hashtable]
+                $URIComponents.Parameters['param1'] | Should -Be 1
+            }
+            
+            It "Should add a single ID parameter to the segments" {
+                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'id' = 123}
+                
+                $URIComponents | Should -BeOfType [hashtable]
+                $URIComponents.Keys.Count | Should -BeExactly 2
+                $URIComponents.Keys | Should -Be @("Segments", "Parameters")
+                $URIComponents.Segments | Should -Be @("segment1", "segment2", '123')
+                $URIComponents.Parameters.Count | Should -BeExactly 0
+                $URIComponents.Parameters | Should -BeOfType [hashtable]
+            }
+            
+            It "Should add multiple IDs to the parameters id__in" {
+                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'id' = "123", "456"}
+                
+                $URIComponents | Should -BeOfType [hashtable]
+                $URIComponents.Keys.Count | Should -BeExactly 2
+                $URIComponents.Keys | Should -Be @("Segments", "Parameters")
+                $URIComponents.Segments | Should -Be @("segment1", "segment2")
+                $URIComponents.Parameters.Count | Should -BeExactly 1
+                $URIComponents.Parameters | Should -BeOfType [hashtable]
+                $URIComponents.Parameters['id__in'] | Should -Be '123,456'
+            }
+            
+            It "Should skip a particular parameter name" {
+                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'param1' = 1; 'param2' = 2} -SkipParameterByName 'param2'
+                
+                $URIComponents | Should -BeOfType [hashtable]
+                $URIComponents.Keys.Count | Should -BeExactly 2
+                $URIComponents.Keys | Should -Be @("Segments", "Parameters")
+                $URIComponents.Segments | Should -Be @("segment1", "segment2")
+                $URIComponents.Parameters.Count | Should -BeExactly 1
+                $URIComponents.Parameters | Should -BeOfType [hashtable]
+                $URIComponents.Parameters['param1'] | Should -Be 1
+                $URIComponents.Parameters['param2'] | Should -BeNullOrEmpty
+            }
+            
+            It "Should add a query (q) parameter" {
+                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'query' = 'mytestquery'}
+                
+                $URIComponents | Should -BeOfType [hashtable]
+                $URIComponents.Keys.Count | Should -BeExactly 2
+                $URIComponents.Keys | Should -Be @("Segments", "Parameters")
+                $URIComponents.Segments | Should -Be @("segment1", "segment2")
+                $URIComponents.Parameters.Count | Should -BeExactly 1
+                $URIComponents.Parameters | Should -BeOfType [hashtable]
+                $URIComponents.Parameters['q'] | Should -Be 'mytestquery'
+            }
+        }
+        
+        Context -Name "Invoking request tests" -Fixture {
             Mock -CommandName 'Invoke-RestMethod' -Verifiable -MockWith {
                 # Return an object of the items we would normally pass to Invoke-RestMethod
                 return [pscustomobject]@{
@@ -123,7 +183,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
                 $Result = InvokeNetboxRequest -URI $URIBuilder -Raw
                 
                 Assert-VerifiableMock
-
+                
                 $Result.Method | Should -Be 'GET'
                 $Result.Uri | Should -Be $URIBuilder.Uri.AbsoluteUri
                 $Result.Headers | Should -BeOfType [System.Collections.HashTable]
@@ -136,7 +196,9 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
             It "Should generate a POST request with body" {
                 $URIBuilder = BuildNewURI -Hostname "netbox.domain.com" -Segments 'seg1', 'seg2'
                 
-                $Result = InvokeNetboxRequest -URI $URIBuilder -Method POST -Body @{'bodyparam1' = 'val1'} -Raw
+                $Result = InvokeNetboxRequest -URI $URIBuilder -Method POST -Body @{
+                    'bodyparam1' = 'val1'
+                } -Raw
                 
                 Assert-VerifiableMock
                 
@@ -161,6 +223,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
                 
                 $Result.Method | Should -Be 'POST'
                 $Result.Body | Should -Be '{"bodyparam1":"val1"}'
+                $Result.Headers.Count | Should -BeExactly 2
                 $Result.Headers.Authorization | Should -Be "Token faketoken"
                 $Result.Headers.Connection | Should -Be "keep-alive"
             }
@@ -179,6 +242,235 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
                 } | Should -Throw
             }
         }
+        
+        Context -Name "Validating choices" -Fixture {
+            $script:NetboxConfig.Choices.Virtualization = (Get-Content "$PSScriptRoot\VirtualizationChoices.json" -ErrorAction Stop | ConvertFrom-Json)
+            $script:NetboxConfig.Choices.IPAM = (Get-Content "$PSScriptRoot\IPAMChoices.json" -ErrorAction Stop | ConvertFrom-Json)
+            
+            Context -Name "Virtualization choices" -Fixture {
+                $MajorObject = 'Virtualization'
+                
+                It "Should return a valid integer for status when provided a name" {
+                    $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName 'virtual-machine:status' -ProvidedValue 'Active'
+                    
+                    $Result | Should -BeOfType [uint16]
+                    $Result | Should -BeExactly 1
+                }
+                
+                It "Should return a valid integer for status when provided an integer" {
+                    $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName 'virtual-machine:status' -ProvidedValue 0
+                    
+                    $Result | Should -BeOfType [uint16]
+                    $Result | Should -BeExactly 0
+                }
+                
+                It "Should throw because of an invalid choice" {
+                    {
+                        ValidateChoice -MajorObject $MajorObject -ChoiceName 'virtual-machine:status' -ProvidedValue 'Fake'
+                    } | Should -Throw
+                }
+            }
+            
+            Context -Name "IPAM choices" -Fixture {
+                $MajorObject = 'IPAM'
+                
+                Context -Name "aggregate:family" -Fixture {
+                    $ChoiceName = 'aggregate:family'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'IPv4'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 4
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 4
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 4
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 0
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "prefix:family" {
+                    $ChoiceName = 'prefix:family'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'IPv4'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 4
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 4
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 4
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 0
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "prefix:status" {
+                    $ChoiceName = 'prefix:status'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'Active'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 1
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 10
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "ip-address:family" {
+                    $ChoiceName = 'ip-address:family'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'IPv4'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 4
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 4
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 4
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 10
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "ip-address:status" {
+                    $ChoiceName = 'ip-address:status'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'Active'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 1
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 10
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "ip-address:role" {
+                    $ChoiceName = 'ip-address:role'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'Anycast'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 30
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 30
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 30
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 1
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "vlan:status" {
+                    $ChoiceName = 'vlan:status'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'Active'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 1
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 0
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "service:protocol" {
+                    $ChoiceName = 'service:protocol'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'TCP'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 6
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 6
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 6
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 0
+                        } | Should -Throw
+                    }
+                }
+            }
+            
+            
+        }
+        
+        
     }
 }
 

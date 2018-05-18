@@ -13,6 +13,7 @@
 
 function Get-NetboxIPAMChoices {
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "", Justification = "These are literally 'choices' in Netbox")]
     param ()
     
     $uriSegments = [System.Collections.ArrayList]::new(@('ipam', '_choices'))
@@ -115,12 +116,13 @@ function VerifyIPAMChoices {
         [switch]$ServiceProtocol
     )
     
-    ValidateChoice -MajorObject 'IPAM' -ChoiceName $PSCmdlet.ParameterSetName
+    ValidateChoice -MajorObject 'IPAM' -ChoiceName $PSCmdlet.ParameterSetName -ProvidedValue $ProvidedValue
 }
 
 
 function Get-NetboxIPAMAggregate {
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "", Justification = "These are literally 'choices' in Netbox")]
     param
     (
         [uint16]$Limit,
@@ -142,7 +144,7 @@ function Get-NetboxIPAMAggregate {
         [switch]$Raw
     )
     
-    if ($Family -ne $null) {
+    if ($null -ne $Family) {
         $PSBoundParameters.Family = VerifyIPAMChoices -ProvidedValue $Family -AggregateFamily
     }
     
@@ -198,15 +200,15 @@ function Get-NetboxIPAMAddress {
         [switch]$Raw
     )
     
-    if ($Family -ne $null) {
+    if ($null -ne $Family) {
         $PSBoundParameters.Family = VerifyIPAMChoices -ProvidedValue $Family -IPAddressFamily
     }
     
-    if ($Status -ne $null) {
+    if ($null -ne $Status) {
         $PSBoundParameters.Status = VerifyIPAMChoices -ProvidedValue $Status -IPAddressStatus
     }
     
-    if ($Role -ne $null) {
+    if ($null -ne $Role) {
         $PSBoundParameters.Role = VerifyIPAMChoices -ProvidedValue $Role -IPAddressRole
     }
     
@@ -395,11 +397,11 @@ function Get-NetboxIPAMPrefix {
         [switch]$Raw
     )
     
-    if ($Family -ne $null) {
+    if ($null -ne $Family) {
         $PSBoundParameters.Family = VerifyIPAMChoices -ProvidedValue $Family -PrefixFamily
     }
     
-    if ($Status -ne $null) {
+    if ($null -ne $Status) {
         $PSBoundParameters.Status = VerifyIPAMChoices -ProvidedValue $Status -PrefixStatus
     }
     
@@ -485,7 +487,7 @@ function Add-NetboxIPAMAddress {
     
     $PSBoundParameters.Status = VerifyIPAMChoices -ProvidedValue $Status -IPAddressStatus
     
-    if ($Role -ne $null) {
+    if ($null -ne $Role) {
         $PSBoundParameters.Role = VerifyIPAMChoices -ProvidedValue $Role -IPAddressRole
     }
     
@@ -558,7 +560,7 @@ function Set-NetboxIPAMAddress {
         
         [string]$Address,
         
-        [object]$Status = 'Active',
+        [object]$Status,
         
         [uint16]$Tenant,
         
@@ -577,7 +579,9 @@ function Set-NetboxIPAMAddress {
         [switch]$Force
     )
     
-    $PSBoundParameters.Status = VerifyIPAMChoices -ProvidedValue $Status -IPAddressStatus
+    if ($Status) {
+        $PSBoundParameters.Status = VerifyIPAMChoices -ProvidedValue $Status -IPAddressStatus
+    }
     
     if ($Role) {
         $PSBoundParameters.Role = VerifyIPAMChoices -ProvidedValue $Role -IPAddressRole

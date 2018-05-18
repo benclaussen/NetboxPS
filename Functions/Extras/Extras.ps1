@@ -12,7 +12,8 @@
 #>
 
 function Get-NetboxExtrasChoices {
-	[CmdletBinding()]
+    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "", Justification = "These are literally 'choices' in Netbox")]
 	param ()
     
     $uriSegments = [System.Collections.ArrayList]::new(@('extras', '_choices'))

@@ -46,6 +46,8 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
     }
     
     InModuleScope -ModuleName 'NetboxPS' -ScriptBlock {
+        $script:NetboxConfig.Choices.Virtualization = (Get-Content "$PSScriptRoot\VirtualizationChoices.json" -ErrorAction Stop | ConvertFrom-Json)
+        
         Context -Name "Get-NetboxVirtualMachine" -Fixture {
             It "Should request the default number of VMs" {
                 $Result = Get-NetboxVirtualMachine
@@ -128,7 +130,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
             }
         }
         
-        Context -Name "Get-VirtualMachineInterface" -Fixture {
+        Context -Name "Get-NetboxVirtualMachineInterface" -Fixture {
             It "Should request the default number of interfaces" {
                 $Result = Get-NetboxVirtualMachineInterface
                 
@@ -190,7 +192,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
             }
         }
         
-        Context -Name "Get-VirtualMachineCluster" -Fixture {
+        Context -Name "Get-NetboxVirtualMachineCluster" -Fixture {
             It "Should request the default number of clusters" {
                 $Result = Get-NetboxVirtualizationCluster
                 
@@ -262,7 +264,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
             }
         }
         
-        Context -Name "Get-VirtualMachineClusterGroup" -Fixture {
+        Context -Name "Get-NetboxVirtualMachineClusterGroup" -Fixture {
             It "Should request the default number of cluster groups" {
                 $Result = Get-NetboxVirtualizationClusterGroup
                 
@@ -349,6 +351,43 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/virtualization/interfaces/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
                 $Result.Body | Should -Be '{"mtu":1500,"description":"Test description","enabled":true,"virtual_machine":10,"name":"Ethernet0","mac_address":"11:22:33:44:55:66"}'
+            }
+        }
+        
+        Context -Name "Set-NetboxVirtualMachine" -Fixture {
+            Mock -CommandName "Get-NetboxVirtualMachine" -ModuleName NetboxPS -MockWith {
+                return @{
+                    'Id' = 1234
+                    'Name' = 'TestVM'
+                }
+            }
+            
+            It "Should set a VM to a new name" {
+                $Result = Set-NetboxVirtualMachine -Id 1234 -Name 'newtestname' -Force
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'PATCH'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/1234/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"name":"newtestname"}'
+            }
+            
+            It "Should set a VM with a new name, cluster, platform, and status" {
+                $Result = Set-NetboxVirtualMachine -Id 1234 -Name 'newtestname' -Cluster 10 -Platform 15 -Status 'Offline' -Force
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'PATCH'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/1234/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"cluster":10,"platform":15,"name":"newtestname","status":0}'
+            }
+            
+            It "Should throw because of an invalid status" {
+                { Set-NetboxVirtualMachine -Id 1234 -Status 'Fake' -Force } | Should -Throw
+                
+                Assert-VerifiableMock
             }
         }
     }

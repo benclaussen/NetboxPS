@@ -25,8 +25,9 @@ function Get-NetboxCircuitsChoices {
 	.NOTES
 		Additional information about the function.
 #>
-	
-	[CmdletBinding()]
+    
+    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "", Justification = "These are literally 'choices' in Netbox")]
 	param ()
 	
 	$uriSegments = [System.Collections.ArrayList]::new(@('circuits', '_choices'))

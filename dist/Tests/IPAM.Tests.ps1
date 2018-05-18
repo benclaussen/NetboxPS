@@ -49,6 +49,10 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
     InModuleScope -ModuleName 'NetboxPS' -ScriptBlock {
         $script:NetboxConfig.Choices.IPAM = (Get-Content "$PSScriptRoot\IPAMChoices.json" -ErrorAction Stop | ConvertFrom-Json)
         
+        Context -Name "VerifyIPAMChoices" -Fixture {
+            #It "Should return a valid integer"
+        }
+        
         Context -Name "Get-NetboxIPAMAggregate" -Fixture {
             It "Should request the default number of aggregates" {
                 $Result = Get-NetboxIPAMAggregate
@@ -368,7 +372,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'POST'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
-                $Result.Body | Should -Be '{"status":2,"role":30,"address":"10.0.0.1/24"}'
+                $Result.Body | Should -Be '{"status":2,"address":"10.0.0.1/24","role":30}'
             }
             
             It "Should add an IP with a status and role values" {
@@ -379,7 +383,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'POST'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
-                $Result.Body | Should -Be '{"status":1,"role":10,"address":"10.0.1.1/24"}'
+                $Result.Body | Should -Be '{"status":1,"address":"10.0.1.1/24","role":10}'
             }
         }
         
@@ -457,7 +461,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Method | Should -Be 'PATCH'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/ipam/ip-addresses/4109/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
-                $Result.Body | Should -Be '{"description":"Test description","status":1,"tenant":14,"vrf":10}'
+                $Result.Body | Should -Be '{"vrf":10,"description":"Test description","tenant":14}'
             }
         }
     }

@@ -307,7 +307,6 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
         }
         
         Context -Name "Add-NetboxVirtualMachine" -Fixture {
-            
             It "Should add a basic VM" {
                 $Result = Add-NetboxVirtualMachine -Name 'testvm' -Cluster 1
                 
@@ -316,7 +315,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Method | Should -Be 'POST'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
-                $Result.Body | Should -Be '{"name":"testvm","cluster":1,"status":1}'
+                $Result.Body | Should -Be '{"cluster":1,"name":"testvm","status":1}'
             }
             
             It "Should add a VM with CPUs, Memory, Disk, tenancy, and comments" {
@@ -327,7 +326,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Method | Should -Be 'POST'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
-                $Result.Body | Should -Be '{"tenant":11,"name":"testvm","comments":"these are comments","cluster":1,"status":1,"memory":4096,"vcpus":4,"disk":50}'
+                $Result.Body | Should -Be '{"tenant":11,"comments":"these are comments","disk":50,"memory":4096,"name":"testvm","cluster":1,"status":1,"vcpus":4}'
             }
         }
         
@@ -340,7 +339,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Method | Should -Be 'POST'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/virtualization/interfaces/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
-                $Result.Body | Should -Be '{"virtual_machine":10,"enabled":true,"name":"Ethernet0"}'
+                $Result.Body | Should -Be '{"virtual_machine":10,"name":"Ethernet0","enabled":true}'
             }
             
             It "Should add an interface with a MAC, MTU, and Description" {
@@ -351,7 +350,44 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Method | Should -Be 'POST'
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/virtualization/interfaces/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
-                $Result.Body | Should -Be '{"description":"Test description","virtual_machine":10,"enabled":true,"name":"Ethernet0","mtu":1500,"mac_address":"11:22:33:44:55:66"}'
+                $Result.Body | Should -Be '{"mtu":1500,"description":"Test description","enabled":true,"virtual_machine":10,"name":"Ethernet0","mac_address":"11:22:33:44:55:66"}'
+            }
+        }
+        
+        Context -Name "Set-NetboxVirtualMachine" -Fixture {
+            Mock -CommandName "Get-NetboxVirtualMachine" -ModuleName NetboxPS -MockWith {
+                return @{
+                    'Id' = 1234
+                    'Name' = 'TestVM'
+                }
+            }
+            
+            It "Should set a VM to a new name" {
+                $Result = Set-NetboxVirtualMachine -Id 1234 -Name 'newtestname' -Force
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'PATCH'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/1234/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"name":"newtestname"}'
+            }
+            
+            It "Should set a VM with a new name, cluster, platform, and status" {
+                $Result = Set-NetboxVirtualMachine -Id 1234 -Name 'newtestname' -Cluster 10 -Platform 15 -Status 'Offline' -Force
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'PATCH'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/1234/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"cluster":10,"platform":15,"name":"newtestname","status":0}'
+            }
+            
+            It "Should throw because of an invalid status" {
+                { Set-NetboxVirtualMachine -Id 1234 -Status 'Fake' -Force } | Should -Throw
+                
+                Assert-VerifiableMock
             }
         }
     }
