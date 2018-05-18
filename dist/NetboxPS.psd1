@@ -25,7 +25,7 @@
 	GUID = 'bba9b06c-49c8-47cf-8358-aca7c4e78896'
 	
 	# Author of this module
-	Author = ' Ben Claussen'
+	Author = 'Ben Claussen'
 	
 	# Company or vendor of this module
 	CompanyName = 'NEOnet'
@@ -34,10 +34,10 @@
 	Copyright = '(c) 2018. All rights reserved.'
 	
 	# Description of the functionality provided by this module
-	Description = 'Module description'
+	Description = 'A Powershell wrapper for Netbox API'
 	
 	# Minimum version of the Windows PowerShell engine required by this module
-	PowerShellVersion = '2.0'
+	PowerShellVersion = '5.0'
 	
 	# Name of the Windows PowerShell host required by this module
 	PowerShellHostName = ''
@@ -100,13 +100,13 @@
 		PSData = @{
 			
 			# Tags applied to this module. These help with module discovery in online galleries.
-			# Tags = @()
+			Tags = @('Netbox', 'API', 'DCIM', 'IPAM')
 			
 			# A URL to the license for this module.
 			# LicenseUri = ''
 			
 			# A URL to the main website for this project.
-			# ProjectUri = ''
+			ProjectUri = 'https://github.com/benclaussen/NetboxPS'
 			
 			# A URL to an icon representing this module.
 			# IconUri = ''
