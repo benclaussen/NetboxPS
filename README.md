@@ -8,6 +8,6 @@ This module is beta. Use it at your own risk. All internal functions are exposed
 This module is a wrapper for the [Netbox](https://github.com/digitalocean/netbox) API.
 
 # Usage
-1. Install module
+1. Install module from the `dist` folder
 2. Import module
 3. Connect to an API endpoint by using `Connect-NetboxAPI`
