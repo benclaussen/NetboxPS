@@ -6,5 +6,5 @@ $script:CommonParameterNames = New-Object System.Collections.ArrayList
 
 SetupNetboxConfigVariable
 
-#Export-ModuleMember -Function *
-Export-ModuleMember -Function *-*
+Export-ModuleMember -Function *
+#Export-ModuleMember -Function *-*

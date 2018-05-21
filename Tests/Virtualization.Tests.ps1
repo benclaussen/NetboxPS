@@ -390,6 +390,69 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 Assert-VerifiableMock
             }
         }
+        
+        Context -Name "Set-NetboxVirtualMachineInterface" -Fixture {
+            Mock -CommandName "Get-NetboxVirtualMachineInterface" -ModuleName NetboxPS -MockWith {
+                return @{
+                    'Id' = 1234
+                    'Name' = 'TestVM'
+                }
+            }
+            
+            It "Should set an interface to a new name" {
+                $Result = Set-NetboxVirtualMachineInterface -Id 1234 -Name 'newtestname' -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName Get-NetboxVirtualMachineInterface -Times 1 -Scope 'It' -Exactly
+                
+                $Result.Method | Should -Be 'PATCH'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/interfaces/1234/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"name":"newtestname"}'
+            }
+            
+            It "Should set an interface to a new name, MTU, MAC address and description" {
+                $paramSetNetboxVirtualMachineInterface = @{
+                    Id = 1234
+                    Name = 'newtestname'
+                    MAC_Address = '11:22:33:44:55:66'
+                    MTU = 9000
+                    Description = "Test description"
+                    Force = $true
+                }
+                
+                $Result = Set-NetboxVirtualMachineInterface @paramSetNetboxVirtualMachineInterface
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName Get-NetboxVirtualMachineInterface -Times 1 -Scope 'It' -Exactly
+                
+                $Result.Method | Should -Be 'PATCH'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/interfaces/1234/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"mac_address":"11:22:33:44:55:66","mtu":9000,"description":"Test description","name":"newtestname"}'
+            }
+            
+            It "Should set multiple interfaces to a new name" {
+                Mock -CommandName "Get-NetboxVirtualMachineInterface" -ModuleName NetboxPS -MockWith {
+                    return @(
+                        @{
+                            'Id' = $Id
+                            'Name' = 'TestVM'
+                        }
+                    )
+                }
+                
+                $Result = Set-NetboxVirtualMachineInterface -Id 1234, 4321 -Name 'newtestname' -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName Get-NetboxVirtualMachineInterface -Times 2 -Scope 'It' -Exactly
+                
+                $Result.Method | Should -Be 'PATCH', 'PATCH'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/interfaces/1234/', 'https://netbox.domain.com/api/virtualization/interfaces/4321/'
+                $Result.Headers.Keys.Count | Should -BeExactly 2
+                $Result.Body | Should -Be '{"name":"newtestname"}', '{"name":"newtestname"}'
+            }
+        }
     }
 }
 
