@@ -36,7 +36,7 @@ function GetNetboxConfigVariable {
 }
 
 function Set-NetboxHostName {
-    [CmdletBinding(ConfirmImpact = 'Medium',
+    [CmdletBinding(ConfirmImpact = 'Low',
                    SupportsShouldProcess = $true)]
     [OutputType([string])]
     param
@@ -45,8 +45,10 @@ function Set-NetboxHostName {
         [string]$Hostname
     )
     
-    $script:NetboxConfig.Hostname = $Hostname.Trim()
-    $script:NetboxConfig.Hostname
+    if ($PSCmdlet.ShouldProcess('Netbox Hostname', 'Set')) {
+        $script:NetboxConfig.Hostname = $Hostname.Trim()
+        $script:NetboxConfig.Hostname
+    }
 }
 
 function Get-NetboxHostname {
@@ -61,50 +63,49 @@ function Get-NetboxHostname {
 	$script:NetboxConfig.Hostname
 }
 
-function Set-NetboxCredentials {
+function Set-NetboxCredential {
     [CmdletBinding(DefaultParameterSetName = 'CredsObject',
-                   ConfirmImpact = 'Medium',
+                   ConfirmImpact = 'Low',
                    SupportsShouldProcess = $true)]
-    [OutputType([pscredential], ParameterSetName = 'CredsObject')]
-    [OutputType([pscredential], ParameterSetName = 'UserPass')]
     [OutputType([pscredential])]
     param
     (
         [Parameter(ParameterSetName = 'CredsObject',
                    Mandatory = $true)]
-        [pscredential]$Credentials,
+        [pscredential]$Credential,
         
         [Parameter(ParameterSetName = 'UserPass',
                    Mandatory = $true)]
-        [string]$Token
+        [securestring]$Token
     )
     
-    switch ($PsCmdlet.ParameterSetName) {
-        'CredsObject' {
-            $script:NetboxConfig.Credentials = $Credentials
-            break
+    if ($PSCmdlet.ShouldProcess('Netbox Credentials', 'Set')) {
+        switch ($PsCmdlet.ParameterSetName) {
+            'CredsObject' {
+                $script:NetboxConfig.Credential = $Credential
+                break
+            }
+            
+            'UserPass' {
+                $script:NetboxConfig.Credential = [System.Management.Automation.PSCredential]::new('notapplicable', $Token)
+                break
+            }
         }
         
-        'UserPass' {
-            $securePW = ConvertTo-SecureString $Token -AsPlainText -Force
-            $script:NetboxConfig.Credentials = [System.Management.Automation.PSCredential]::new('notapplicable', $securePW)
-            break
-        }
+        $script:NetboxConfig.Credential
     }
-    
-    $script:NetboxConfig.Credentials
 }
 
-function Get-NetboxCredentials {
+function Get-NetboxCredential {
 	[CmdletBinding()]
 	[OutputType([pscredential])]
 	param ()
 	
-	if (-not $script:NetboxConfig.Credentials) {
-		throw "Netbox Credentials not set! You may set with Set-NetboxCredentials"
+	if (-not $script:NetboxConfig.Credential) {
+		throw "Netbox Credentials not set! You may set with Set-NetboxCredential"
 	}
 	
-	$script:NetboxConfig.Credentials
+	$script:NetboxConfig.Credential
 }
 
 function VerifyAPIConnectivity {
@@ -153,7 +154,7 @@ function Connect-NetboxAPI {
     
     if (-not $Credentials) {
         try {
-            $Credentials = Get-NetboxCredentials -ErrorAction Stop
+            $Credentials = Get-NetboxCredential -ErrorAction Stop
         } catch {
             # Credentials are not set... Try to obtain from the user
             if (-not ($Credentials = Get-Credential -UserName 'username-not-applicable' -Message "Enter token for Netbox")) {
@@ -163,7 +164,7 @@ function Connect-NetboxAPI {
     }
     
     $null = Set-NetboxHostName -Hostname $Hostname
-    $null = Set-NetboxCredentials -Credentials $Credentials
+    $null = Set-NetboxCredential -Credential $Credentials
     
     try {
         Write-Verbose "Verifying API connectivity..."

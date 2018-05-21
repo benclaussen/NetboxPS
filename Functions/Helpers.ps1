@@ -286,7 +286,7 @@ function InvokeNetboxRequest {
         [switch]$Raw
     )
     
-    $creds = Get-NetboxCredentials
+    $creds = Get-NetboxCredential
     
     $Headers.Authorization = "Token {0}" -f $creds.GetNetworkCredential().Password
     

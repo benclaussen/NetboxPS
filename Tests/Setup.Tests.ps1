@@ -34,17 +34,17 @@ Describe "Setup tests" -Tag 'Core', 'Setup' -Fixture {
     }
     
     It "Throws an error for empty credentials" {
-        { Get-NetboxCredentials } | Should -Throw
+        { Get-NetboxCredential } | Should -Throw
     }
     
     Context "Plain text credentials" {
         It "Sets the credentials using plain text" {
-            $Creds = Set-NetboxCredentials -Token "faketoken" | Should -BeOfType [pscredential]
+            Set-NetboxCredential -Token (ConvertTo-SecureString -String "faketoken" -Force -AsPlainText) | Should -BeOfType [pscredential]
         }
         
         It "Checks the set credentials" {
-            $Creds = Set-NetboxCredentials -Token "faketoken"
-            (Get-NetboxCredentials).GetNetworkCredential().Password | Should -BeExactly "faketoken"
+            $Creds = Set-NetboxCredential -Token (ConvertTo-SecureString -String "faketoken" -Force -AsPlainText)
+            (Get-NetboxCredential).GetNetworkCredential().Password | Should -BeExactly "faketoken"
         }
     }
     
@@ -52,11 +52,11 @@ Describe "Setup tests" -Tag 'Core', 'Setup' -Fixture {
         $Creds = [PSCredential]::new('notapplicable', (ConvertTo-SecureString -String "faketoken" -AsPlainText -Force))
         
         It "Sets the credentials using [pscredential]" {
-            Set-NetboxCredentials -Credentials $Creds | Should -BeOfType [pscredential]
+            Set-NetboxCredential -Credential $Creds | Should -BeOfType [pscredential]
         }
         
         It "Checks the set credentials" {
-            (Get-NetboxCredentials).GetNetworkCredential().Password | Should -BeExactly 'faketoken'
+            (Get-NetboxCredential).GetNetworkCredential().Password | Should -BeExactly 'faketoken'
         }
     }
     
