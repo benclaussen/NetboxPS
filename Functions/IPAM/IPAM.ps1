@@ -414,13 +414,13 @@ function Get-NetboxIPAMPrefix {
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
 
-function Add-NetboxIPAMAddress {
+function New-NetboxIPAMAddress {
 <#
     .SYNOPSIS
-        Add a new IP address to Netbox
+        Create a new IP address to Netbox
     
     .DESCRIPTION
-        Adds a new IP address to Netbox with a status of Active by default.
+        Create a new IP address to Netbox with a status of Active by default.
     
     .PARAMETER Address
         IP address in CIDR notation: 192.168.1.1/24
@@ -453,7 +453,7 @@ function Add-NetboxIPAMAddress {
         Return raw results from API service
     
     .EXAMPLE
-        PS C:\> Add-NetboxIPAMAddress
+        PS C:\> Create-NetboxIPAMAddress
     
     .NOTES
         Additional information about the function.

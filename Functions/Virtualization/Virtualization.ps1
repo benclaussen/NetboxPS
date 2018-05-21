@@ -459,9 +459,9 @@ function Get-NetboxVirtualizationClusterGroup {
 #endregion GET commands
 
 
-#region ADD commands
+#region ADD/NEW commands
 
-function Add-NetboxVirtualMachine {
+function New-NetboxVirtualMachine {
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param
@@ -577,7 +577,7 @@ function Set-NetboxVirtualMachine {
         [switch]$Force
     )
     
-    if ($Status) {
+    if ($null -ne $Status) {
         $PSBoundParameters.Status = VerifyVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
     }
     
@@ -644,6 +644,7 @@ function Set-NetboxVirtualMachineInterface {
             }
         }
     }
+    
     end {
         
     }

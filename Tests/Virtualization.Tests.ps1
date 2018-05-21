@@ -306,9 +306,9 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
             }
         }
         
-        Context -Name "Add-NetboxVirtualMachine" -Fixture {
-            It "Should add a basic VM" {
-                $Result = Add-NetboxVirtualMachine -Name 'testvm' -Cluster 1
+        Context -Name "New-NetboxVirtualMachine" -Fixture {
+            It "Should create a basic VM" {
+                $Result = New-NetboxVirtualMachine -Name 'testvm' -Cluster 1
                 
                 Assert-VerifiableMock
 
@@ -318,8 +318,8 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Body | Should -Be '{"cluster":1,"name":"testvm","status":1}'
             }
             
-            It "Should add a VM with CPUs, Memory, Disk, tenancy, and comments" {
-                $Result = Add-NetboxVirtualMachine -Name 'testvm' -Cluster 1 -Status Active -vCPUs 4 -Memory 4096 -Tenant 11 -Disk 50 -Comments "these are comments"
+            It "Should create a VM with CPUs, Memory, Disk, tenancy, and comments" {
+                $Result = New-NetboxVirtualMachine -Name 'testvm' -Cluster 1 -Status Active -vCPUs 4 -Memory 4096 -Tenant 11 -Disk 50 -Comments "these are comments"
                 
                 Assert-VerifiableMock
                 
