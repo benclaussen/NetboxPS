@@ -162,7 +162,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
                 }
             }
             
-            Mock -CommandName 'Get-NetboxCredentials' -Verifiable -ModuleName 'NetboxPS' -MockWith {
+            Mock -CommandName 'Get-NetboxCredential' -Verifiable -ModuleName 'NetboxPS' -MockWith {
                 return [PSCredential]::new('notapplicable', (ConvertTo-SecureString -String "faketoken" -AsPlainText -Force))
             }
             

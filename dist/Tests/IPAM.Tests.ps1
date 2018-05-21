@@ -38,7 +38,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
         }
     }
     
-    Mock -CommandName 'Get-NetboxCredentials' -Verifiable -ModuleName 'NetboxPS' -MockWith {
+    Mock -CommandName 'Get-NetboxCredential' -Verifiable -ModuleName 'NetboxPS' -MockWith {
         return [PSCredential]::new('notapplicable', (ConvertTo-SecureString -String "faketoken" -AsPlainText -Force))
     }
     
@@ -352,9 +352,9 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
             }
         }
         
-        Context -Name "Add-NetboxIPAMAddress" -Fixture {
-            It "Should add a basic IP address" {
-                $Result = Add-NetboxIPAMAddress -Address '10.0.0.1/24'
+        Context -Name "New-NetboxIPAMAddress" -Fixture {
+            It "Should create a basic IP address" {
+                $Result = New-NetboxIPAMAddress -Address '10.0.0.1/24'
                 
                 Assert-VerifiableMock
                 
@@ -364,8 +364,8 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Body | Should -Be '{"status":1,"address":"10.0.0.1/24"}'
             }
             
-            It "Should add an IP with a status and role names" {
-                $Result = Add-NetboxIPAMAddress -Address '10.0.0.1/24' -Status 'Reserved' -Role 'Anycast'
+            It "Should create an IP with a status and role names" {
+                $Result = New-NetboxIPAMAddress -Address '10.0.0.1/24' -Status 'Reserved' -Role 'Anycast'
                 
                 Assert-VerifiableMock
                 
@@ -375,8 +375,8 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
                 $Result.Body | Should -Be '{"status":2,"address":"10.0.0.1/24","role":30}'
             }
             
-            It "Should add an IP with a status and role values" {
-                $Result = Add-NetboxIPAMAddress -Address '10.0.1.1/24' -Status '1' -Role '10'
+            It "Should create an IP with a status and role values" {
+                $Result = New-NetboxIPAMAddress -Address '10.0.1.1/24' -Status '1' -Role '10'
                 
                 Assert-VerifiableMock
                 
