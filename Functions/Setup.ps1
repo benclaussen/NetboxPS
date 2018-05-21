@@ -122,7 +122,7 @@ function VerifyAPIConnectivity {
 function Connect-NetboxAPI {
 <#
     .SYNOPSIS
-        Connects to the Netbox API and ensures credentials work properly
+        Connects to the Netbox API and ensures Credential work properly
     
     .DESCRIPTION
         A detailed description of the Connect-NetboxAPI function.
@@ -130,13 +130,13 @@ function Connect-NetboxAPI {
     .PARAMETER Hostname
         A description of the Hostname parameter.
     
-    .PARAMETER Credentials
-        A description of the Credentials parameter.
+    .PARAMETER Credential
+        A description of the Credential parameter.
     
     .EXAMPLE
         PS C:\> Connect-NetboxAPI -Hostname "netbox.domain.com"
         
-        This will prompt for credentials, then proceed to attempt a connection to Netbox
+        This will prompt for Credential, then proceed to attempt a connection to Netbox
     
     .NOTES
         Additional information about the function.
@@ -149,22 +149,22 @@ function Connect-NetboxAPI {
         [string]$Hostname,
         
         [Parameter(Mandatory = $false)]
-        [pscredential]$Credentials
+        [pscredential]$Credential
     )
     
-    if (-not $Credentials) {
+    if (-not $Credential) {
         try {
-            $Credentials = Get-NetboxCredential -ErrorAction Stop
+            $Credential = Get-NetboxCredential -ErrorAction Stop
         } catch {
             # Credentials are not set... Try to obtain from the user
-            if (-not ($Credentials = Get-Credential -UserName 'username-not-applicable' -Message "Enter token for Netbox")) {
+            if (-not ($Credential = Get-Credential -UserName 'username-not-applicable' -Message "Enter token for Netbox")) {
                 throw "Token is necessary to connect to a Netbox API."
             }
         }
     }
     
     $null = Set-NetboxHostName -Hostname $Hostname
-    $null = Set-NetboxCredential -Credential $Credentials
+    $null = Set-NetboxCredential -Credential $Credential
     
     try {
         Write-Verbose "Verifying API connectivity..."
