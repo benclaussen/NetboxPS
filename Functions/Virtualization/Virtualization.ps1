@@ -11,7 +11,7 @@
 		Virtualization object functions
 #>
 
-function VerifyVirtualizationChoices {
+function ValidateVirtualizationChoices {
 <#
     .SYNOPSIS
         Internal function to verify provided values for static choices
@@ -219,7 +219,7 @@ function Get-NetboxVirtualMachine {
     )
     
     if ($null -ne $Status) {
-        $PSBoundParameters.Status = VerifyVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
+        $PSBoundParameters.Status = ValidateVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
     }
     
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
@@ -491,7 +491,7 @@ function New-NetboxVirtualMachine {
         [string]$Comments
     )
     
-    $PSBoundParameters.Status = VerifyVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
+    $PSBoundParameters.Status = ValidateVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
     
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
     
@@ -578,7 +578,7 @@ function Set-NetboxVirtualMachine {
     )
     
     if ($null -ne $Status) {
-        $PSBoundParameters.Status = VerifyVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
+        $PSBoundParameters.Status = ValidateVirtualizationChoices -ProvidedValue $Status -VirtualMachineStatus
     }
     
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines', $Id))

@@ -328,6 +328,10 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Headers.Keys.Count | Should -BeExactly 1
                 $Result.Body | Should -Be '{"tenant":11,"comments":"these are comments","disk":50,"memory":4096,"name":"testvm","cluster":1,"status":1,"vcpus":4}'
             }
+            
+            It "Should throw because of an invalid status" {
+                { New-NetboxVirtualMachine -Name 'testvm' -Status 1123 -Cluster 1 } | Should -Throw
+            }
         }
         
         Context -Name "Add-NetboxVirtualInterface" -Fixture {
