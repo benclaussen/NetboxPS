@@ -183,7 +183,7 @@ function Connect-NetboxAPI {
     
     Write-Verbose "Caching static choices"
     $script:NetboxConfig.Choices.Circuits = Get-NetboxCircuitsChoices
-    #$script:NetboxConfig.Choices.DCIM = Get-NetboxDCIMChoices          # Not completed yet
+    $script:NetboxConfig.Choices.DCIM = Get-NetboxDCIMChoices          # Not completed yet
     $script:NetboxConfig.Choices.Extras = Get-NetboxExtrasChoices
     $script:NetboxConfig.Choices.IPAM = Get-NetboxIPAMChoices
     #$script:NetboxConfig.Choices.Secrets = Get-NetboxSecretsChoices    # Not completed yet
