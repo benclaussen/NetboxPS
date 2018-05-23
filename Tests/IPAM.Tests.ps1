@@ -49,7 +49,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
     InModuleScope -ModuleName 'NetboxPS' -ScriptBlock {
         $script:NetboxConfig.Choices.IPAM = (Get-Content "$PSScriptRoot\IPAMChoices.json" -ErrorAction Stop | ConvertFrom-Json)
         
-        Context -Name "VerifyIPAMChoices" -Fixture {
+        Context -Name "ValidateIPAMChoice" -Fixture {
             #It "Should return a valid integer"
         }
         
