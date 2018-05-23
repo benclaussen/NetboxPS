@@ -29,7 +29,7 @@
     <File Build="2">Tests\IPAMChoices.json</File>
     <File Build="2">Tests\VirtualizationChoices.json</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-DCIM_ps1">Functions\DCIM\DCIM.ps1</File>
-    <File Build="2" Shared="True" ReferenceFunction="Invoke-DCIM_Tests_ps1">Tests\DCIM.Tests.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-DCIM_Devices_Tests_ps1">Tests\DCIM.Devices.Tests.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>
