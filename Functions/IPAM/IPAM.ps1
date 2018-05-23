@@ -508,13 +508,10 @@ function Remove-NetboxIPAMAddress {
         Removes/deletes an IP address from Netbox by ID and optional other filters
     
     .PARAMETER Id
-        A description of the Id parameter.
+        Database ID of the IP address object.
     
     .PARAMETER Force
-        A description of the Force parameter.
-    
-    .PARAMETER Query
-        A description of the Query parameter.
+        Do not confirm.
     
     .EXAMPLE
         PS C:\> Remove-NetboxIPAMAddress -Id $value1
@@ -527,35 +524,42 @@ function Remove-NetboxIPAMAddress {
                    SupportsShouldProcess = $true)]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
         
         [switch]$Force
     )
     
-    $CurrentIPs = @(Get-NetboxIPAMAddress -Id $Id -ErrorAction Stop)
+    begin {
+    }
     
-    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
-    
-    foreach ($IP in $CurrentIPs) {
-        if ($Force -or $pscmdlet.ShouldProcess($IP.Address, "Delete")) {
-            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary @{'id' = $IP.Id}
+    process {
+        foreach ($IPId in $Id) {
+            $CurrentIP = Get-NetboxIPAMAddress -Id $IPId -ErrorAction Stop
             
-            $URI = BuildNewURI -Segments $URIComponents.Segments
+            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $IPId))
             
-            InvokeNetboxRequest -URI $URI -Method DELETE
+            if ($Force -or $pscmdlet.ShouldProcess($CurrentIP.Address, "Delete")) {
+                $URI = BuildNewURI -Segments $Segments
+                
+                InvokeNetboxRequest -URI $URI -Method DELETE
+            }
         }
+    }
+    
+    end {
     }
 }
 
 function Set-NetboxIPAMAddress {
-    [CmdletBinding(ConfirmImpact = 'High',
+    [CmdletBinding(ConfirmImpact = 'Medium',
                    SupportsShouldProcess = $true)]
     param
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint16[]]$Id,
         
         [string]$Address,
         
@@ -578,25 +582,34 @@ function Set-NetboxIPAMAddress {
         [switch]$Force
     )
     
-    if ($Status) {
-        $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -IPAddressStatus
+    begin {
+        if ($Status) {
+            $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -IPAddressStatus
+        }
+        
+        if ($Role) {
+            $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -IPAddressRole
+        }
     }
     
-    if ($Role) {
-        $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -IPAddressRole
+    process{
+        foreach ($IPId in $Id) {
+            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $IPId))
+            
+            Write-Verbose "Obtaining IPs from ID $IPId"
+            $CurrentIP = Get-NetboxIPAMAddress -Id $IPId -ErrorAction Stop
+            
+            if ($Force -or $PSCmdlet.ShouldProcess($CurrentIP.Address, 'Set')) {
+                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+                
+                $URI = BuildNewURI -Segments $URIComponents.Segments
+                
+                InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+            }
+        }
     }
     
-    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $Id))
-    
-    Write-Verbose "Obtaining IPs from ID $Id"
-    $CurrentIP = Get-NetboxIPAMAddress -Id $Id -ErrorAction Stop
-    
-    if ($Force -or $PSCmdlet.ShouldProcess($($CurrentIP | Select-Object -ExpandProperty 'Address'), 'Set')) {
-        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-        
-        $URI = BuildNewURI -Segments $URIComponents.Segments
-        
-        InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+    end{
     }
 }
 
