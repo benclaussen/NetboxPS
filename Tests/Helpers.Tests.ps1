@@ -244,12 +244,9 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
         }
         
         Context -Name "Validating choices" -Fixture {
-            $script:NetboxConfig.Choices.Virtualization = (Get-Content "$PSScriptRoot\VirtualizationChoices.json" -ErrorAction Stop | ConvertFrom-Json)
-            $script:NetboxConfig.Choices.IPAM = (Get-Content "$PSScriptRoot\IPAMChoices.json" -ErrorAction Stop | ConvertFrom-Json)
-            $script:NetboxConfig.Choices.DCIM = (Get-Content "$PSScriptRoot\DCIMChoices.json" -ErrorAction Stop | ConvertFrom-Json)
-            
             Context -Name "Virtualization choices" -Fixture {
                 $MajorObject = 'Virtualization'
+                $script:NetboxConfig.Choices.Virtualization = (Get-Content "$PSScriptRoot\VirtualizationChoices.json" -ErrorAction Stop | ConvertFrom-Json)
                 
                 It "Should return a valid integer for status when provided a name" {
                     $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName 'virtual-machine:status' -ProvidedValue 'Active'
@@ -274,6 +271,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
             
             Context -Name "IPAM choices" -Fixture {
                 $MajorObject = 'IPAM'
+                $script:NetboxConfig.Choices.IPAM = (Get-Content "$PSScriptRoot\IPAMChoices.json" -ErrorAction Stop | ConvertFrom-Json)
                 
                 Context -Name "aggregate:family" -Fixture {
                     $ChoiceName = 'aggregate:family'
@@ -470,6 +468,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
             
             Context -Name "DCIM choices" -Fixture {
                 $MajorObject = 'DCIM'
+                $script:NetboxConfig.Choices.DCIM = (Get-Content "$PSScriptRoot\DCIMChoices.json" -ErrorAction Stop | ConvertFrom-Json)
                 
                 Context -Name "device:face" -Fixture {
                     $ChoiceName = 'device:face'
@@ -711,6 +710,14 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
         }
     }
 }
+
+
+
+
+
+
+
+
 
 
 
