@@ -20,7 +20,7 @@ if (Test-Path $ModulePath) {
     Import-Module $ModulePath -ErrorAction Stop
 }
 
-Describe -Name "DCIM Tests" -Tag 'DCIM', 'Devices' -Fixture {
+Describe -Name "DCIM Devices Tests" -Tag 'DCIM', 'Devices' -Fixture {
     Mock -CommandName 'CheckNetboxIsConnected' -Verifiable -ModuleName 'NetboxPS' -MockWith {
         return $true
     }
@@ -101,6 +101,18 @@ Describe -Name "DCIM Tests" -Tag 'DCIM', 'Devices' -Fixture {
             
             It "Should request with a single ID" {
                 $Result = Get-NetboxDCIMDevice -Id 10
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'GET'
+                $Result.Uri | Should -Be 'https://netbox.domain.com/api/dcim/devices/10/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+            }
+            
+            It "Should request a device by ID from the pipeline" {
+                $Result = [pscustomobject]@{
+                    'id' = 10
+                } | Get-NetboxDCIMDevice
                 
                 Assert-VerifiableMock
                 

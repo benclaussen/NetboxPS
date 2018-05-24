@@ -129,13 +129,13 @@ function ValidateDCIMChoice {
 #region GET Commands
 function Get-NetboxDCIMDevice {
     [CmdletBinding()]
-    #region Parameters
     param
     (
         [uint16]$Limit,
         
         [uint16]$Offset,
         
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
         
         [string]$Query,
@@ -196,6 +196,7 @@ function Get-NetboxDCIMDevice {
         
         [switch]$Raw
     )
+    
     #endregion Parameters
     
     if ($null -ne $Status) {
@@ -307,6 +308,88 @@ function Get-NetboxDCIMDeviceRole {
         }
     }
 }
+
+function Get-NetboxDCIMInterface {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [uint16]$Limit,
+        
+        [uint16]$Offset,
+        
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [uint16]$Id,
+        
+        [uint16]$Name,
+        
+        [object]$Form_Factor,
+        
+        [bool]$Enabled,
+        
+        [uint16]$MTU,
+        
+        [bool]$MGMT_Only,
+        
+        [string]$Device,
+        
+        [uint16]$Device_Id,
+        
+        [uint16]$Type,
+        
+        [uint16]$LAG_Id,
+        
+        [string]$MAC_Address,
+        
+        [switch]$Raw
+    )
+    
+    if ($null -ne $Form_Factor) {
+        $PSBoundParameters.Form_Factor = ValidateDCIMChoice -ProvidedValue $Form_Factor -InterfaceFormFactor
+    }
+    
+    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces'))
+    
+    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+    
+    $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+    
+    InvokeNetboxRequest -URI $URI -Raw:$Raw
+}
+
+function Get-NetboxDCIMInterfaceConnection {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [uint16]$Limit,
+        
+        [uint16]$Offset,
+        
+        [uint16]$Id,
+        
+        [object]$Connection_Status,
+        
+        [uint16]$Site,
+        
+        [uint16]$Device,
+        
+        [switch]$Raw
+    )
+    
+    if ($null -ne $Connection_Status) {
+        $PSBoundParameters.Connection_Status = ValidateDCIMChoice -ProvidedValue $Connection_Status -InterfaceConnectionStatus
+    }
+    
+    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interface-connections'))
+    
+    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'
+    
+    $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+    
+    InvokeNetboxRequest -URI $URI -Raw:$Raw
+}
+
 #endregion GET Commands
 
 
@@ -387,6 +470,78 @@ function New-NetboxDCIMDevice {
     
     InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
 }
+
+function Add-NetboxDCIMInterface {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [uint16]$Device,
+        
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+        
+        [bool]$Enabled,
+        
+        [object]$Form_Factor,
+        
+        [uint16]$MTU,
+        
+        [string]$MAC_Address,
+        
+        [bool]$MGMT_Only,
+        
+        [uint16]$LAG,
+        
+        [string]$Description,
+        
+        [ValidateSet('Access', 'Tagged', 'Tagged All', '100', '200', '300', IgnoreCase = $true)]
+        [string]$Mode,
+        
+        [ValidateRange(1, 4094)]
+        [uint16]$Untagged_VLAN,
+        
+        [ValidateRange(1, 4094)]
+        [uint16[]]$Tagged_VLANs
+    )
+    
+    if ($null -ne $Form_Factor) {
+        $PSBoundParameters.Form_Factor = ValidateDCIMChoice -ProvidedValue $Form_Factor -InterfaceFormFactor
+    }
+    
+    if (-not [System.String]::IsNullOrWhiteSpace($Mode)) {
+        $PSBoundParameters.Mode = switch ($Mode) {
+            'Access' {
+                100
+                break
+            }
+            
+            'Tagged' {
+                200
+                break
+            }
+            
+            'Tagged All' {
+                300
+                break
+            }
+            
+            default {
+                $_
+            }
+        }
+    }
+    
+    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces'))
+    
+    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+    
+    $URI = BuildNewURI -Segments $URIComponents.Segments
+    
+    InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
+}
+
 
 #endregion ADD/NEW commands
 
@@ -474,6 +629,91 @@ function Set-NetboxDCIMDevice {
     }
 }
 
+function Set-NetboxDCIMInterface {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint16[]]$Id,
+        
+        [uint16]$Device,
+        
+        [string]$Name,
+        
+        [bool]$Enabled,
+        
+        [object]$Form_Factor,
+        
+        [uint16]$MTU,
+        
+        [string]$MAC_Address,
+        
+        [bool]$MGMT_Only,
+        
+        [uint16]$LAG,
+        
+        [string]$Description,
+        
+        [ValidateSet('Access', 'Tagged', 'Tagged All', '100', '200', '300', IgnoreCase = $true)]
+        [string]$Mode,
+        
+        [ValidateRange(1, 4094)]
+        [uint16]$Untagged_VLAN,
+        
+        [ValidateRange(1, 4094)]
+        [uint16[]]$Tagged_VLANs
+    )
+    
+    begin {
+        if ($null -ne $Form_Factor) {
+            $PSBoundParameters.Form_Factor = ValidateDCIMChoice -ProvidedValue $Form_Factor -InterfaceFormFactor
+        }
+        
+        if (-not [System.String]::IsNullOrWhiteSpace($Mode)) {
+            $PSBoundParameters.Mode = switch ($Mode) {
+                'Access' {
+                    100
+                    break
+                }
+                
+                'Tagged' {
+                    200
+                    break
+                }
+                
+                'Tagged All' {
+                    300
+                    break
+                }
+                
+                default {
+                    $_
+                }
+            }
+        }
+    }
+    
+    process {
+        foreach ($InterfaceId in $Id) {
+            $CurrentInterface = Get-NetboxDCIMInterface -Id $InterfaceId -ErrorAction Stop
+            
+            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces', $CurrentInterface.Id))
+            
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+            
+            $URI = BuildNewURI -Segments $Segments
+            
+            InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+        }
+    }
+    
+    end {
+        
+    }
+}
+
 
 #endregion SET Commands
 
@@ -533,6 +773,62 @@ function Remove-NetboxDCIMDevice {
         
     }
 }
+
+function Remove-NetboxDCIMInterface {
+<#
+    .SYNOPSIS
+        Removes an interface
+    
+    .DESCRIPTION
+        Removes an interface by ID from a device
+    
+    .PARAMETER Id
+        A description of the Id parameter.
+    
+    .PARAMETER Force
+        A description of the Force parameter.
+    
+    .EXAMPLE
+        		PS C:\> Remove-NetboxDCIMInterface -Id $value1
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(ConfirmImpact = 'High',
+                   SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint16[]]$Id,
+        
+        [switch]$Force
+    )
+    
+    begin {
+        
+    }
+    
+    process {
+        foreach ($InterfaceId in $Id) {
+            $CurrentInterface = Get-NetboxDCIMInterface -Id $InterfaceId -ErrorAction Stop
+            
+            if ($Force -or $pscmdlet.ShouldProcess("Name: $($CurrentInterface.Name) | ID: $($CurrentInterface.Id)", "Remove")) {
+                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces', $CurrentInterface.Id))
+                
+                $URI = BuildNewURI -Segments $Segments
+                
+                InvokeNetboxRequest -URI $URI -Method DELETE
+            }
+        }
+    }
+    
+    end {
+        
+    }
+}
+
 #endregion REMOVE commands
 
 
