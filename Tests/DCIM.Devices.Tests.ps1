@@ -329,6 +329,7 @@ Describe -Name "DCIM Tests" -Tag 'DCIM', 'Devices' -Fixture {
             }
         }
         
+        
         Context -Name "New-NetboxDCIMDevice" -Fixture {
             It "Should create a new device" {
                 $Result = New-NetboxDCIMDevice -Name "newdevice" -Device_Role 4 -Device_Type 10 -Site 1 -Face 0
@@ -367,6 +368,49 @@ Describe -Name "DCIM Tests" -Tag 'DCIM', 'Devices' -Fixture {
                 $Result.URI | Should -Be 'https://netbox.domain.com/api/dcim/devices/1234/'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
                 $Result.Body | Should -Be '{"name":"newtestname"}'
+            }
+            
+            It "Should set a device with new properties" {
+                $Result = Set-NetboxDCIMDevice -Id 1234 -Name 'newtestname' -Cluster 10 -Platform 20 -Site 15 -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxDCIMDevice' -Times 1 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'PATCH'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/dcim/devices/1234/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"cluster":10,"platform":20,"name":"newtestname","site":15}'
+            }
+            
+            It "Should set multiple devices with new properties" {
+                $Result = Set-NetboxDCIMDevice -Id 1234, 3214 -Cluster 10 -Platform 20 -Site 15 -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxDCIMDevice' -Times 2 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'PATCH', 'PATCH'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/dcim/devices/1234/', 'https://netbox.domain.com/api/dcim/devices/3214/'
+                $Result.Headers.Keys.Count | Should -BeExactly 2
+                $Result.Body | Should -Be '{"cluster":10,"platform":20,"site":15}', '{"cluster":10,"platform":20,"site":15}'
+            }
+            
+            It "Should set multiple devices with new properties from the pipeline" {
+                $Result = @(
+                    [pscustomobject]@{
+                        'id' = 4432
+                    },
+                    [pscustomobject]@{
+                        'id' = 3241
+                    }
+                ) | Set-NetboxDCIMDevice -Cluster 10 -Platform 20 -Site 15 -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxDCIMDevice' -Times 2 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'PATCH', 'PATCH'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/dcim/devices/4432/', 'https://netbox.domain.com/api/dcim/devices/3241/'
+                $Result.Headers.Keys.Count | Should -BeExactly 2
+                $Result.Body | Should -Be '{"cluster":10,"platform":20,"site":15}', '{"cluster":10,"platform":20,"site":15}'
             }
         }
         
