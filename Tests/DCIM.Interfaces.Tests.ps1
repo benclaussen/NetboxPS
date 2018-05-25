@@ -337,6 +337,151 @@ Describe -Name "DCIM Interfaces Tests" -Tag 'DCIM', 'Interfaces' -Fixture {
                 } | Should -Throw
             }
         }
+        
+        Context -Name "Add-NetboxDCIMInterfaceConnection" -Fixture {
+            It "Should add a new interface connection" {
+                $Result = Add-NetboxDCIMInterfaceConnection -Interface_A 21 -Interface_B 22
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Invoke-RestMethod' -Times 1 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'POST'
+                $Result.Uri | Should -BeExactly 'https://netbox.domain.com/api/dcim/interface-connections/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"interface_b":22,"interface_a":21}'
+            }
+            
+            It "Should throw because of an invalid connection status" {
+                {
+                    Add-NetboxDCIMInterfaceConnection -Interface_A 21 -Interface_B 22 -Connection_Status 'fake'
+                } | Should -Throw
+            }
+        }
+        
+        
+        Mock -CommandName "Get-NetboxDCIMInterfaceConnection" -ModuleName 'NetboxPS' -MockWith {
+            [pscustomobject]@{
+                'Id' = $Id
+            }
+        }
+        
+        Context -Name "Set-NetboxDCIMInterfaceConnection" -Fixture {
+            It "Should set an interface connection" {
+                $Result = Set-NetboxDCIMInterfaceConnection -Id 123 -Interface_B 2 -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Invoke-RestMethod' -Times 1 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'PATCH'
+                $Result.Uri | Should -BeExactly 'https://netbox.domain.com/api/dcim/interface-connections/123/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"interface_b":2}'
+            }
+            
+            It "Should set multiple interface connections to a new status" {
+                $Result = Set-NetboxDCIMInterfaceConnection -Id 456, 789 -Connection_Status 'Planned' -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Invoke-RestMethod' -Times 2 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'PATCH', 'PATCH'
+                $Result.Uri | Should -BeExactly 'https://netbox.domain.com/api/dcim/interface-connections/456/', 'https://netbox.domain.com/api/dcim/interface-connections/789/'
+                $Result.Headers.Keys.Count | Should -BeExactly 2
+                $Result.Body | Should -Be '{"connection_status":false}', '{"connection_status":false}'
+            }
+            
+            It "Should set an interface connection from the pipeline" {
+                $Result = [pscustomobject]@{
+                    'id' = 3
+                } | Set-NetboxDCIMInterfaceConnection -Connection_Status 'Planned' -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Invoke-RestMethod' -Times 1 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'PATCH'
+                $Result.Uri | Should -BeExactly 'https://netbox.domain.com/api/dcim/interface-connections/3/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"connection_status":false}'
+            }
+            
+            It "Should set multiple interface connections from the pipeline" {
+                $Result = @(
+                    [pscustomobject]@{
+                        'id' = 456
+                    },
+                    [pscustomobject]@{
+                        'id' = 789
+                    }
+                ) | Set-NetboxDCIMInterfaceConnection -Connection_Status 'Planned' -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Invoke-RestMethod' -Times 2 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'PATCH', 'PATCH'
+                $Result.Uri | Should -BeExactly 'https://netbox.domain.com/api/dcim/interface-connections/456/', 'https://netbox.domain.com/api/dcim/interface-connections/789/'
+                $Result.Headers.Keys.Count | Should -BeExactly 2
+                $Result.Body | Should -Be '{"connection_status":false}', '{"connection_status":false}'
+            }
+            
+            It "Should throw trying to set multiple connections to the same interface" {
+                {
+                    Set-NetboxDCIMInterfaceConnection -Id 456, 789 -Interface_B 22 -Force
+                } | Should -Throw -ExpectedMessage "Cannot set multiple connections to the same interface"
+            }
+        }
+        
+        Context -Name "Remove-NetboxDCIMInterfaceConnection" -Fixture {
+            It "Should remove an interface connection" {
+                $Result = Remove-NetboxDCIMInterfaceConnection -Id 10 -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxDCIMInterfaceConnection' -Times 1 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'DELETE'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/dcim/interface-connections/10/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+            }
+            
+            It "Should remove multiple interface connections" {
+                $Result = Remove-NetboxDCIMInterfaceConnection -Id 10, 12 -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxDCIMInterfaceConnection' -Times 2 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'DELETE', 'DELETE'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/dcim/interface-connections/10/', 'https://netbox.domain.com/api/dcim/interface-connections/12/'
+                $Result.Headers.Keys.Count | Should -BeExactly 2
+            }
+            
+            It "Should remove an interface connection from the pipeline" {
+                $Result = Get-NetboxDCIMInterfaceConnection -Id 20 | Remove-NetboxDCIMInterfaceConnection -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxDCIMInterfaceConnection' -Times 2 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'DELETE'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/dcim/interface-connections/20/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+            }
+            
+            It "Should remove mulitple interface connections from the pipeline" {
+                $Result = @(
+                    [pscustomobject]@{
+                        'Id' = 30
+                    },
+                    [pscustomobject]@{
+                        'Id' = 40
+                    }
+                ) | Remove-NetboxDCIMInterfaceConnection -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxDCIMInterfaceConnection' -Times 2 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'DELETE', 'DELETE'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/dcim/interface-connections/30/', 'https://netbox.domain.com/api/dcim/interface-connections/40/'
+                $Result.Headers.Keys.Count | Should -BeExactly 2
+            }
+        }
     }
 }
 

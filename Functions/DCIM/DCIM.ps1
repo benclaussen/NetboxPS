@@ -542,6 +542,60 @@ function Add-NetboxDCIMInterface {
     InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
 }
 
+function Add-NetboxDCIMInterfaceConnection {
+<#
+    .SYNOPSIS
+        Create a new connection between two interfaces
+    
+    .DESCRIPTION
+        Create a new connection between two interfaces
+    
+    .PARAMETER Connection_Status
+        Is it connected or planned?
+    
+    .PARAMETER Interface_A
+        Database ID of interface A
+    
+    .PARAMETER Interface_B
+        Database ID of interface B
+    
+    .EXAMPLE
+        PS C:\> Add-NetboxDCIMInterfaceConnection -Interface_A $value1 -Interface_B $value2
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [object]$Connection_Status,
+        
+        [Parameter(Mandatory = $true)]
+        [uint16]$Interface_A,
+        
+        [Parameter(Mandatory = $true)]
+        [uint16]$Interface_B
+    )
+    
+    if ($null -ne $Connection_Status) {
+        $PSBoundParameters.Connection_Status = ValidateDCIMChoice -ProvidedValue $Connection_Status -InterfaceConnectionStatus
+    }
+    
+    # Verify if both Interfaces exist
+    $I_A = Get-NetboxDCIMInterface -Id $Interface_A -ErrorAction Stop
+    $I_B = Get-NetboxDCIMInterface -Id $Interface_B -ErrorAction Stop
+    
+    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interface-connections'))
+    
+    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+    
+    $URI = BuildNewURI -Segments $URIComponents.Segments
+    
+    InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
+}
+
 
 #endregion ADD/NEW commands
 
@@ -714,6 +768,85 @@ function Set-NetboxDCIMInterface {
     }
 }
 
+function Set-NetboxDCIMInterfaceConnection {
+<#
+    .SYNOPSIS
+        Update an interface connection
+    
+    .DESCRIPTION
+        Update an interface connection
+    
+    .PARAMETER Id
+        A description of the Id parameter.
+    
+    .PARAMETER Connection_Status
+        A description of the Connection_Status parameter.
+    
+    .PARAMETER Interface_A
+        A description of the Interface_A parameter.
+    
+    .PARAMETER Interface_B
+        A description of the Interface_B parameter.
+    
+    .PARAMETER Force
+        A description of the Force parameter.
+    
+    .EXAMPLE
+        PS C:\> Set-NetboxDCIMInterfaceConnection -Id $value1
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(ConfirmImpact = 'Medium',
+                   SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint16[]]$Id,
+        
+        [object]$Connection_Status,
+        
+        [uint16]$Interface_A,
+        
+        [uint16]$Interface_B,
+        
+        [switch]$Force
+    )
+    
+    begin {
+        if ($null -ne $Connection_Status) {
+            $PSBoundParameters.Connection_Status = ValidateDCIMChoice -ProvidedValue $Connection_Status -InterfaceConnectionStatus
+        }
+        
+        if ((@($ID).Count -gt 1) -and ($Interface_A -or $Interface_B)) {
+            throw "Cannot set multiple connections to the same interface"
+        }
+    }
+    
+    process {
+        foreach ($ConnectionID in $Id) {
+            $CurrentConnection = Get-NetboxDCIMInterfaceConnection -Id $ConnectionID -ErrorAction Stop
+            
+            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interface-connections', $CurrentConnection.Id))
+            
+            if ($Force -or $pscmdlet.ShouldProcess("Connection ID $($CurrentConnection.Id)", "Set")) {
+
+                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+                
+                $URI = BuildNewURI -Segments $URIComponents.Segments
+                
+                InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+            }
+        }
+    }
+    
+    end {
+        
+    }
+}
+
 
 #endregion SET Commands
 
@@ -828,6 +961,45 @@ function Remove-NetboxDCIMInterface {
         
     }
 }
+
+function Remove-NetboxDCIMInterfaceConnection {
+    [CmdletBinding(ConfirmImpact = 'High',
+                   SupportsShouldProcess = $true)]
+    [OutputType([void])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint16[]]$Id,
+        
+        [switch]$Force
+    )
+    
+    begin {
+        
+    }
+    
+    process {
+        foreach ($ConnectionID in $Id) {
+            $CurrentConnection = Get-NetboxDCIMInterfaceConnection -Id $ConnectionID -ErrorAction Stop
+            
+            if ($Force -or $pscmdlet.ShouldProcess("Connection ID $($ConnectionID.Id)", "REMOVE")) {
+                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interface-connections', $CurrentConnection.Id))
+                
+                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+                
+                $URI = BuildNewURI -Segments $URIComponents.Segments
+                
+                InvokeNetboxRequest -URI $URI -Method DELETE
+            }
+        }
+    }
+    
+    end {
+        
+    }
+}
+
 
 #endregion REMOVE commands
 
