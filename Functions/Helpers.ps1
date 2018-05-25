@@ -28,7 +28,7 @@ function BuildNewURI {
         Create a new URI for Netbox
     
     .DESCRIPTION
-        A detailed description of the BuildNewURI function.
+        Internal function used to build a URIBuilder object.
     
     .PARAMETER Hostname
         Hostname of the Netbox API
@@ -148,14 +148,14 @@ function BuildURIComponents {
     $URIParameters = @{}
     
     foreach ($CmdletParameterName in $ParametersDictionary.Keys) {
-        if ($CmdletParameterName -in $CommonParameterNames) {
+        if ($CmdletParameterName -in $script:CommonParameterNames) {
             # These are common parameters and should not be appended to the URI
-            Write-Debug "Skipping parameter $CmdletParameterName"
+            Write-Debug "Skipping common parameter $CmdletParameterName"
             continue
         }
         
         if ($CmdletParameterName -in $SkipParameterByName) {
-            Write-Debug "Skipping parameter $CmdletParameterName"
+            Write-Debug "Skipping parameter $CmdletParameterName by SkipParameterByName"
             continue
         }
         

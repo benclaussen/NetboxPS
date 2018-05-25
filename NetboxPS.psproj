@@ -31,6 +31,9 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-DCIM_ps1">Functions\DCIM\DCIM.ps1</File>
     <File Build="2" Shared="True" ReferenceFunction="Invoke-DCIM_Devices_Tests_ps1">Tests\DCIM.Devices.Tests.ps1</File>
     <File Build="2" Shared="True" ReferenceFunction="Invoke-DCIM_Interfaces_Tests_ps1">Tests\DCIM.Interfaces.Tests.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-DCIM_Platforms_Tests_ps1">Tests\DCIM.Platforms.Tests.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-DCIM_Devices_ps1">Functions\DCIM\DCIM.Devices.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-DCIM_Interfaces_ps1">Functions\DCIM\DCIM.Interfaces.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>
