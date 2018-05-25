@@ -341,7 +341,6 @@ Describe -Name "DCIM Devices Tests" -Tag 'DCIM', 'Devices' -Fixture {
             }
         }
         
-        
         Context -Name "New-NetboxDCIMDevice" -Fixture {
             It "Should create a new device" {
                 $Result = New-NetboxDCIMDevice -Name "newdevice" -Device_Role 4 -Device_Type 10 -Site 1 -Face 0

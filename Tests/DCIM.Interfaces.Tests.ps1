@@ -124,12 +124,6 @@ Describe -Name "DCIM Interfaces Tests" -Tag 'DCIM', 'Interfaces' -Fixture {
             }
         }
         
-        Mock -CommandName "Get-NetboxDCIMInterface" -ModuleName "NetboxPS" -MockWith {
-            return [pscustomobject]@{
-                'Id' = $Id
-            }
-        }
-        
         Context -Name "Add-NetboxDCIMInterface" -Fixture {
             It "Should add a basic interface to a device" {
                 $Result = Add-NetboxDCIMInterface -Device 111 -Name "TestInterface"
@@ -187,6 +181,13 @@ Describe -Name "DCIM Interfaces Tests" -Tag 'DCIM', 'Interfaces' -Fixture {
                 {
                     Add-NetboxDCIMInterface -Device 321 -Name "Test123" -Untagged_VLAN 4100
                 } | Should -Throw
+            }
+        }
+        
+        
+        Mock -CommandName "Get-NetboxDCIMInterface" -ModuleName "NetboxPS" -MockWith {
+            return [pscustomobject]@{
+                'Id' = $Id
             }
         }
         
@@ -296,6 +297,7 @@ Describe -Name "DCIM Interfaces Tests" -Tag 'DCIM', 'Interfaces' -Fixture {
                 $Result.Headers.Keys.Count | Should -BeExactly 2
             }
         }
+        
         
         Context -Name "Get-NetboxDCIMInterfaceConnection" -Fixture {
             It "Should request the default number of interface connections" {
