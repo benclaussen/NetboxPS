@@ -232,11 +232,14 @@ function Get-NetboxIPAMAvailableIP {
     .PARAMETER Prefix_ID
         A description of the Prefix_ID parameter.
     
-    .PARAMETER NumberOfIPs
-        A description of the NumberOfIPs parameter.
+    .PARAMETER Limit
+        A description of the Limit parameter.
     
     .PARAMETER Raw
         A description of the Raw parameter.
+    
+    .PARAMETER NumberOfIPs
+        A description of the NumberOfIPs parameter.
     
     .EXAMPLE
         PS C:\> Get-NetboxIPAMAvaiableIP -Prefix_ID $value1
@@ -248,7 +251,9 @@ function Get-NetboxIPAMAvailableIP {
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [Alias('Id')]
         [uint16]$Prefix_ID,
         
         [Alias('NumberOfIPs')]
