@@ -486,6 +486,10 @@ function New-NetboxVirtualMachine {
         
         [uint16]$Disk,
         
+        [uint16]$Primary_IP4,
+        
+        [uint16]$Primary_IP6,
+        
         [hashtable]$Custom_Fields,
         
         [string]$Comments
@@ -540,7 +544,7 @@ function Add-NetboxVirtualMachineInterface {
 #region SET commands
 
 function Set-NetboxVirtualMachine {
-    [CmdletBinding(ConfirmImpact = 'High',
+    [CmdletBinding(ConfirmImpact = 'Medium',
                    SupportsShouldProcess = $true)]
     param
     (
@@ -558,9 +562,9 @@ function Set-NetboxVirtualMachine {
         
         [uint16]$Platform,
         
-        [uint16]$Primary_IPv4,
+        [uint16]$Primary_IP4,
         
-        [uint16]$Primary_IPv6,
+        [uint16]$Primary_IP6,
         
         [byte]$VCPUs,
         
