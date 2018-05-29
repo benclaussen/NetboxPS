@@ -244,11 +244,9 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
         }
         
         Context -Name "Validating choices" -Fixture {
-            $script:NetboxConfig.Choices.Virtualization = (Get-Content "$PSScriptRoot\VirtualizationChoices.json" -ErrorAction Stop | ConvertFrom-Json)
-            $script:NetboxConfig.Choices.IPAM = (Get-Content "$PSScriptRoot\IPAMChoices.json" -ErrorAction Stop | ConvertFrom-Json)
-            
             Context -Name "Virtualization choices" -Fixture {
                 $MajorObject = 'Virtualization'
+                $script:NetboxConfig.Choices.Virtualization = (Get-Content "$PSScriptRoot\VirtualizationChoices.json" -ErrorAction Stop | ConvertFrom-Json)
                 
                 It "Should return a valid integer for status when provided a name" {
                     $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName 'virtual-machine:status' -ProvidedValue 'Active'
@@ -273,6 +271,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
             
             Context -Name "IPAM choices" -Fixture {
                 $MajorObject = 'IPAM'
+                $script:NetboxConfig.Choices.IPAM = (Get-Content "$PSScriptRoot\IPAMChoices.json" -ErrorAction Stop | ConvertFrom-Json)
                 
                 Context -Name "aggregate:family" -Fixture {
                     $ChoiceName = 'aggregate:family'
@@ -467,12 +466,258 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
                 }
             }
             
-            
+            Context -Name "DCIM choices" -Fixture {
+                $MajorObject = 'DCIM'
+                $script:NetboxConfig.Choices.DCIM = (Get-Content "$PSScriptRoot\DCIMChoices.json" -ErrorAction Stop | ConvertFrom-Json)
+                
+                Context -Name "device:face" -Fixture {
+                    $ChoiceName = 'device:face'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'Front'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 0
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 1
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'fake'
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "device:status" -Fixture {
+                    $ChoiceName = 'device:status'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'Active'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 0
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 0
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'fake'
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "console-port:connection_status" -Fixture {
+                    $ChoiceName = 'console-port:connection_status'
+                    
+                    It "Should return a valid string when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'Planned'
+                        
+                        $Result | Should -BeOfType [bool]
+                        $Result | Should -Be $false
+                    }
+                    
+                    It "Should return a valid string when provided a string" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'false'
+                        
+                        $Result | Should -BeOfType [bool]
+                        $Result | Should -Be $false
+                    }
+                    
+                    It "Should return a valid string when provided a boolean" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue $true
+                        
+                        $Result | Should -BeOfType [bool]
+                        $Result | Should -Be $true
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'fake'
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "interface:form_factor" -Fixture {
+                    $ChoiceName = 'interface:form_factor'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue '10GBASE-CX4 (10GE)'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1170
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 1500
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1500
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'fake'
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "interface-connection:connection_status" -Fixture {
+                    $ChoiceName = 'interface-connection:connection_status'
+                    
+                    It "Should return a valid string when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'Planned'
+                        
+                        $Result | Should -BeOfType [bool]
+                        $Result | Should -Be $false
+                    }
+                    
+                    It "Should return a valid string when provided a string" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'false'
+                        
+                        $Result | Should -BeOfType [bool]
+                        $Result | Should -Be $false
+                    }
+                    
+                    It "Should return a valid string when provided a boolean" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue $true
+                        
+                        $Result | Should -BeOfType [bool]
+                        $Result | Should -Be $true
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'fake'
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "interface-template:form_factor" -Fixture {
+                    $ChoiceName = 'interface-template:form_factor'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue '10GBASE-CX4 (10GE)'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1170
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 1500
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 1500
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'fake'
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "power-port:connection_status" -Fixture {
+                    $ChoiceName = 'power-port:connection_status'
+                    
+                    It "Should return a valid string when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'Planned'
+                        
+                        $Result | Should -BeOfType [bool]
+                        $Result | Should -Be $false
+                    }
+                    
+                    It "Should return a valid string when provided a string" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'false'
+                        
+                        $Result | Should -BeOfType [bool]
+                        $Result | Should -Be $false
+                    }
+                    
+                    It "Should return a valid string when provided a boolean" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue $true
+                        
+                        $Result | Should -BeOfType [bool]
+                        $Result | Should -Be $true
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'fake'
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "rack:type" -Fixture {
+                    $ChoiceName = 'rack:type'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue '2-post frame'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 100
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 300
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 300
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'fake'
+                        } | Should -Throw
+                    }
+                }
+                
+                Context -Name "rack:width" -Fixture {
+                    $ChoiceName = 'rack:width'
+                    
+                    It "Should return a valid integer when provided a name" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue '19 inches'
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 19
+                    }
+                    
+                    It "Should return a valid integer when provided an integer" {
+                        $Result = ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 23
+                        
+                        $Result | Should -BeOfType [uint16]
+                        $Result | Should -BeExactly 23
+                    }
+                    
+                    It "Should throw because of an invalid choice" {
+                        {
+                            ValidateChoice -MajorObject $MajorObject -ChoiceName $ChoiceName -ProvidedValue 'fake'
+                        } | Should -Throw
+                    }
+                }
+            }
         }
-        
-        
     }
 }
+
+
+
+
+
+
+
+
 
 
 

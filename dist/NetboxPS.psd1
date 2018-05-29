@@ -19,7 +19,7 @@
 	ModuleToProcess = 'NetboxPS.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '1.0.1'
+	ModuleVersion = '1.0.2'
 	
 	# ID used to uniquely identify this module
 	GUID = 'bba9b06c-49c8-47cf-8358-aca7c4e78896'

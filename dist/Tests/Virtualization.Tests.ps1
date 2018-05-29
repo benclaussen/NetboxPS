@@ -128,6 +128,10 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.Uri | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/?status=1'
                 $Result.Headers.Keys.Count | Should -BeExactly 1
             }
+            
+            It "Should throw for an invalid status" {
+                { Get-NetboxVirtualMachine -Status 'Fake' } | Should -Throw
+            }
         }
         
         Context -Name "Get-NetboxVirtualMachineInterface" -Fixture {
@@ -334,9 +338,9 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
             }
         }
         
-        Context -Name "Add-NetboxVirtualInterface" -Fixture {
+        Context -Name "Add-NetboxVirtualMachineInterface" -Fixture {
             It "Should add a basic interface" {
-                $Result = Add-NetboxVirtualInterface -Name 'Ethernet0' -Virtual_Machine 10
+                $Result = Add-NetboxVirtualMachineInterface -Name 'Ethernet0' -Virtual_Machine 10
                 
                 Assert-VerifiableMock
                 
@@ -347,7 +351,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
             }
             
             It "Should add an interface with a MAC, MTU, and Description" {
-                $Result = Add-NetboxVirtualInterface -Name 'Ethernet0' -Virtual_Machine 10 -Mac_Address '11:22:33:44:55:66' -MTU 1500 -Description "Test description"
+                $Result = Add-NetboxVirtualMachineInterface -Name 'Ethernet0' -Virtual_Machine 10 -Mac_Address '11:22:33:44:55:66' -MTU 1500 -Description "Test description"
                 
                 Assert-VerifiableMock
                 
@@ -358,18 +362,20 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
             }
         }
         
-        Context -Name "Set-NetboxVirtualMachine" -Fixture {
-            Mock -CommandName "Get-NetboxVirtualMachine" -ModuleName NetboxPS -MockWith {
-                return @{
-                    'Id' = 1234
-                    'Name' = 'TestVM'
-                }
+        
+        Mock -CommandName "Get-NetboxVirtualMachine" -ModuleName NetboxPS -MockWith {
+            return [pscustomobject]@{
+                'Id' = $Id
+                'Name' = $Name
             }
-            
+        }
+        
+        Context -Name "Set-NetboxVirtualMachine" -Fixture {
             It "Should set a VM to a new name" {
                 $Result = Set-NetboxVirtualMachine -Id 1234 -Name 'newtestname' -Force
                 
                 Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxVirtualMachine' -Times 1 -Exactly -Scope 'It'
                 
                 $Result.Method | Should -Be 'PATCH'
                 $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/1234/'
@@ -381,6 +387,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result = Set-NetboxVirtualMachine -Id 1234 -Name 'newtestname' -Cluster 10 -Platform 15 -Status 'Offline' -Force
                 
                 Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxVirtualMachine' -Times 1 -Exactly -Scope 'It'
                 
                 $Result.Method | Should -Be 'PATCH'
                 $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/1234/'
@@ -392,17 +399,19 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 { Set-NetboxVirtualMachine -Id 1234 -Status 'Fake' -Force } | Should -Throw
                 
                 Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxVirtualMachine' -Times 0 -Exactly -Scope 'It'
+            }
+        }
+        
+        
+        Mock -CommandName "Get-NetboxVirtualMachineInterface" -ModuleName NetboxPS -MockWith {
+            return [pscustomobject]@{
+                'Id' = $Id
+                'Name' = $Name
             }
         }
         
         Context -Name "Set-NetboxVirtualMachineInterface" -Fixture {
-            Mock -CommandName "Get-NetboxVirtualMachineInterface" -ModuleName NetboxPS -MockWith {
-                return @{
-                    'Id' = 1234
-                    'Name' = 'TestVM'
-                }
-            }
-            
             It "Should set an interface to a new name" {
                 $Result = Set-NetboxVirtualMachineInterface -Id 1234 -Name 'newtestname' -Force
                 
@@ -437,15 +446,6 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
             }
             
             It "Should set multiple interfaces to a new name" {
-                Mock -CommandName "Get-NetboxVirtualMachineInterface" -ModuleName NetboxPS -MockWith {
-                    return @(
-                        @{
-                            'Id' = $Id
-                            'Name' = 'TestVM'
-                        }
-                    )
-                }
-                
                 $Result = Set-NetboxVirtualMachineInterface -Id 1234, 4321 -Name 'newtestname' -Force
                 
                 Assert-VerifiableMock
@@ -455,6 +455,78 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
                 $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/interfaces/1234/', 'https://netbox.domain.com/api/virtualization/interfaces/4321/'
                 $Result.Headers.Keys.Count | Should -BeExactly 2
                 $Result.Body | Should -Be '{"name":"newtestname"}', '{"name":"newtestname"}'
+            }
+            
+            It "Should set multiple interfaces to a new name from the pipeline" {
+                $Result = @(
+                    [pscustomobject]@{
+                        'Id' = 4123
+                    },
+                    [pscustomobject]@{
+                        'Id' = 4321
+                    }
+                ) | Set-NetboxVirtualMachineInterface -Name 'newtestname' -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName Get-NetboxVirtualMachineInterface -Times 2 -Scope 'It' -Exactly
+                
+                $Result.Method | Should -Be 'PATCH', 'PATCH'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/interfaces/4123/', 'https://netbox.domain.com/api/virtualization/interfaces/4321/'
+                $Result.Headers.Keys.Count | Should -BeExactly 2
+                $Result.Body | Should -Be '{"name":"newtestname"}', '{"name":"newtestname"}'
+            }
+        }
+        
+        Context -Name "Remove-NetboxVirtualMachine" -Fixture {
+            It "Should remove a single VM" {
+                $Result = Remove-NetboxVirtualMachine -Id 4125 -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxVirtualMachine' -Times 1 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'DELETE'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/4125/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+            }
+            
+            It "Should remove mulitple VMs" {
+                $Result = Remove-NetboxVirtualMachine -Id 4125, 4132 -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxVirtualMachine' -Times 2 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'DELETE', 'DELETE'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/4125/', 'https://netbox.domain.com/api/virtualization/virtual-machines/4132/'
+                $Result.Headers.Keys.Count | Should -BeExactly 2
+            }
+            
+            It "Should remove a VM from the pipeline" {
+                $Result = Get-NetboxVirtualMachine -Id 4125 | Remove-NetboxVirtualMachine -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxVirtualMachine' -Times 2 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'DELETE'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/4125/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+            }
+            
+            It "Should remove multiple VMs from the pipeline" {
+                $Result = @(
+                    [pscustomobject]@{
+                        'Id' = 4125
+                    },
+                    [pscustomobject]@{
+                        'Id' = 4132
+                    }
+                ) | Remove-NetboxVirtualMachine -Force
+                
+                Assert-VerifiableMock
+                Assert-MockCalled -CommandName 'Get-NetboxVirtualMachine' -Times 2 -Exactly -Scope 'It'
+                
+                $Result.Method | Should -Be 'DELETE', 'DELETE'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/virtualization/virtual-machines/4125/', 'https://netbox.domain.com/api/virtualization/virtual-machines/4132/'
+                $Result.Headers.Keys.Count | Should -BeExactly 2
             }
         }
     }
