@@ -159,21 +159,41 @@ function BuildURIComponents {
             continue
         }
         
-        if ($CmdletParameterName -eq 'Id') {
-            # Check if there is one or more values for Id and build a URI or query as appropriate
-            if (@($ParametersDictionary[$CmdletParameterName]).Count -gt 1) {
-                Write-Verbose " Joining IDs for parameter"
-                $URIParameters['id__in'] = $ParametersDictionary[$CmdletParameterName] -join ','
-            } else {
-                Write-Verbose " Adding ID to segments"
-                [void]$uriSegments.Add($ParametersDictionary[$CmdletParameterName])
+        switch ($CmdletParameterName) {
+            "id" {
+                # Check if there is one or more values for Id and build a URI or query as appropriate
+                if (@($ParametersDictionary[$CmdletParameterName]).Count -gt 1) {
+                    Write-Verbose " Joining IDs for parameter"
+                    $URIParameters['id__in'] = $ParametersDictionary[$CmdletParameterName] -join ','
+                } else {
+                    Write-Verbose " Adding ID to segments"
+                    [void]$uriSegments.Add($ParametersDictionary[$CmdletParameterName])
+                }
+                
+                break
             }
-        } elseif ($CmdletParameterName -eq 'Query') {
-            Write-Verbose " Adding query parameter"
-            $URIParameters['q'] = $ParametersDictionary[$CmdletParameterName]
-        } else {
-            Write-Verbose " Adding $($CmdletParameterName.ToLower()) parameter"
-            $URIParameters[$CmdletParameterName.ToLower()] = $ParametersDictionary[$CmdletParameterName]
+            
+            'Query' {
+                Write-Verbose " Adding query parameter"
+                $URIParameters['q'] = $ParametersDictionary[$CmdletParameterName]
+                break
+            }
+            
+            'CustomFields' {
+                Write-Verbose " Adding custom field query parameters"
+                foreach ($field in $ParametersDictionary[$CmdletParameterName].GetEnumerator()) {
+                    Write-Verbose "  Adding parameter 'cf_$($field.Key) = $($field.Value)"
+                    $URIParameters["cf_$($field.Key.ToLower())"] = $field.Value
+                }
+                
+                break
+            }
+            
+            default {
+                Write-Verbose " Adding $($CmdletParameterName.ToLower()) parameter"
+                $URIParameters[$CmdletParameterName.ToLower()] = $ParametersDictionary[$CmdletParameterName]
+                break
+            }
         }
     }
     
