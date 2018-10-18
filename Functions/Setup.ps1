@@ -12,29 +12,6 @@
         to a Netbox API
 #>
 
-function SetupNetboxConfigVariable {
-    [CmdletBinding()]
-    param
-    (
-        [switch]$Overwrite
-    )
-    
-    Write-Verbose "Checking for NetboxConfig hashtable"
-    if ((-not ($script:NetboxConfig)) -or $Overwrite) {
-        Write-Verbose "Creating NetboxConfig hashtable"
-        $script:NetboxConfig = @{
-            'Connected' = $false
-            'Choices' = @{}
-        }
-    }
-    
-    Write-Verbose "NetboxConfig hashtable already exists"
-}
-
-function GetNetboxConfigVariable {
-    return $script:NetboxConfig
-}
-
 function Set-NetboxHostName {
     [CmdletBinding(ConfirmImpact = 'Low',
                    SupportsShouldProcess = $true)]
@@ -108,17 +85,6 @@ function Get-NetboxCredential {
 	$script:NetboxConfig.Credential
 }
 
-function VerifyAPIConnectivity {
-    [CmdletBinding()]
-    param ()
-    
-    $uriSegments = [System.Collections.ArrayList]::new(@('extras', '_choices'))
-    
-    $uri = BuildNewURI -Segments $uriSegments -SkipConnectedCheck
-    
-    InvokeNetboxRequest -URI $uri
-}
-
 function Connect-NetboxAPI {
 <#
     .SYNOPSIS
@@ -187,7 +153,7 @@ function Connect-NetboxAPI {
     $script:NetboxConfig.Choices.Extras = Get-NetboxExtrasChoices
     $script:NetboxConfig.Choices.IPAM = Get-NetboxIPAMChoices
     #$script:NetboxConfig.Choices.Secrets = Get-NetboxSecretsChoices    # Not completed yet
-    #$script:NetboxConfig.Choices.Tenancy = Get-NetboxTenancyChoices    # Not completed yet
+    #$script:NetboxConfig.Choices.Tenancy = Get-NetboxTenancyChoices
     $script:NetboxConfig.Choices.Virtualization = Get-NetboxVirtualizationChoices
     
     Write-Verbose "Connection process completed"

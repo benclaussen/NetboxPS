@@ -23,102 +23,7 @@ function Get-NetboxIPAMChoices {
     InvokeNetboxRequest -URI $uri
 }
 
-function ValidateIPAMChoice {
-<#
-    .SYNOPSIS
-        Internal function to verify provided values for static choices
-    
-    .DESCRIPTION
-        When users connect to the API, choices for each major object are cached to the config variable.
-        These values are then utilized to verify if the provided value from a user is valid.
-    
-    .PARAMETER ProvidedValue
-        The value to validate against static choices
-    
-    .PARAMETER AggregateFamily
-        Verify against aggregate family values
-    
-    .PARAMETER PrefixFamily
-        Verify against prefix family values
-    
-    .PARAMETER PrefixStatus
-        Verify against prefix status values
-    
-    .PARAMETER IPAddressFamily
-        Verify against ip-address family values
-    
-    .PARAMETER IPAddressStatus
-        Verify against ip-address status values
-    
-    .PARAMETER IPAddressRole
-        Verify against ip-address role values
-    
-    .PARAMETER VLANStatus
-        Verify against VLAN status values
-    
-    .PARAMETER ServiceProtocol
-        Verify against service protocol values
-    
-    .EXAMPLE
-        PS C:\> ValidateIPAMChoice -ProvidedValue 'loopback' -IPAddressRole
-    
-    .EXAMPLE
-        PS C:\> ValidateIPAMChoice -ProvidedValue 'Loopback' -IPAddressFamily
-        >> Invalid value Loopback for ip-address:family. Must be one of: 4, 6, IPv4, IPv6
-    
-    .OUTPUTS
-        This function returns the integer value if valid. Otherwise, it will throw an error.
-    
-    .NOTES
-        Additional information about the function.
-    
-    .FUNCTIONALITY
-        This cmdlet is intended to be used internally and not exposed to the user
-#>
-    
-    [CmdletBinding(DefaultParameterSetName = 'service:protocol')]
-    [OutputType([uint16])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [object]$ProvidedValue,
-        
-        [Parameter(ParameterSetName = 'aggregate:family',
-                   Mandatory = $true)]
-        [switch]$AggregateFamily,
-        
-        [Parameter(ParameterSetName = 'prefix:family',
-                   Mandatory = $true)]
-        [switch]$PrefixFamily,
-        
-        [Parameter(ParameterSetName = 'prefix:status',
-                   Mandatory = $true)]
-        [switch]$PrefixStatus,
-        
-        [Parameter(ParameterSetName = 'ip-address:family',
-                   Mandatory = $true)]
-        [switch]$IPAddressFamily,
-        
-        [Parameter(ParameterSetName = 'ip-address:status',
-                   Mandatory = $true)]
-        [switch]$IPAddressStatus,
-        
-        [Parameter(ParameterSetName = 'ip-address:role',
-                   Mandatory = $true)]
-        [switch]$IPAddressRole,
-        
-        [Parameter(ParameterSetName = 'vlan:status',
-                   Mandatory = $true)]
-        [switch]$VLANStatus,
-        
-        [Parameter(ParameterSetName = 'service:protocol',
-                   Mandatory = $true)]
-        [switch]$ServiceProtocol
-    )
-    
-    ValidateChoice -MajorObject 'IPAM' -ChoiceName $PSCmdlet.ParameterSetName -ProvidedValue $ProvidedValue
-}
-
+#region GET commands
 
 function Get-NetboxIPAMAggregate {
     [CmdletBinding()]
@@ -418,6 +323,11 @@ function Get-NetboxIPAMPrefix {
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
 
+#endregion GET commands
+
+
+#region NEW commands
+
 function New-NetboxIPAMAddress {
 <#
     .SYNOPSIS
@@ -504,6 +414,58 @@ function New-NetboxIPAMAddress {
     InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
 }
 
+function New-NetboxIPAMPrefix {
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$Prefix,
+        
+        [object]$Status = 'Active',
+        
+        [uint16]$Tenant,
+        
+        [object]$Role,
+        
+        [bool]$IsPool,
+        
+        [string]$Description,
+        
+        [uint16]$Site,
+        
+        [uint16]$VRF,
+        
+        [uint16]$VLAN,
+        
+        [hashtable]$Custom_Fields,
+        
+        [switch]$Raw
+    )
+    
+    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -PrefixStatus
+    
+    <#
+    # As of 2018/10/18, this does not appear to be a validated IPAM choice
+    if ($null -ne $Role) {
+        $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -PrefixRole
+    }
+    #>
+    
+    $segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes'))
+    
+    $URIComponents = BuildURIComponents -URISegments $segments -ParametersDictionary $PSBoundParameters
+    
+    $URI = BuildNewURI -Segments $URIComponents.Segments
+    
+    InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
+}
+
+
+#endregion ADD commands
+
+
+#region REMOVE commands
+
 function Remove-NetboxIPAMAddress {
 <#
     .SYNOPSIS
@@ -556,6 +518,11 @@ function Remove-NetboxIPAMAddress {
     end {
     }
 }
+
+#endregion REMOVE commands
+
+
+#region SET commands
 
 function Set-NetboxIPAMAddress {
     [CmdletBinding(ConfirmImpact = 'Medium',
@@ -618,6 +585,7 @@ function Set-NetboxIPAMAddress {
     }
 }
 
+#endregion SET commands
 
 
 
