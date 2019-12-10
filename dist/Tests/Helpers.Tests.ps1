@@ -146,6 +146,24 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
                 $URIComponents.Parameters | Should -BeOfType [hashtable]
                 $URIComponents.Parameters['q'] | Should -Be 'mytestquery'
             }
+            
+            It "Should generate custom field parameters" {
+                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{
+                    'CustomFields' = @{
+                        'PRTG_Id' = 1234
+                        'Customer_Id' = 'abc'
+                    }
+                }
+                
+                $URIComponents | Should -BeOfType [hashtable]
+                $URIComponents.Keys.Count | Should -BeExactly 2
+                $URIComponents.Keys | Should -Be @("Segments", "Parameters")
+                $URIComponents.Segments | Should -Be @("segment1", "segment2")
+                $URIComponents.Parameters.Count | Should -BeExactly 2
+                $URIComponents.Parameters | Should -BeOfType [hashtable]
+                $URIComponents.Parameters['cf_prtg_id'] | Should -Be '1234'
+                $URIComponents.Parameters['cf_customer_id'] | Should -Be 'abc'
+            }
         }
         
         Context -Name "Invoking request tests" -Fixture {

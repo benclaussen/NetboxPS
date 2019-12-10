@@ -348,6 +348,41 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
             }
         }
         
+        Context -Name "New-NetboxIPAMPrefix" -Fixture {
+            It "Should create a basic prefix" {
+                $Result = New-NetboxIPAMPrefix -Prefix "10.0.0.0/24"
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'POST'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"prefix":"10.0.0.0/24","status":1}'
+            }
+            
+            It "Should create a prefix with a status and role names" {
+                $Result = New-NetboxIPAMPrefix -Prefix "10.0.0.0/24" -Status 'Active' -Role 'Active'
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'POST'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"prefix":"10.0.0.0/24","status":1,"role":"Active"}'
+            }
+            
+            It "Should create a prefix with a status, role name, and tenant ID" {
+                $Result = New-NetboxIPAMPrefix -Prefix "10.0.0.0/24" -Status 'Active' -Role 'Active' -Tenant 15
+                
+                Assert-VerifiableMock
+                
+                $Result.Method | Should -Be 'POST'
+                $Result.URI | Should -Be 'https://netbox.domain.com/api/ipam/prefixes/'
+                $Result.Headers.Keys.Count | Should -BeExactly 1
+                $Result.Body | Should -Be '{"prefix":"10.0.0.0/24","status":1,"tenant":15,"role":"Active"}'
+            }
+        }
+        
         Context -Name "New-NetboxIPAMAddress" -Fixture {
             It "Should create a basic IP address" {
                 $Result = New-NetboxIPAMAddress -Address '10.0.0.1/24'

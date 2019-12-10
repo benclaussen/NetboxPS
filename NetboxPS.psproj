@@ -39,7 +39,7 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-DCIM_Support_ps1" ExportFunctions="False">Functions\DCIM\DCIM.Support.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-IPAM_Support_ps1" ExportFunctions="False">Functions\IPAM\IPAM.Support.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Virtualization_Support_ps1" ExportFunctions="False">Functions\Virtualization\Virtualization.Support.ps1</File>
-    <File Build="2" Shared="True" ReferenceFunction="Invoke-Setup_Support_ps1" ExportFunctions="False">Functions\Setup.Support.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Setup_Support_ps1" ExportFunctions="False">Functions\Setup.Support.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>
