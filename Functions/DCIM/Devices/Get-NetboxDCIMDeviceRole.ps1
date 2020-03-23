@@ -1,34 +1,19 @@
 ﻿<#	
 	.NOTES
 	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2018 v5.5.152
-	 Created on:   	5/22/2018 4:47 PM
-	 Created by:   	Ben Claussen
+	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
+	 Created on:   	3/23/2020 12:07
+	 Created by:   	Claussen
 	 Organization: 	NEOnet
-	 Filename:     	DCIM.ps1
+	 Filename:     	Get-NetboxDCIMDeviceRole.ps1
 	===========================================================================
 	.DESCRIPTION
 		A description of the file.
 #>
 
-function Get-NetboxDCIMChoices {
+
+function Get-NetboxDCIMDeviceRole {
     [CmdletBinding()]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "", Justification = "These are literally 'choices' in Netbox")]
-    param ()
-    
-    $uriSegments = [System.Collections.ArrayList]::new(@('dcim', '_choices'))
-    
-    $uri = BuildNewURI -Segments $uriSegments -Parameters $Parameters
-    
-    InvokeNetboxRequest -URI $uri
-}
-
-
-#region GET commands
-
-function Get-NetboxDCIMPlatform {
-    [CmdletBinding()]
-    [OutputType([pscustomobject])]
     param
     (
         [uint16]$Limit,
@@ -42,17 +27,17 @@ function Get-NetboxDCIMPlatform {
         
         [string]$Slug,
         
-        [uint16]$Manufacturer_Id,
+        [string]$Color,
         
-        [string]$Manufacturer,
+        [bool]$VM_Role,
         
         [switch]$Raw
     )
     
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
-            foreach ($PlatformID in $Id) {
-                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'platforms', $PlatformID))
+            foreach ($DRId in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'device-roles', $DRId))
                 
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Raw'
                 
@@ -65,7 +50,7 @@ function Get-NetboxDCIMPlatform {
         }
         
         default {
-            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'platforms'))
+            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'device-roles'))
             
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'
             
@@ -75,32 +60,3 @@ function Get-NetboxDCIMPlatform {
         }
     }
 }
-
-#endregion GET commands
-
-
-
-#region NEW/ADD commands
-
-#endregion NEW/ADD commands
-
-
-
-#region SET commands
-
-#endregion SET commands
-
-
-
-#region REMOVE commands
-
-#endregion REMOVE commands
-
-
-
-
-
-
-
-
-

@@ -11,52 +11,12 @@
 		A description of the file.
 #>
 
-function Get-NetboxTenancyChoices {
-    [CmdletBinding()]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "", Justification = "These are literally 'choices' in Netbox")]
-    param ()
-    
-    $uriSegments = [System.Collections.ArrayList]::new(@('tenancy', '_choices'))
-    
-    $uri = BuildNewURI -Segments $uriSegments
-    
-    InvokeNetboxRequest -URI $uri
-}
+
 
 
 #region GET commands
 
-function Get-NetboxTenant {
-    [CmdletBinding()]
-    param
-    (
-        [uint16]$Limit,
-        
-        [uint16]$Offset,
-        
-        [string]$Name,
-        
-        [uint16[]]$Id,
-        
-        [string]$Query,
-        
-        [string]$Group,
-        
-        [uint16]$GroupID,
-        
-        [hashtable]$CustomFields,
-        
-        [switch]$Raw
-    )
-    
-    $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'tenants'))
-    
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
-    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
-    InvokeNetboxRequest -URI $uri -Raw:$Raw
-}
+
 
 #endregion GET commands
 

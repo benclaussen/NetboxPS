@@ -11,6 +11,16 @@
     <Folder>Functions\Virtualization</Folder>
     <Folder>Functions\IPAM</Folder>
     <Folder>Functions\Tenancy</Folder>
+    <Folder>Functions\IPAM\VLAN</Folder>
+    <Folder>Functions\IPAM\Role</Folder>
+    <Folder>Functions\IPAM\Aggregate</Folder>
+    <Folder>Functions\IPAM\Address</Folder>
+    <Folder>Functions\IPAM\Prefix</Folder>
+    <Folder>Functions\Virtualization\VirtualMachine</Folder>
+    <Folder>Functions\Virtualization\VirtualMachineInterface</Folder>
+    <Folder>Functions\Virtualization\VirtualizationCluster</Folder>
+    <Folder>Functions\DCIM\Devices</Folder>
+    <Folder>Functions\DCIM\Interfaces</Folder>
   </Folders>
   <Files>
     <File Build="2">NetboxPS.psd1</File>
@@ -20,26 +30,61 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Helpers_ps1" ExportFunctions="False">Functions\Helpers.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Setup_ps1" ExportFunctions="False">Functions\Setup.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Extras_ps1" ExportFunctions="True">Functions\Extras\Extras.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-Circuits_ps1" ExportFunctions="True">Functions\Circuits\Circuits.ps1</File>
     <File Build="1" Shared="False" ReferenceFunction="Invoke-Setup_Tests_ps1" ExportFunctions="False">Tests\Setup.Tests.ps1</File>
     <File Build="2" Shared="True" ReferenceFunction="Invoke-Helpers_Tests_ps1" ExportFunctions="False">Tests\Helpers.Tests.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-Virtualization_ps1" ExportFunctions="True">Functions\Virtualization\Virtualization.ps1</File>
     <File Build="2" Shared="True" ReferenceFunction="Invoke-Virtualization_Tests_ps1" ExportFunctions="False">Tests\Virtualization.Tests.ps1</File>
     <File Build="2" Shared="True" ReferenceFunction="Invoke-IPAM_Tests_ps1" ExportFunctions="False">Tests\IPAM.Tests.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-IPAM_ps1" ExportFunctions="True">Functions\IPAM\IPAM.ps1</File>
     <File Build="2">Tests\IPAMChoices.json</File>
     <File Build="2">Tests\VirtualizationChoices.json</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-DCIM_ps1" ExportFunctions="True">Functions\DCIM\DCIM.ps1</File>
     <File Build="2" Shared="True" ReferenceFunction="Invoke-DCIM_Devices_Tests_ps1" ExportFunctions="False">Tests\DCIM.Devices.Tests.ps1</File>
     <File Build="2" Shared="True" ReferenceFunction="Invoke-DCIM_Interfaces_Tests_ps1" ExportFunctions="False">Tests\DCIM.Interfaces.Tests.ps1</File>
     <File Build="2" Shared="True" ReferenceFunction="Invoke-DCIM_Platforms_Tests_ps1" ExportFunctions="False">Tests\DCIM.Platforms.Tests.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-DCIM_Devices_ps1" ExportFunctions="True">Functions\DCIM\DCIM.Devices.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-DCIM_Interfaces_ps1" ExportFunctions="True">Functions\DCIM\DCIM.Interfaces.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-Tenancy_ps1" ExportFunctions="True">Functions\Tenancy\Tenancy.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-DCIM_Support_ps1" ExportFunctions="False">Functions\DCIM\DCIM.Support.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-IPAM_Support_ps1" ExportFunctions="False">Functions\IPAM\IPAM.Support.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-Virtualization_Support_ps1" ExportFunctions="False">Functions\Virtualization\Virtualization.Support.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-ValidateDCIMChoice_ps1" ExportFunctions="False">Functions\DCIM\ValidateDCIMChoice.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Setup_Support_ps1" ExportFunctions="False">Functions\Setup.Support.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxIPAMVLAN_ps1" ExportFunctions="True">Functions\IPAM\VLAN\Get-NetboxIPAMVLAN.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxIPAMVLAN_ps1" ExportFunctions="True">Functions\IPAM\VLAN\New-NetboxIPAMVLAN.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxIPAMRole_ps1" ExportFunctions="True">Functions\IPAM\Role\Get-NetboxIPAMRole.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxIPAMAggregate_ps1" ExportFunctions="True">Functions\IPAM\Aggregate\Get-NetboxIPAMAggregate.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxIPAMAddress_ps1" ExportFunctions="True">Functions\IPAM\Address\Get-NetboxIPAMAddress.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-Get-NetboxIPAMAvailableIP_ps1" ExportFunctions="False">Functions\IPAM\Address\Get-NetboxIPAMAvailableIP.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-Get-NetboxIPAMPrefix_ps1" ExportFunctions="False">Functions\IPAM\Prefix\Get-NetboxIPAMPrefix.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxIPAMAddress_ps1" ExportFunctions="True">Functions\IPAM\Address\New-NetboxIPAMAddress.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxIPAMPrefix_ps1" ExportFunctions="True">Functions\IPAM\Prefix\New-NetboxIPAMPrefix.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Remove-NetboxIPAMAddress_ps1" ExportFunctions="True">Functions\IPAM\Address\Remove-NetboxIPAMAddress.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxIPAMAddress_ps1" ExportFunctions="True">Functions\IPAM\Address\Set-NetboxIPAMAddress.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-ValidateIPAMChoice_ps1" ExportFunctions="False">Functions\IPAM\ValidateIPAMChoice.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxIPAMChoices_ps1" ExportFunctions="True">Functions\IPAM\Get-NetboxIPAMChoices.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxTenant_ps1" ExportFunctions="True">Functions\Tenancy\Get-NetboxTenant.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxTenancyChoices_ps1" ExportFunctions="True">Functions\Tenancy\Get-NetboxTenancyChoices.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxVirtualMachine_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachine\Get-NetboxVirtualMachine.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxVirtualMachine_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachine\New-NetboxVirtualMachine.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxVirtualMachine_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachine\Set-NetboxVirtualMachine.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-Remove-NetboxVirtualMachine_ps1" ExportFunctions="False">Functions\Virtualization\VirtualMachine\Remove-NetboxVirtualMachine.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Add-NetboxVirtualMachineInterface_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachineInterface\Add-NetboxVirtualMachineInterface.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxVirtualMachineInterface_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachineInterface\Get-NetboxVirtualMachineInterface.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxVirtualMachineInterface_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachineInterface\Set-NetboxVirtualMachineInterface.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxVirtualizationChoices_ps1" ExportFunctions="True">Functions\Virtualization\Get-NetboxVirtualizationChoices.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxVirtualizationCluster_ps1" ExportFunctions="True">Functions\Virtualization\VirtualizationCluster\Get-NetboxVirtualizationCluster.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-Get-NetboxVirtualizationClusterGroup_ps1" ExportFunctions="False">Functions\Virtualization\VirtualizationCluster\Get-NetboxVirtualizationClusterGroup.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-ValidateVirtualizationChoice_ps1" ExportFunctions="True">Functions\Virtualization\ValidateVirtualizationChoice.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMDevice_ps1" ExportFunctions="True">Functions\DCIM\Devices\Get-NetboxDCIMDevice.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMDeviceType_ps1" ExportFunctions="True">Functions\DCIM\Devices\Get-NetboxDCIMDeviceType.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMDeviceRole_ps1" ExportFunctions="True">Functions\DCIM\Devices\Get-NetboxDCIMDeviceRole.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxDCIMDevice_ps1" ExportFunctions="True">Functions\DCIM\Devices\New-NetboxDCIMDevice.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxDCIMDevice_ps1" ExportFunctions="True">Functions\DCIM\Devices\Set-NetboxDCIMDevice.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Remove-NetboxDCIMDevice_ps1" ExportFunctions="True">Functions\DCIM\Devices\Remove-NetboxDCIMDevice.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMInterface_ps1" ExportFunctions="True">Functions\DCIM\Interfaces\Get-NetboxDCIMInterface.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMInterfaceConnection_ps1" ExportFunctions="True">Functions\DCIM\Interfaces\Get-NetboxDCIMInterfaceConnection.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Add-NetboxDCIMInterface_ps1" ExportFunctions="True">Functions\DCIM\Interfaces\Add-NetboxDCIMInterface.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Add-NetboxDCIMInterfaceConnection_ps1" ExportFunctions="True">Functions\DCIM\Interfaces\Add-NetboxDCIMInterfaceConnection.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxDCIMInterface_ps1" ExportFunctions="True">Functions\DCIM\Interfaces\Set-NetboxDCIMInterface.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxDCIMInterfaceConnection_ps1" ExportFunctions="True">Functions\DCIM\Interfaces\Set-NetboxDCIMInterfaceConnection.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Remove-NetboxDCIMInterface_ps1" ExportFunctions="True">Functions\DCIM\Interfaces\Remove-NetboxDCIMInterface.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Remove-NetboxDCIMInterfaceConnection_ps1" ExportFunctions="True">Functions\DCIM\Interfaces\Remove-NetboxDCIMInterfaceConnection.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMPlatform_ps1" ExportFunctions="True">Functions\DCIM\Get-NetboxDCIMPlatform.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMChoices_ps1" ExportFunctions="True">Functions\DCIM\Get-NetboxDCIMChoices.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuitsChoices_ps1" ExportFunctions="True">Functions\Circuits\Get-NetboxCircuitsChoices.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuit_ps1" ExportFunctions="True">Functions\Circuits\Get-NetboxCircuit.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>

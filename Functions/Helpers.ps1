@@ -233,7 +233,7 @@ function GetChoiceValidValues {
 
 function ValidateChoice {
     [CmdletBinding()]
-    [OutputType([uint16],[string], [bool])]
+    [OutputType([uint16], [string], [bool])]
     param
     (
         [Parameter(Mandatory = $true)]
