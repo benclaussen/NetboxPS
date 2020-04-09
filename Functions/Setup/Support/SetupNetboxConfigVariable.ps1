@@ -1,15 +1,4 @@
-﻿function VerifyAPIConnectivity {
-    [CmdletBinding()]
-    param ()
-    
-    $uriSegments = [System.Collections.ArrayList]::new(@('extras', '_choices'))
-    
-    $uri = BuildNewURI -Segments $uriSegments -SkipConnectedCheck
-    
-    InvokeNetboxRequest -URI $uri
-}
-
-function SetupNetboxConfigVariable {
+﻿function SetupNetboxConfigVariable {
     [CmdletBinding()]
     param
     (
@@ -21,14 +10,10 @@ function SetupNetboxConfigVariable {
         Write-Verbose "Creating NetboxConfig hashtable"
         $script:NetboxConfig = @{
             'Connected' = $false
-            'Choices' = @{
+            'Choices'   = @{
             }
         }
     }
     
     Write-Verbose "NetboxConfig hashtable already exists"
-}
-
-function GetNetboxConfigVariable {
-    return $script:NetboxConfig
 }
