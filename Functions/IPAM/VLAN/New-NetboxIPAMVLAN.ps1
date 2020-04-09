@@ -1,40 +1,37 @@
-﻿function New-NetboxIPAMAddress {
+﻿function New-NetboxIPAMVLAN {
 <#
     .SYNOPSIS
-        Create a new IP address to Netbox
+        Create a new VLAN
     
     .DESCRIPTION
-        Create a new IP address to Netbox with a status of Active by default.
+        Create a new VLAN in Netbox with a status of Active by default.
     
-    .PARAMETER Address
-        IP address in CIDR notation: 192.168.1.1/24
+    .PARAMETER VID
+        The VLAN ID.
+    
+    .PARAMETER Name
+        The name of the VLAN.
     
     .PARAMETER Status
-        Status of the IP. Defaults to Active
+        Status of the VLAN. Defaults to Active
     
     .PARAMETER Tenant
         Tenant ID
     
-    .PARAMETER VRF
-        VRF ID
-    
     .PARAMETER Role
         Role such as anycast, loopback, etc... Defaults to nothing
-    
-    .PARAMETER NAT_Inside
-        ID of IP for NAT
-    
-    .PARAMETER Custom_Fields
-        Custom field hash table. Will be validated by the API service
-    
-    .PARAMETER Interface
-        ID of interface to apply IP
     
     .PARAMETER Description
         Description of IP address
     
+    .PARAMETER Custom_Fields
+        Custom field hash table. Will be validated by the API service
+    
     .PARAMETER Raw
         Return raw results from API service
+    
+    .PARAMETER Address
+        IP address in CIDR notation: 192.168.1.1/24
     
     .EXAMPLE
         PS C:\> Create-NetboxIPAMAddress
@@ -50,21 +47,18 @@
         [Parameter(Mandatory = $true)]
         [uint16]$VID,
         
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+        
         [object]$Status = 'Active',
         
         [uint16]$Tenant,
         
-        [uint16]$VRF,
-        
         [object]$Role,
         
-        [uint16]$NAT_Inside,
+        [string]$Description,
         
         [hashtable]$Custom_Fields,
-        
-        [uint16]$Interface,
-        
-        [string]$Description,
         
         [switch]$Raw
     )
@@ -75,7 +69,7 @@
         $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -IPAddressRole
     }
     
-    $segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
+    $segments = [System.Collections.ArrayList]::new(@('ipam', 'vlans'))
     
     $URIComponents = BuildURIComponents -URISegments $segments -ParametersDictionary $PSBoundParameters
     
