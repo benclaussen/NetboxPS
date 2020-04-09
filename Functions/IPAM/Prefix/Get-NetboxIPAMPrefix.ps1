@@ -20,6 +20,12 @@ function Get-NetboxIPAMPrefix {
     .DESCRIPTION
         A detailed description of the Get-NetboxIPAMPrefix function.
     
+    .PARAMETER Query
+        A description of the Query parameter.
+    
+    .PARAMETER Id
+        A description of the Id parameter.
+    
     .PARAMETER Limit
         A description of the Limit parameter.
     
@@ -31,12 +37,6 @@ function Get-NetboxIPAMPrefix {
     
     .PARAMETER Is_Pool
         A description of the Is_Pool parameter.
-    
-    .PARAMETER Id
-        A description of the Id parameter.
-    
-    .PARAMETER Query
-        A description of the Query parameter.
     
     .PARAMETER Within
         Should be a CIDR notation prefix such as '10.0.0.0/16'
@@ -87,7 +87,7 @@ function Get-NetboxIPAMPrefix {
         A description of the Raw parameter.
     
     .EXAMPLE
-        		PS C:\> Get-NetboxIPAMPrefix
+        PS C:\> Get-NetboxIPAMPrefix
     
     .NOTES
         Additional information about the function.
@@ -96,17 +96,15 @@ function Get-NetboxIPAMPrefix {
     [CmdletBinding()]
     param
     (
-        [uint16]$Limit,
+        [string]$Prefix,
         
-        [uint16]$Offset,
+        [string]$Query,
+        
+        [uint16[]]$Id,
         
         [object]$Family,
         
         [boolean]$Is_Pool,
-        
-        [uint16[]]$Id,
-        
-        [string]$Query,
         
         [string]$Within,
         
@@ -138,6 +136,10 @@ function Get-NetboxIPAMPrefix {
         [string]$Role,
         
         [uint16]$Role_Id,
+        
+        [uint16]$Limit,
+        
+        [uint16]$Offset,
         
         [switch]$Raw
     )
