@@ -2,15 +2,13 @@
     [CmdletBinding()]
     param
     (
-        [uint16]$Limit,
-        
-        [uint16]$Offset,
-        
-        [object]$Family,
+        [string]$Address,
         
         [uint16[]]$Id,
         
         [string]$Query,
+        
+        [object]$Family,
         
         [uint16]$Parent,
         
@@ -37,6 +35,10 @@
         [object]$Status,
         
         [object]$Role,
+        
+        [uint16]$Limit,
+        
+        [uint16]$Offset,
         
         [switch]$Raw
     )
