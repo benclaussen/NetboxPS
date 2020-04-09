@@ -2,7 +2,7 @@
 ###### Powershell Netbox API module
 
 # Disclaimer
-This module is beta. Use it at your own risk. All internal functions are exposed currently. Public functions are in the form of `verb-noun` like usual cmdlets. 
+This module is beta. Use it at your own risk. I have only added functions as I have needed them, so not everything is available.
 
 # Description
 This module is a wrapper for the [Netbox](https://github.com/digitalocean/netbox) API.

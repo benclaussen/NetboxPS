@@ -16,10 +16,10 @@
 @{
 	
 	# Script module or binary module file associated with this manifest
-	ModuleToProcess = 'NetboxPS.psm1'
+    RootModule = 'NetboxPS.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '1.0.2'
+	ModuleVersion = '1.0.4'
 	
 	# ID used to uniquely identify this module
 	GUID = 'bba9b06c-49c8-47cf-8358-aca7c4e78896'
@@ -76,7 +76,7 @@
 	NestedModules = @()
 	
 	# Functions to export from this module
-	FunctionsToExport = '*' #For performanace, list functions explicity
+	FunctionsToExport = @('*') #For performanace, list functions explicity
 	
 	# Cmdlets to export from this module
 	CmdletsToExport = '*' 
