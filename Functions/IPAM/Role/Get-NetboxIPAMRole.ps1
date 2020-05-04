@@ -41,11 +41,11 @@ function Get-NetboxIPAMRole {
     [CmdletBinding()]
     param
     (
-        [uint16[]]$Id,
+        [string]$Name,
         
         [string]$Query,
         
-        [string]$Name,
+        [uint16[]]$Id,
         
         [string]$Slug,
         

@@ -60,14 +60,12 @@ function Get-NetboxVirtualMachineInterface {
     [CmdletBinding()]
     param
     (
-        [uint16]$Limit,
-        
-        [uint16]$Offset,
-        
         [Parameter(ValueFromPipeline = $true)]
         [uint16]$Id,
         
         [string]$Name,
+        
+        [string]$Query,
         
         [boolean]$Enabled,
         
@@ -78,6 +76,10 @@ function Get-NetboxVirtualMachineInterface {
         [string]$Virtual_Machine,
         
         [string]$MAC_Address,
+        
+        [uint16]$Limit,
+        
+        [uint16]$Offset,
         
         [switch]$Raw
     )

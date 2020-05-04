@@ -66,16 +66,11 @@ function Get-NetboxVirtualizationCluster {
     [CmdletBinding()]
     param
     (
-        [uint16]$Limit,
-        
-        [uint16]$Offset,
+        [string]$Name,
         
         [Alias('q')]
         [string]$Query,
         
-        [string]$Name,
-        
-        [Alias('id__in')]
         [uint16[]]$Id,
         
         [string]$Group,
@@ -90,36 +85,18 @@ function Get-NetboxVirtualizationCluster {
         
         [uint16]$Site_Id,
         
+        [uint16]$Limit,
+        
+        [uint16]$Offset,
+        
         [switch]$Raw
     )
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('virtualization', 'clusters'))
+    $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'clusters'))
     
-    $URIParameters = @{
-    }
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
     
-    foreach ($CmdletParameterName in $PSBoundParameters.Keys) {
-        if ($CmdletParameterName -in $CommonParameterNames) {
-            # These are common parameters and should not be appended to the URI
-            Write-Debug "Skipping parameter $CmdletParameterName"
-            continue
-        }
-        
-        if ($CmdletParameterName -eq 'Id') {
-            # Check if there is one or more values for Id and build a URI or query as appropriate
-            if (@($PSBoundParameters[$CmdletParameterName]).Count -gt 1) {
-                $URIParameters['id__in'] = $Id -join ','
-            } else {
-                [void]$uriSegments.Add($PSBoundParameters[$CmdletParameterName])
-            }
-        } elseif ($CmdletParameterName -eq 'Query') {
-            $URIParameters['q'] = $PSBoundParameters[$CmdletParameterName]
-        } else {
-            $URIParameters[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName]
-        }
-    }
-    
-    $uri = BuildNewURI -Segments $uriSegments -Parameters $URIParameters
+    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }

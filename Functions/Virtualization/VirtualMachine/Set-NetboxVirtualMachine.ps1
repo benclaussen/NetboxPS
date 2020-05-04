@@ -50,19 +50,19 @@ function Set-NetboxVirtualMachine {
         [switch]$Force
     )
     
-    if ($null -ne $Status) {
-        $PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
-    }
-    
+#    if ($null -ne $Status) {
+#        $PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
+#    }
+#    
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines', $Id))
     
     Write-Verbose "Obtaining VM from ID $Id"
     
-    $CurrentVM = Get-NetboxVirtualMachine -Id $Id -ErrorAction Stop
+    #$CurrentVM = Get-NetboxVirtualMachine -Id $Id -ErrorAction Stop
     
     Write-Verbose "Finished obtaining VM"
     
-    if ($Force -or $pscmdlet.ShouldProcess($CurrentVM.Name, "Set")) {
+    if ($Force -or $pscmdlet.ShouldProcess($ID, "Set properties on VM ID")) {
         $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
         
         $URI = BuildNewURI -Segments $URIComponents.Segments

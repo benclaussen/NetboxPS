@@ -63,11 +63,11 @@
         [switch]$Raw
     )
     
-    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -VLANStatus
-    
-    if ($null -ne $Role) {
-        $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -IPAddressRole
-    }
+#    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -VLANStatus
+#    
+#    if ($null -ne $Role) {
+#        $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -IPAddressRole
+#    }
     
     $segments = [System.Collections.ArrayList]::new(@('ipam', 'vlans'))
     

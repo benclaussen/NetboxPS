@@ -48,8 +48,6 @@
     try {
         Write-Verbose "Verifying API connectivity..."
         $null = VerifyAPIConnectivity
-        $script:NetboxConfig.Connected = $true
-        Write-Verbose "Successfully connected!"
     } catch {
         Write-Verbose "Failed to connect. Generating error"
         Write-Verbose $_.Exception.Message
@@ -60,14 +58,25 @@
         }
     }
     
-    Write-Verbose "Caching static choices"
-    $script:NetboxConfig.Choices.Circuits = Get-NetboxCircuitsChoices
-    $script:NetboxConfig.Choices.DCIM = Get-NetboxDCIMChoices # Not completed yet
-    $script:NetboxConfig.Choices.Extras = Get-NetboxExtrasChoices
-    $script:NetboxConfig.Choices.IPAM = Get-NetboxIPAMChoices
-    #$script:NetboxConfig.Choices.Secrets = Get-NetboxSecretsChoices    # Not completed yet
-    #$script:NetboxConfig.Choices.Tenancy = Get-NetboxTenancyChoices
-    $script:NetboxConfig.Choices.Virtualization = Get-NetboxVirtualizationChoices
+    Write-Verbose "Caching API definition"
+    $script:NetboxConfig.APIDefinition = Get-NetboxAPIDefinition
+    
+    if ([version]$script:NetboxConfig.APIDefinition.info.version -lt 2.8) {
+        $Script:NetboxConfig.Connected = $false
+        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.APIDefinition.info.version)"
+    }
+    
+    $script:NetboxConfig.Connected = $true
+    Write-Verbose "Successfully connected!"
+    
+    #Write-Verbose "Caching static choices"
+    #$script:NetboxConfig.Choices.Circuits = Get-NetboxCircuitsChoices
+    #$script:NetboxConfig.Choices.DCIM = Get-NetboxDCIMChoices # Not completed yet
+    #$script:NetboxConfig.Choices.Extras = Get-NetboxExtrasChoices
+    #$script:NetboxConfig.Choices.IPAM = Get-NetboxIPAMChoices
+    ##$script:NetboxConfig.Choices.Secrets = Get-NetboxSecretsChoices    # Not completed yet
+    ##$script:NetboxConfig.Choices.Tenancy = Get-NetboxTenancyChoices
+    #$script:NetboxConfig.Choices.Virtualization = Get-NetboxVirtualizationChoices
     
     Write-Verbose "Connection process completed"
 }

@@ -93,7 +93,7 @@ function Get-NetboxIPAMPrefix {
         Additional information about the function.
 #>
     
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
     param
     (
         [string]$Prefix,

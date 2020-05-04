@@ -16,10 +16,6 @@ function Get-NetboxIPAMVLAN {
     [CmdletBinding()]
     param
     (
-        [uint16]$Limit,
-        
-        [uint16]$Offset,
-        
         [uint16]$VID,
         
         [uint16[]]$Id,
@@ -51,6 +47,10 @@ function Get-NetboxIPAMVLAN {
         [string]$Role,
         
         [uint16]$Role_Id,
+        
+        [uint16]$Limit,
+        
+        [uint16]$Offset,
         
         [switch]$Raw
     )

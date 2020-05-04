@@ -43,20 +43,31 @@ function Set-NetboxIPAMAddress {
     )
     
     begin {
-        if ($Status) {
-            $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -IPAddressStatus
-        }
-        
-        if ($Role) {
-            $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -IPAddressRole
-        }
+#        Write-Verbose "Validating enum properties"
+#        $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', 0))
+        $Method = 'PATCH'
+#        
+#        # Value validation
+#        $ModelDefinition = GetModelDefinitionFromURIPath -Segments $Segments -Method $Method
+#        $EnumProperties = GetModelEnumProperties -ModelDefinition $ModelDefinition
+#        
+#        foreach ($Property in $EnumProperties.Keys) {
+#            if ($PSBoundParameters.ContainsKey($Property)) {
+#                Write-Verbose "Validating property [$Property] with value [$($PSBoundParameters.$Property)]"
+#                $PSBoundParameters.$Property = ValidateValue -ModelDefinition $ModelDefinition -Property $Property -ProvidedValue $PSBoundParameters.$Property
+#            } else {
+#                Write-Verbose "User did not provide a value for [$Property]"
+#            }
+#        }
+#        
+#        Write-Verbose "Finished enum validation"
     }
     
     process {
         foreach ($IPId in $Id) {
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $IPId))
             
-            Write-Verbose "Obtaining IPs from ID $IPId"
+            Write-Verbose "Obtaining IP from ID $IPId"
             $CurrentIP = Get-NetboxIPAMAddress -Id $IPId -ErrorAction Stop
             
             if ($Force -or $PSCmdlet.ShouldProcess($CurrentIP.Address, 'Set')) {
@@ -64,11 +75,8 @@ function Set-NetboxIPAMAddress {
                 
                 $URI = BuildNewURI -Segments $URIComponents.Segments
                 
-                InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+                InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method $Method
             }
         }
-    }
-    
-    end {
     }
 }

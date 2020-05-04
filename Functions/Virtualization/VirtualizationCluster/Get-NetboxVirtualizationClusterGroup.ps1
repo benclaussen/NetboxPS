@@ -16,33 +16,28 @@ function Get-NetboxVirtualizationClusterGroup {
     [CmdletBinding()]
     param
     (
-        [uint16]$Limit,
-        
-        [uint16]$Offset,
-        
         [string]$Name,
         
         [string]$Slug,
         
+        [string]$Description,
+        
+        [string]$Query,
+        
+        [uint32[]]$Id,
+        
+        [uint16]$Limit,
+        
+        [uint16]$Offset,
+        
         [switch]$Raw
     )
     
-    $uriSegments = [System.Collections.ArrayList]::new(@('virtualization', 'cluster-groups'))
+    $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'cluster-groups'))
     
-    $URIParameters = @{
-    }
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
     
-    foreach ($CmdletParameterName in $PSBoundParameters.Keys) {
-        if ($CmdletParameterName -in $CommonParameterNames) {
-            # These are common parameters and should not be appended to the URI
-            Write-Debug "Skipping parameter $CmdletParameterName"
-            continue
-        }
-        
-        $URIParameters[$CmdletParameterName.ToLower()] = $PSBoundParameters[$CmdletParameterName]
-    }
-    
-    $uri = BuildNewURI -Segments $uriSegments -Parameters $URIParameters
+    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
     
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }

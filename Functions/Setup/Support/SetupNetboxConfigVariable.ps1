@@ -12,6 +12,7 @@
             'Connected' = $false
             'Choices'   = @{
             }
+            'APIDefinition' = $null
         }
     }
     

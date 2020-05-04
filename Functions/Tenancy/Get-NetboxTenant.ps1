@@ -16,11 +16,9 @@ function Get-NetboxTenant {
     [CmdletBinding()]
     param
     (
-        [uint16]$Limit,
-        
-        [uint16]$Offset,
-        
         [string]$Name,
+        
+        [string]$Slug,
         
         [uint16[]]$Id,
         
@@ -31,6 +29,10 @@ function Get-NetboxTenant {
         [uint16]$GroupID,
         
         [hashtable]$CustomFields,
+        
+        [uint16]$Limit,
+        
+        [uint16]$Offset,
         
         [switch]$Raw
     )

@@ -40,7 +40,7 @@ function New-NetboxIPAMPrefix {
         [switch]$Raw
     )
     
-    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -PrefixStatus
+#    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -PrefixStatus
     
     <#
     # As of 2018/10/18, this does not appear to be a validated IPAM choice
