@@ -48,7 +48,7 @@ function New-NetboxIPAMAddress {
         Description of IP address
     
     .PARAMETER Force
-        A description of the Force parameter.
+        Do not prompt for confirmation to create IP.
     
     .PARAMETER Raw
         Return raw results from API service
