@@ -2,7 +2,8 @@
     [CmdletBinding(DefaultParameterSetName = 'Query')]
     param
     (
-        [Parameter(ParameterSetName = 'Query')]
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
         [string]$Address,
         
         [Parameter(ParameterSetName = 'ByID')]
