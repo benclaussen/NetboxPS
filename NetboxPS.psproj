@@ -24,6 +24,7 @@
     <Folder>Functions\Setup</Folder>
     <Folder>Functions\Setup\Support</Folder>
     <Folder>Tests</Folder>
+    <Folder>Functions\DCIM\Sites</Folder>
   </Folders>
   <Files>
     <File Build="2">NetboxPS.psd1</File>
@@ -103,6 +104,8 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuitsChoices_ps1" ExportFunctions="True">Functions\Circuits\Get-NetboxCircuitsChoices.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuit_ps1" ExportFunctions="True">Functions\Circuits\Get-NetboxCircuit.ps1</File>
     <File Build="2" Shared="True" ReferenceFunction="Invoke-deploy_ps1" ExportFunctions="False">deploy.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxAPIDefinition_ps1" ExportFunctions="True">Functions\Setup\Support\Get-NetboxAPIDefinition.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMSite_ps1" ExportFunctions="True">Functions\DCIM\Sites\Get-NetboxDCIMSite.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>
