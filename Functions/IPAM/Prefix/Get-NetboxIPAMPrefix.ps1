@@ -96,67 +96,110 @@ function Get-NetboxIPAMPrefix {
     [CmdletBinding(DefaultParameterSetName = 'Query')]
     param
     (
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
         [string]$Prefix,
         
+        [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
         
-        [uint16[]]$Id,
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint32[]]$Id,
         
+        [Parameter(ParameterSetName = 'Query')]
         [object]$Family,
         
+        [Parameter(ParameterSetName = 'Query')]
         [boolean]$Is_Pool,
         
+        [Parameter(ParameterSetName = 'Query')]
         [string]$Within,
         
+        [Parameter(ParameterSetName = 'Query')]
         [string]$Within_Include,
         
+        [Parameter(ParameterSetName = 'Query')]
         [string]$Contains,
         
+        [Parameter(ParameterSetName = 'Query')]
         [ValidateRange(0, 127)]
         [byte]$Mask_Length,
         
+        [Parameter(ParameterSetName = 'Query')]
         [string]$VRF,
         
-        [uint16]$VRF_Id,
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$VRF_Id,
         
+        [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
         
-        [uint16]$Tenant_Id,
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$Tenant_Id,
         
+        [Parameter(ParameterSetName = 'Query')]
         [string]$Site,
         
-        [uint16]$Site_Id,
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$Site_Id,
         
+        [Parameter(ParameterSetName = 'Query')]
         [string]$Vlan_VId,
         
-        [uint16]$Vlan_Id,
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$Vlan_Id,
         
+        [Parameter(ParameterSetName = 'Query')]
         [object]$Status,
         
+        [Parameter(ParameterSetName = 'Query')]
         [string]$Role,
         
-        [uint16]$Role_Id,
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$Role_Id,
         
+        [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
         
+        [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
         
         [switch]$Raw
     )
     
-    if ($null -ne $Family) {
-        $PSBoundParameters.Family = ValidateIPAMChoice -ProvidedValue $Family -PrefixFamily
+    #    if ($null -ne $Family) {
+    #        $PSBoundParameters.Family = ValidateIPAMChoice -ProvidedValue $Family -PrefixFamily
+    #    }
+    #    
+    #    if ($null -ne $Status) {
+    #        $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -PrefixStatus
+    #    }
+    
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($Prefix_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes', $Prefix_ID))
+                
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+                
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+                
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+            
+            break
+        }
+        
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes'))
+            
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+            
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+            
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+            
+            break
+        }
     }
-    
-    if ($null -ne $Status) {
-        $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -PrefixStatus
-    }
-    
-    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes'))
-    
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
-    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
-    InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
