@@ -7,7 +7,7 @@
         [string]$Address,
         
         [Parameter(ParameterSetName = 'ByID')]
-        [uint16[]]$Id,
+        [uint32[]]$Id,
         
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
@@ -16,7 +16,7 @@
         [object]$Family,
         
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Parent,
+        [uint32]$Parent,
         
         [Parameter(ParameterSetName = 'Query')]
         [byte]$Mask_Length,
@@ -25,28 +25,28 @@
         [string]$VRF,
         
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$VRF_Id,
+        [uint32]$VRF_Id,
         
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
         
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Tenant_Id,
+        [uint32]$Tenant_Id,
         
         [Parameter(ParameterSetName = 'Query')]
         [string]$Device,
         
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Device_ID,
+        [uint32]$Device_ID,
         
         [Parameter(ParameterSetName = 'Query')]
         [string]$Virtual_Machine,
         
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Virtual_Machine_Id,
+        [uint32]$Virtual_Machine_Id,
         
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Interface_Id,
+        [uint32]$Interface_Id,
         
         [Parameter(ParameterSetName = 'Query')]
         [object]$Status,
