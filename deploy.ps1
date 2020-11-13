@@ -40,8 +40,8 @@ Write-Host "Beginning deployment" -ForegroundColor Green
 
 $ModuleName = 'NetboxPS'
 $ConcatenatedFilePath = "$PSScriptRoot\concatenated.ps1"
-$PSD1OutputPath = "$PSScriptRoot\dist\$ModuleName.psd1"
-$PSM1OutputPath = "$PSScriptRoot\dist\$ModuleName.psm1"
+$PSD1OutputPath = "$PSScriptRoot\$ModuleName\$ModuleName.psd1"
+$PSM1OutputPath = "$PSScriptRoot\$ModuleName\$ModuleName.psm1"
 
 $PS1Files = Get-ChildItem "$PSScriptRoot\Functions" -Filter "*.ps1" -Recurse | Sort-Object Name
 
