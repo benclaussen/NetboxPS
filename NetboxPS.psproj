@@ -25,6 +25,10 @@
     <Folder>Functions\Setup\Support</Folder>
     <Folder>Tests</Folder>
     <Folder>Functions\DCIM\Sites</Folder>
+    <Folder>Functions\Circuits\Circuits</Folder>
+    <Folder>Functions\Circuits\Providers</Folder>
+    <Folder>Functions\Circuits\Types</Folder>
+    <Folder>Functions\Circuits\Terminations</Folder>
   </Folders>
   <Files>
     <File Build="2">NetboxPS.psd1</File>
@@ -102,10 +106,15 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMPlatform_ps1" ExportFunctions="True">Functions\DCIM\Get-NetboxDCIMPlatform.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMChoices_ps1" ExportFunctions="True">Functions\DCIM\Get-NetboxDCIMChoices.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuitsChoices_ps1" ExportFunctions="True">Functions\Circuits\Get-NetboxCircuitsChoices.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuit_ps1" ExportFunctions="True">Functions\Circuits\Get-NetboxCircuit.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuit_ps1" ExportFunctions="True">Functions\Circuits\Circuits\Get-NetboxCircuit.ps1</File>
     <File Build="2" Shared="True" ReferenceFunction="Invoke-deploy_ps1" ExportFunctions="False">deploy.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxAPIDefinition_ps1" ExportFunctions="True">Functions\Setup\Support\Get-NetboxAPIDefinition.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMSite_ps1" ExportFunctions="True">Functions\DCIM\Sites\Get-NetboxDCIMSite.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuitTermination_ps1" ExportFunctions="True">Functions\Circuits\Terminations\Get-NetboxCircuitTermination.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxCircuit_ps1" ExportFunctions="True">Functions\Circuits\Circuits\New-NetboxCircuit.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuitProvider_ps1" ExportFunctions="True">Functions\Circuits\Providers\Get-NetboxCircuitProvider.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuitType_ps1" ExportFunctions="True">Functions\Circuits\Types\Get-NetboxCircuitType.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-ModelDefinition_ps1" ExportFunctions="True">Functions\Helpers\Get-ModelDefinition.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>
