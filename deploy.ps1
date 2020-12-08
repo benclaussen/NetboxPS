@@ -40,15 +40,17 @@ Write-Host "Beginning deployment" -ForegroundColor Green
 
 $ModuleName = 'NetboxPS'
 $ConcatenatedFilePath = "$PSScriptRoot\concatenated.ps1"
-$PSD1OutputPath = "$PSScriptRoot\$ModuleName\$ModuleName.psd1"
-$PSM1OutputPath = "$PSScriptRoot\$ModuleName\$ModuleName.psm1"
+$FunctionPath = "$PSScriptRoot\Functions"
+$OutputDirectory = "$PSScriptRoot\$ModuleName"
+$PSD1OutputPath = "$OutputDirectory\$ModuleName.psd1"
+$PSM1OutputPath = "$OutputDirectory\$ModuleName.psm1"
 
-$PS1Files = Get-ChildItem "$PSScriptRoot\Functions" -Filter "*.ps1" -Recurse | Sort-Object Name
+$PS1Files = Get-ChildItem $FunctionPath -Filter "*.ps1" -Recurse | Sort-Object Name
 
 "" | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8
 
 $Counter = 0
-Write-Host "Concatenating [$($PS1Files.Count)] PS1 files from $PSScriptRoot\Functions"
+Write-Host "Concatenating [$($PS1Files.Count)] PS1 files from $FunctionPath"
 foreach ($File in $PS1Files) {
     $Counter++
     
@@ -106,6 +108,16 @@ switch ($PSCmdlet.ParameterSetName) {
         Update-ModuleManifest -Path "$PSScriptRoot\$ModuleName.psd1" -ModuleVersion $NewVersion
         
         break
+    }
+}
+
+
+if (-not (Test-Path $OutputDirectory)) {
+    try {
+        Write-Warning "Creating path [$OutputDirectory]"
+        $null = New-Item -Path $OutputDirectory -ItemType Directory -Force
+    } catch {
+        throw "Failed to create directory [$OutputDirectory]: $($_.Exception.Message)"
     }
 }
 
