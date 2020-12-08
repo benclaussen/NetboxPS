@@ -1,0 +1,1189 @@
+{
+	"info": {
+		"_postman_id": "eba3e2e2-fd8e-5304-be69-4aebe1237cfc",
+		"name": "Netbox",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "IPAM",
+			"item": [
+				{
+					"name": "Role",
+					"item": [
+						{
+							"name": "Get-NetboxIPAMRole",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/ipam/roles?brief=0",
+									"protocol": "{{SCHEME}}",
+									"host": [
+										"{{HOSTNAME}}"
+									],
+									"port": "{{PORT}}",
+									"path": [
+										"api",
+										"ipam",
+										"roles"
+									],
+									"query": [
+										{
+											"key": "brief",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Prefix",
+					"item": [
+						{
+							"name": "Get Prefixes",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/ipam/prefixes/?prefix",
+									"protocol": "{{SCHEME}}",
+									"host": [
+										"{{HOSTNAME}}"
+									],
+									"port": "{{PORT}}",
+									"path": [
+										"api",
+										"ipam",
+										"prefixes",
+										""
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "prefix",
+											"value": null
+										},
+										{
+											"key": "q",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "is_pool",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant_group_id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant_group",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant_id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "family",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "within",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "mask_length",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "region",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "region_id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "IP Address",
+					"item": [
+						{
+							"name": "Create New IP Address",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\":  3,\r\n    \"description\":  \"TEST API CALL DELETE ME\",\r\n    \"tenant\":  \"2\",\r\n    \"address\":  \"1.2.3.4/5\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/ipam/ip-addresses/",
+									"protocol": "{{SCHEME}}",
+									"host": [
+										"{{HOSTNAME}}"
+									],
+									"port": "{{PORT}}",
+									"path": [
+										"api",
+										"ipam",
+										"ip-addresses",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Available IP",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/ipam/prefixes/PREFIX_DATABASE_ID/available-ips",
+									"protocol": "{{SCHEME}}",
+									"host": [
+										"{{HOSTNAME}}"
+									],
+									"port": "{{PORT}}",
+									"path": [
+										"api",
+										"ipam",
+										"prefixes",
+										"PREFIX_DATABASE_ID",
+										"available-ips"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get IP Addresses By Query",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/ipam/ip-addresses/?q=1.2.3.4",
+									"protocol": "{{SCHEME}}",
+									"host": [
+										"{{HOSTNAME}}"
+									],
+									"port": "{{PORT}}",
+									"path": [
+										"api",
+										"ipam",
+										"ip-addresses",
+										""
+									],
+									"query": [
+										{
+											"key": "q",
+											"value": "1.2.3.4"
+										},
+										{
+											"key": "id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "dns_name",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant_group_id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant_group",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant_id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "family",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "parent",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "address",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "mask_length",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "virtual_machine",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "virtual_machine_id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get IP Address By ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/ipam/ip-addresses/DATABASEID",
+									"protocol": "{{SCHEME}}",
+									"host": [
+										"{{HOSTNAME}}"
+									],
+									"port": "{{PORT}}",
+									"path": [
+										"api",
+										"ipam",
+										"ip-addresses",
+										"DATABASEID"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove IP",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/ipam/ip-addresses/4110/",
+									"protocol": "{{SCHEME}}",
+									"host": [
+										"{{HOSTNAME}}"
+									],
+									"port": "{{PORT}}",
+									"path": [
+										"api",
+										"ipam",
+										"ip-addresses",
+										"4110",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "VLAN",
+					"item": [
+						{
+							"name": "New-VLAN",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": 1,\r\n    \"description\": \"\",\r\n    \"tenant\": \"2\",\r\n    \"address\": \"0.0.0.0/0\",\r\n    \"custom_fields\": {\r\n        \"requested_by\": null,\r\n        \"dns_host_name\": \"\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/ipam/vlans/",
+									"protocol": "{{SCHEME}}",
+									"host": [
+										"{{HOSTNAME}}"
+									],
+									"port": "{{PORT}}",
+									"path": [
+										"api",
+										"ipam",
+										"vlans",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get VLANs",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/ipam/vlans?vid",
+									"protocol": "{{SCHEME}}",
+									"host": [
+										"{{HOSTNAME}}"
+									],
+									"port": "{{PORT}}",
+									"path": [
+										"api",
+										"ipam",
+										"vlans"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "vid",
+											"value": null
+										},
+										{
+											"key": "name",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "q",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant_group_id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant_group",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant_id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tenant",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "site",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "site_id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "group",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "role",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "role_id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Tenancy",
+			"item": [
+				{
+					"name": "Get Tenants",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/tenancy/tenants/?name",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"tenancy",
+								"tenants",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": null
+								},
+								{
+									"key": "q",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "slug",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "group_id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Virtualization",
+			"item": [
+				{
+					"name": "Get Virtual machines",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/virtualization/virtual-machines",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"virtualization",
+								"virtual-machines"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Virtual Machine",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/virtualization/virtual-machines/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"virtualization",
+								"virtual-machines",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Clusters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/virtualization/clusters/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"virtualization",
+								"clusters",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Virtual machine",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"status\": 1,\n\t\"name\": \"my-vm-name\",\n\t\"platform\": 12,\n\t\"memory\": 4096,\n\t\"cluster\": 9,\n\t\"vcpus\": 2,\n\t\"role\": 10,\n\t\"disk\": 54,\n\t\"tenant\": 47\n}"
+						},
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/virtualization/virtual-machines/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"virtualization",
+								"virtual-machines",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Virtual Machine Interfaces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/virtualization/interfaces/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"virtualization",
+								"interfaces",
+								""
+							],
+							"query": [
+								{
+									"key": "virtual_machine",
+									"value": "neo-claussen-vm",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "Ethernet1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Virtual Machine Interface",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"virtual_machine\": 281,\n\t\"name\": \"Ethernet0\"\n}"
+						},
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/virtualization/interfaces/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"virtualization",
+								"interfaces",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Virtual Machine Interfaces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/virtualization/interfaces/?virtual_machine_id=198",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"virtualization",
+								"interfaces",
+								""
+							],
+							"query": [
+								{
+									"key": "virtual_machine",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "Ethernet1",
+									"disabled": true
+								},
+								{
+									"key": "virtual_machine_id",
+									"value": "198"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Virtual Machine",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"primary_ip\": null,\n    \"primary_ip4\": null\n}"
+						},
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/virtualization/virtual-machines/198/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"virtualization",
+								"virtual-machines",
+								"198",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Virtual machines",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/virtualization/virtual-machines/?q=Barracuda+Load",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"virtualization",
+								"virtual-machines",
+								""
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "Barracuda+Load"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Platforms",
+			"item": [
+				{
+					"name": "Get Platforms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/device-roles/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"dcim",
+								"device-roles",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DCIM",
+			"item": [
+				{
+					"name": "Get Device Roles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/device-roles/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"dcim",
+								"device-roles",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Device",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/devices/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"dcim",
+								"devices",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Device",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/devices/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"dcim",
+								"devices",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Device Interfaces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/interfaces/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"dcim",
+								"interfaces",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Interface",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"device\": 62,\r\n  \"name\": \"TestINterface2\",\r\n  \"mgmt_only\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/interfaces/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"dcim",
+								"interfaces",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Circuits",
+			"item": [
+				{
+					"name": "Get Circuits",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/circuits/circuits/?cid",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"circuits",
+								"circuits",
+								""
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "cid",
+									"value": null
+								},
+								{
+									"key": "commit_rate",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "tenant_group_id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "tenant_group",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "tenant_id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "tenant",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "provider_id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "provider",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "type_id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "site_id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "site",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "id__in",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get-NetboxAPIInformation",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/extras/_choices",
+					"protocol": "{{SCHEME}}",
+					"host": [
+						"{{HOSTNAME}}"
+					],
+					"port": "{{PORT}}",
+					"path": [
+						"api",
+						"extras",
+						"_choices"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "Token {{APIKey}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "Authorization",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.request.headers.upsert(",
+					"    {",
+					"        key: 'content-type',",
+					"        value: 'application/json'",
+					"    }",
+					");",
+					"",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "SCHEME",
+			"value": "https"
+		},
+		{
+			"key": "HOSTNAME",
+			"value": "my.host.name"
+		},
+		{
+			"key": "PORT",
+			"value": "443"
+		},
+		{
+			"key": "APIKey",
+			"value": "myapikey"
+		}
+	]
+}
