@@ -68,10 +68,12 @@ function Set-NetboxIPAMAddress {
     
     process {
         foreach ($IPId in $Id) {
-            if ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Id))-and [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) {
-                throw "Assigned_Object_Type is required when specifying Assigned_Object_Id"
-            } elseif ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) {
-                throw "Assigned_Object_Id is required when specifying Assigned_Object_Type"
+            if ($PSBoundParameters.ContainsKey('Assigned_Object_Type') -or $PSBoundParameters.ContainsKey('Assigned_Object_Id')) {
+                if ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) {
+                    throw "Assigned_Object_Type is required when specifying Assigned_Object_Id"
+                } elseif ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) {
+                    throw "Assigned_Object_Id is required when specifying Assigned_Object_Type"
+                }
             }
             
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $IPId))
