@@ -36,6 +36,8 @@ param
     [version]$NewVersion
 )
 
+Import-Module "Microsoft.PowerShell.Utility" -ErrorAction Stop
+
 Write-Host "Beginning deployment" -ForegroundColor Green
 
 $ModuleName = 'NetboxPS'
@@ -57,11 +59,11 @@ foreach ($File in $PS1Files) {
     try {
         Write-Host (" Adding file {0:D2}/{1:D2}: $($File.Name)" -f $Counter, $PS1Files.Count)
         
-        "`r`n#region File $($File.Name)`r`n" | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8 -Append
+        "`r`n#region File $($File.Name)`r`n" | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8 -Append -ErrorAction Stop
         
-        Get-Content $File.FullName -Encoding UTF8 | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8 -Append
+        Get-Content $File.FullName -Encoding UTF8 -ErrorAction Stop | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8 -Append -ErrorAction Stop
         
-        "`r`n#endregion" | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8 -Append
+        "`r`n#endregion" | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8 -Append -ErrorAction Stop
     } catch {
         Write-Host "FAILED TO WRITE CONCATENATED FILE: $($_.Exception.Message): $($_.TargetObject)" -ForegroundColor Red
         return
