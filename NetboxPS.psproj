@@ -103,7 +103,7 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuitProvider_ps1" ExportFunctions="True">Functions\Circuits\Providers\Get-NetboxCircuitProvider.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuitType_ps1" ExportFunctions="True">Functions\Circuits\Types\Get-NetboxCircuitType.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-ModelDefinition_ps1" ExportFunctions="True">Functions\Helpers\Get-ModelDefinition.ps1</File>
-    <File Build="2" Shared="True" ReferenceFunction="Invoke-Set-NetboxIPAMPrefix_ps1" ExportFunctions="False">Functions\IPAM\Prefix\Set-NetboxIPAMPrefix.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxIPAMPrefix_ps1" ExportFunctions="True">Functions\IPAM\Prefix\Set-NetboxIPAMPrefix.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>
