@@ -1,18 +1,18 @@
 ﻿<#	
 	.NOTES
 	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 11:53
+	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2021 v5.8.186
+	 Created on:   	2021-03-23 13:54
 	 Created by:   	Claussen
 	 Organization: 	NEOnet
-	 Filename:     	Set-NetboxIPAMAddress.ps1
+	 Filename:     	Set-NetboxIPAMPrefix.ps1
 	===========================================================================
 	.DESCRIPTION
 		A description of the file.
 #>
 
 
-function Set-NetboxIPAMAddress {
+function Set-NetboxIPAMPrefix {
     [CmdletBinding(ConfirmImpact = 'Medium',
                    SupportsShouldProcess = $true)]
     param
@@ -21,26 +21,25 @@ function Set-NetboxIPAMAddress {
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
         
-        [string]$Address,
+        [string]$Prefix,
         
         [string]$Status,
         
         [uint16]$Tenant,
         
+        [uint16]$Site,
+        
         [uint16]$VRF,
+        
+        [uint16]$VLAN,
         
         [object]$Role,
         
-        [uint16]$NAT_Inside,
-        
         [hashtable]$Custom_Fields,
         
-        [ValidateSet('dcim.interface', 'virtualization.vminterface', IgnoreCase = $true)]
-        [string]$Assigned_Object_Type,
-        
-        [uint16]$Assigned_Object_Id,
-        
         [string]$Description,
+        
+        [switch]$Is_Pool,
         
         [switch]$Force
     )
@@ -67,21 +66,13 @@ function Set-NetboxIPAMAddress {
     }
     
     process {
-        foreach ($IPId in $Id) {
-            if ($PSBoundParameters.ContainsKey('Assigned_Object_Type') -or $PSBoundParameters.ContainsKey('Assigned_Object_Id')) {
-                if ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) {
-                    throw "Assigned_Object_Type is required when specifying Assigned_Object_Id"
-                } elseif ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) {
-                    throw "Assigned_Object_Id is required when specifying Assigned_Object_Type"
-                }
-            }
+        foreach ($PrefixId in $Id) {
+            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes', $PrefixId))
             
-            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $IPId))
+            Write-Verbose "Obtaining Prefix from ID $PrefixId"
+            $CurrentPrefix = Get-NetboxIPAMPrefix -Id $PrefixId -ErrorAction Stop
             
-            Write-Verbose "Obtaining IP from ID $IPId"
-            $CurrentIP = Get-NetboxIPAMAddress -Id $IPId -ErrorAction Stop
-            
-            if ($Force -or $PSCmdlet.ShouldProcess($CurrentIP.Address, 'Set')) {
+            if ($Force -or $PSCmdlet.ShouldProcess($CurrentPrefix.Prefix, 'Set')) {
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
                 
                 $URI = BuildNewURI -Segments $URIComponents.Segments
@@ -91,3 +82,11 @@ function Set-NetboxIPAMAddress {
         }
     }
 }
+
+
+
+
+
+
+
+

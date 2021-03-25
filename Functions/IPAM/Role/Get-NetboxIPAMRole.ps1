@@ -41,28 +41,56 @@ function Get-NetboxIPAMRole {
     [CmdletBinding()]
     param
     (
-        [uint16[]]$Id,
-        
-        [string]$Query,
-        
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
         [string]$Name,
         
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Query,
+        
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint32[]]$Id,
+        
+        [Parameter(ParameterSetName = 'Query')]
         [string]$Slug,
         
+        [Parameter(ParameterSetName = 'Query')]
         [switch]$Brief,
         
+        [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
         
+        [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
         
         [switch]$Raw
     )
     
-    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'roles'))
-    
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
-    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
-    InvokeNetboxRequest -URI $uri -Raw:$Raw
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($Role_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('ipam', 'roles', $Role_ID))
+                
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+                
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+                
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+            
+            break
+        }
+        
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'roles'))
+            
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+            
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+            
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+            
+            break
+        }
+    }
 }

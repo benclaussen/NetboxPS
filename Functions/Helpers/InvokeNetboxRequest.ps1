@@ -27,7 +27,7 @@ function InvokeNetboxRequest {
         [ValidateRange(0, 60)]
         [uint16]$Timeout = 5,
         
-        [ValidateSet('GET', 'PATCH', 'PUT', 'POST', 'DELETE', IgnoreCase = $true)]
+        [ValidateSet('GET', 'PATCH', 'PUT', 'POST', 'DELETE', 'OPTIONS', IgnoreCase = $true)]
         [string]$Method = 'GET',
         
         [switch]$Raw

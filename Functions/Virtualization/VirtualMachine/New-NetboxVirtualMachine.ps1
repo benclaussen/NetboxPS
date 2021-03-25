@@ -46,7 +46,14 @@ function New-NetboxVirtualMachine {
         [string]$Comments
     )
     
-    $PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
+#    $ModelDefinition = $script:NetboxConfig.APIDefinition.definitions.WritableVirtualMachineWithConfigContext
+#    
+#    # Validate the status against the APIDefinition
+#    if ($ModelDefinition.properties.status.enum -inotcontains $Status) {
+#        throw ("Invalid value [] for Status. Must be one of []" -f $Status, ($ModelDefinition.properties.status.enum -join ', '))
+#    }
+#    
+    #$PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
     
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
     
@@ -56,3 +63,7 @@ function New-NetboxVirtualMachine {
     
     InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters
 }
+
+
+
+

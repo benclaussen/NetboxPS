@@ -43,9 +43,6 @@ function Remove-NetboxIPAMAddress {
         [switch]$Force
     )
     
-    begin {
-    }
-    
     process {
         foreach ($IPId in $Id) {
             $CurrentIP = Get-NetboxIPAMAddress -Id $IPId -ErrorAction Stop
@@ -58,8 +55,5 @@ function Remove-NetboxIPAMAddress {
                 InvokeNetboxRequest -URI $URI -Method DELETE
             }
         }
-    }
-    
-    end {
     }
 }
