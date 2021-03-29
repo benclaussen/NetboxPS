@@ -90,26 +90,28 @@ function New-NetboxIPAMAddress {
         [switch]$Raw
     )
 
-    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
-    $Method = 'POST'
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
+        $Method = 'POST'
 
-    #    # Value validation
-    #    $ModelDefinition = GetModelDefinitionFromURIPath -Segments $Segments -Method $Method
-    #    $EnumProperties = GetModelEnumProperties -ModelDefinition $ModelDefinition
-    #
-    #    foreach ($Property in $EnumProperties.Keys) {
-    #        if ($PSBoundParameters.ContainsKey($Property)) {
-    #            Write-Verbose "Validating property [$Property] with value [$($PSBoundParameters.$Property)]"
-    #            $PSBoundParameters.$Property = ValidateValue -ModelDefinition $ModelDefinition -Property $Property -ProvidedValue $PSBoundParameters.$Property
-    #        }
-    #    }
-    #
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+        #    # Value validation
+        #    $ModelDefinition = GetModelDefinitionFromURIPath -Segments $Segments -Method $Method
+        #    $EnumProperties = GetModelEnumProperties -ModelDefinition $ModelDefinition
+        #
+        #    foreach ($Property in $EnumProperties.Keys) {
+        #        if ($PSBoundParameters.ContainsKey($Property)) {
+        #            Write-Verbose "Validating property [$Property] with value [$($PSBoundParameters.$Property)]"
+        #            $PSBoundParameters.$Property = ValidateValue -ModelDefinition $ModelDefinition -Property $Property -ProvidedValue $PSBoundParameters.$Property
+        #        }
+        #    }
+        #
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
 
-    $URI = BuildNewURI -Segments $URIComponents.Segments
+        $URI = BuildNewURI -Segments $URIComponents.Segments
 
-    if ($Force -or $PSCmdlet.ShouldProcess($Address, 'Create new IP address')) {
-        InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        if ($Force -or $PSCmdlet.ShouldProcess($Address, 'Create new IP address')) {
+            InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        }
     }
 }
 
