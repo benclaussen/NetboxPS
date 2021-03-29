@@ -10,4 +10,4 @@ This module is a wrapper for the [Netbox](https://github.com/digitalocean/netbox
 # Usage
 1. Install module from the `netboxPS` folder
 2. Import module
-3. Connect to an API endpoint by using `Connect-NetboxAPI`
+3. Connect to an API endpoint by using `Connect-NetboxAPI -Hostname netbox.example.com`
