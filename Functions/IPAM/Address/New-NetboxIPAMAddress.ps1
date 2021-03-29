@@ -74,17 +74,17 @@ function New-NetboxIPAMAddress {
 
         [object]$Status = 'Active',
 
-        [uint16]$Tenant,
+        [int]$Tenant,
 
-        [uint16]$VRF,
+        [int]$VRF,
 
         [object]$Role,
 
-        [uint16]$NAT_Inside,
+        [int]$NAT_Inside,
 
         [hashtable]$Custom_Fields,
 
-        [uint16]$Interface,
+        [int]$Interface,
 
         [string]$Description,
 

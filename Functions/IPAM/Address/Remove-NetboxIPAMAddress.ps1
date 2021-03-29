@@ -38,7 +38,7 @@ function Remove-NetboxIPAMAddress {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [int[]]$Id,
 
         [switch]$Force
     )

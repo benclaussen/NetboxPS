@@ -19,19 +19,19 @@ function Set-NetboxIPAMAddress {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [int[]]$Id,
 
         [string]$Address,
 
         [string]$Status,
 
-        [uint16]$Tenant,
+        [int]$Tenant,
 
-        [uint16]$VRF,
+        [int]$VRF,
 
         [object]$Role,
 
-        [uint16]$NAT_Inside,
+        [int]$NAT_Inside,
 
         [hashtable]$Custom_Fields,
 
