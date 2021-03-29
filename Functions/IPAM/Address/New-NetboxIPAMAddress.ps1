@@ -47,6 +47,9 @@ function New-NetboxIPAMAddress {
     .PARAMETER Description
         Description of IP address
 
+    .PARAMETER Dns_name
+        DNS Name of IP address (example : netbox.example.com)
+
     .PARAMETER Force
         Do not prompt for confirmation to create IP.
 
@@ -84,6 +87,8 @@ function New-NetboxIPAMAddress {
         [uint16]$Interface,
 
         [string]$Description,
+
+        [string]$Dns_name,
 
         [switch]$Force,
 

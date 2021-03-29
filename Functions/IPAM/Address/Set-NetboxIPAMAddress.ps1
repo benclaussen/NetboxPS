@@ -42,6 +42,8 @@ function Set-NetboxIPAMAddress {
 
         [string]$Description,
 
+        [string]$Dns_name,
+
         [switch]$Force
     )
 
