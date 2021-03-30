@@ -1696,90 +1696,90 @@ function Get-NetboxIPAMAddress {
     param
     (
         [Parameter(ParameterSetName = 'Query',
-                   Position = 0)]
+            Position = 0)]
         [string]$Address,
-        
+
         [Parameter(ParameterSetName = 'ByID')]
         [uint32[]]$Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [object]$Family,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Parent,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [byte]$Mask_Length,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$VRF,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$VRF_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Tenant_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Device,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Device_ID,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Virtual_Machine,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Virtual_Machine_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Interface_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [object]$Status,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [object]$Role,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($IP_ID in $Id) {
                 $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $IP_ID))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-                
+
                 $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $uri -Raw:$Raw
             }
-            
+
             break
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-            
+
             $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $uri -Raw:$Raw
-            
+
             break
         }
     }
@@ -1873,7 +1873,7 @@ function Get-NetboxIPAMAggregate {
 
 #region File Get-NetboxIPAMAvailableIP.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -1888,54 +1888,56 @@ function Get-NetboxIPAMAggregate {
 
 
 function Get-NetboxIPAMAvailableIP {
-<#
+    <#
     .SYNOPSIS
         A convenience method for returning available IP addresses within a prefix
-    
+
     .DESCRIPTION
         By default, the number of IPs returned will be equivalent to PAGINATE_COUNT. An arbitrary limit
         (up to MAX_PAGE_SIZE, if set) may be passed, however results will not be paginated
-    
+
     .PARAMETER Prefix_ID
         A description of the Prefix_ID parameter.
-    
+
     .PARAMETER Limit
         A description of the Limit parameter.
-    
+
     .PARAMETER Raw
         A description of the Raw parameter.
-    
+
     .PARAMETER NumberOfIPs
         A description of the NumberOfIPs parameter.
-    
+
     .EXAMPLE
         PS C:\> Get-NetboxIPAMAvaiableIP -Prefix_ID $value1
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true,
-                   ValueFromPipelineByPropertyName = $true)]
+            ValueFromPipelineByPropertyName = $true)]
         [Alias('Id')]
-        [uint16]$Prefix_ID,
-        
+        [int]$Prefix_ID,
+
         [Alias('NumberOfIPs')]
-        [uint16]$Limit,
-        
+        [int]$Limit,
+
         [switch]$Raw
     )
-    
-    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes', $Prefix_ID, 'available-ips'))
-    
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'prefix_id'
-    
-    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
-    InvokeNetboxRequest -URI $uri -Raw:$Raw
+
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes', $Prefix_ID, 'available-ips'))
+
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'prefix_id'
+
+        $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+        InvokeNetboxRequest -URI $uri -Raw:$Raw
+    }
 }
 
 #endregion
@@ -3188,7 +3190,7 @@ function New-NetboxDCIMDevice {
 
 #region File New-NetboxIPAMAddress.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -3203,103 +3205,110 @@ function New-NetboxDCIMDevice {
 
 
 function New-NetboxIPAMAddress {
-<#
+    <#
     .SYNOPSIS
         Create a new IP address to Netbox
-    
+
     .DESCRIPTION
         Create a new IP address to Netbox with a status of Active by default.
-    
+
     .PARAMETER Address
         IP address in CIDR notation: 192.168.1.1/24
-    
+
     .PARAMETER Status
         Status of the IP. Defaults to Active
-    
+
     .PARAMETER Tenant
         Tenant ID
-    
+
     .PARAMETER VRF
         VRF ID
-    
+
     .PARAMETER Role
         Role such as anycast, loopback, etc... Defaults to nothing
-    
+
     .PARAMETER NAT_Inside
         ID of IP for NAT
-    
+
     .PARAMETER Custom_Fields
         Custom field hash table. Will be validated by the API service
-    
+
     .PARAMETER Interface
         ID of interface to apply IP
-    
+
     .PARAMETER Description
         Description of IP address
-    
+
+    .PARAMETER Dns_name
+        DNS Name of IP address (example : netbox.example.com)
+
     .PARAMETER Force
         Do not prompt for confirmation to create IP.
-    
+
     .PARAMETER Raw
         Return raw results from API service
-    
+
     .EXAMPLE
         PS C:\> Create-NetboxIPAMAddress
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'Low',
-                   SupportsShouldProcess = $true)]
+        SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
     param
     (
         [Parameter(Mandatory = $true,
-                   ValueFromPipelineByPropertyName = $true)]
+            ValueFromPipelineByPropertyName = $true)]
         [string]$Address,
-        
+
         [object]$Status = 'Active',
-        
-        [uint16]$Tenant,
-        
-        [uint16]$VRF,
-        
+
+        [int]$Tenant,
+
+        [int]$VRF,
+
         [object]$Role,
-        
-        [uint16]$NAT_Inside,
-        
+
+        [int]$NAT_Inside,
+
         [hashtable]$Custom_Fields,
-        
-        [uint16]$Interface,
-        
+
+        [int]$Interface,
+
         [string]$Description,
-        
+
+        [string]$Dns_name,
+
         [switch]$Force,
-        
+
         [switch]$Raw
     )
-    
-    $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
-    $Method = 'POST'
-    
-    #    # Value validation
-    #    $ModelDefinition = GetModelDefinitionFromURIPath -Segments $Segments -Method $Method
-    #    $EnumProperties = GetModelEnumProperties -ModelDefinition $ModelDefinition
-    #    
-    #    foreach ($Property in $EnumProperties.Keys) {
-    #        if ($PSBoundParameters.ContainsKey($Property)) {
-    #            Write-Verbose "Validating property [$Property] with value [$($PSBoundParameters.$Property)]"
-    #            $PSBoundParameters.$Property = ValidateValue -ModelDefinition $ModelDefinition -Property $Property -ProvidedValue $PSBoundParameters.$Property
-    #        }
-    #    }
-    #    
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
-    $URI = BuildNewURI -Segments $URIComponents.Segments
-    
-    if ($Force -or $PSCmdlet.ShouldProcess($Address, 'Create new IP address')) {
-        InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
+        $Method = 'POST'
+
+        #    # Value validation
+        #    $ModelDefinition = GetModelDefinitionFromURIPath -Segments $Segments -Method $Method
+        #    $EnumProperties = GetModelEnumProperties -ModelDefinition $ModelDefinition
+        #
+        #    foreach ($Property in $EnumProperties.Keys) {
+        #        if ($PSBoundParameters.ContainsKey($Property)) {
+        #            Write-Verbose "Validating property [$Property] with value [$($PSBoundParameters.$Property)]"
+        #            $PSBoundParameters.$Property = ValidateValue -ModelDefinition $ModelDefinition -Property $Property -ProvidedValue $PSBoundParameters.$Property
+        #        }
+        #    }
+        #
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+        $URI = BuildNewURI -Segments $URIComponents.Segments
+
+        if ($Force -or $PSCmdlet.ShouldProcess($Address, 'Create new IP address')) {
+            InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        }
     }
 }
 
@@ -3736,7 +3745,7 @@ function Remove-NetboxDCIMInterfaceConnection {
 
 #region File Remove-NetboxIPAMAddress.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -3750,46 +3759,46 @@ function Remove-NetboxDCIMInterfaceConnection {
 #>
 
 function Remove-NetboxIPAMAddress {
-<#
+    <#
     .SYNOPSIS
         Remove an IP address from Netbox
-    
+
     .DESCRIPTION
         Removes/deletes an IP address from Netbox by ID and optional other filters
-    
+
     .PARAMETER Id
         Database ID of the IP address object.
-    
+
     .PARAMETER Force
         Do not confirm.
-    
+
     .EXAMPLE
         PS C:\> Remove-NetboxIPAMAddress -Id $value1
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'High',
-                   SupportsShouldProcess = $true)]
+        SupportsShouldProcess = $true)]
     param
     (
         [Parameter(Mandatory = $true,
-                   ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
-        
+            ValueFromPipelineByPropertyName = $true)]
+        [int[]]$Id,
+
         [switch]$Force
     )
-    
+
     process {
         foreach ($IPId in $Id) {
             $CurrentIP = Get-NetboxIPAMAddress -Id $IPId -ErrorAction Stop
-            
+
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $IPId))
-            
+
             if ($Force -or $pscmdlet.ShouldProcess($CurrentIP.Address, "Delete")) {
                 $URI = BuildNewURI -Segments $Segments
-                
+
                 InvokeNetboxRequest -URI $URI -Method DELETE
             }
         }
@@ -4230,7 +4239,7 @@ function Set-NetboxHostName {
 
 #region File Set-NetboxIPAMAddress.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -4246,46 +4255,48 @@ function Set-NetboxHostName {
 
 function Set-NetboxIPAMAddress {
     [CmdletBinding(ConfirmImpact = 'Medium',
-                   SupportsShouldProcess = $true)]
+        SupportsShouldProcess = $true)]
     param
     (
         [Parameter(Mandatory = $true,
-                   ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
-        
+            ValueFromPipelineByPropertyName = $true)]
+        [int[]]$Id,
+
         [string]$Address,
-        
+
         [string]$Status,
-        
-        [uint16]$Tenant,
-        
-        [uint16]$VRF,
-        
+
+        [int]$Tenant,
+
+        [int]$VRF,
+
         [object]$Role,
-        
-        [uint16]$NAT_Inside,
-        
+
+        [int]$NAT_Inside,
+
         [hashtable]$Custom_Fields,
-        
+
         [ValidateSet('dcim.interface', 'virtualization.vminterface', IgnoreCase = $true)]
         [string]$Assigned_Object_Type,
-        
+
         [uint16]$Assigned_Object_Id,
-        
+
         [string]$Description,
-        
+
+        [string]$Dns_name,
+
         [switch]$Force
     )
-    
+
     begin {
         #        Write-Verbose "Validating enum properties"
         #        $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', 0))
         $Method = 'PATCH'
-        #        
+        #
         #        # Value validation
         #        $ModelDefinition = GetModelDefinitionFromURIPath -Segments $Segments -Method $Method
         #        $EnumProperties = GetModelEnumProperties -ModelDefinition $ModelDefinition
-        #        
+        #
         #        foreach ($Property in $EnumProperties.Keys) {
         #            if ($PSBoundParameters.ContainsKey($Property)) {
         #                Write-Verbose "Validating property [$Property] with value [$($PSBoundParameters.$Property)]"
@@ -4294,30 +4305,31 @@ function Set-NetboxIPAMAddress {
         #                Write-Verbose "User did not provide a value for [$Property]"
         #            }
         #        }
-        #        
+        #
         #        Write-Verbose "Finished enum validation"
     }
-    
+
     process {
         foreach ($IPId in $Id) {
             if ($PSBoundParameters.ContainsKey('Assigned_Object_Type') -or $PSBoundParameters.ContainsKey('Assigned_Object_Id')) {
                 if ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) {
                     throw "Assigned_Object_Type is required when specifying Assigned_Object_Id"
-                } elseif ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) {
+                }
+                elseif ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) {
                     throw "Assigned_Object_Id is required when specifying Assigned_Object_Type"
                 }
             }
-            
+
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $IPId))
-            
+
             Write-Verbose "Obtaining IP from ID $IPId"
             $CurrentIP = Get-NetboxIPAMAddress -Id $IPId -ErrorAction Stop
-            
+
             if ($Force -or $PSCmdlet.ShouldProcess($CurrentIP.Address, 'Set')) {
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments
-                
+
                 InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method $Method
             }
         }
