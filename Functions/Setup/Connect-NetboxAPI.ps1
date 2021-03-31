@@ -12,6 +12,15 @@
     .PARAMETER Credential
         A description of the Credential parameter.
     
+    .PARAMETER Scheme
+        A description of the Scheme parameter.
+    
+    .PARAMETER Port
+        A description of the Port parameter.
+    
+    .PARAMETER URI
+        A description of the URI parameter.
+    
     .EXAMPLE
         PS C:\> Connect-NetboxAPI -Hostname "netbox.domain.com"
         
@@ -21,14 +30,26 @@
         Additional information about the function.
 #>
     
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Manual')]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(ParameterSetName = 'Manual',
+                   Mandatory = $true)]
         [string]$Hostname,
         
         [Parameter(Mandatory = $false)]
-        [pscredential]$Credential
+        [pscredential]$Credential,
+        
+        [Parameter(ParameterSetName = 'Manual')]
+        [ValidateSet('https', 'http', IgnoreCase = $true)]
+        [string]$Scheme = 'https',
+        
+        [Parameter(ParameterSetName = 'Manual')]
+        [uint16]$Port = 443,
+        
+        [Parameter(ParameterSetName = 'URI',
+                   Mandatory = $true)]
+        [string]$URI
     )
     
     if (-not $Credential) {
@@ -42,8 +63,24 @@
         }
     }
     
-    $null = Set-NetboxHostName -Hostname $Hostname
     $null = Set-NetboxCredential -Credential $Credential
+    
+    switch ($PSCmdlet.ParameterSetName) {
+        'Manual' {
+            $uriBuilder = [System.UriBuilder]::new($Scheme, $Hostname, $Port)
+        }
+        
+        'URI' {
+            $uriBuilder = [System.UriBuilder]::new($URI)
+            if ([string]::IsNullOrWhiteSpace($uriBuilder.Host)) {
+                throw "URI appears to be invalid. Must be in format [host.name], [scheme://host.name], or [scheme://host.name:port]"
+            }
+        }
+    }
+    
+    $null = Set-NetboxHostName -Hostname $uriBuilder.Host
+    $null = Set-NetboxHostScheme -Scheme $uriBuilder.Scheme
+    $null = Set-NetboxHostPort -Port $uriBuilder.Port
     
     try {
         Write-Verbose "Verifying API connectivity..."

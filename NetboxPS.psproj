@@ -104,6 +104,10 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxCircuitType_ps1" ExportFunctions="True">Functions\Circuits\Types\Get-NetboxCircuitType.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-ModelDefinition_ps1" ExportFunctions="True">Functions\Helpers\Get-ModelDefinition.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxIPAMPrefix_ps1" ExportFunctions="True">Functions\IPAM\Prefix\Set-NetboxIPAMPrefix.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxHostScheme_ps1" ExportFunctions="True">Functions\Setup\Set-NetboxHostScheme.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxHostScheme_ps1" ExportFunctions="True">Functions\Setup\Get-NetboxHostScheme.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxHostPort_ps1" ExportFunctions="True">Functions\Setup\Set-NetboxHostPort.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxHostPort_ps1" ExportFunctions="True">Functions\Setup\Get-NetboxHostPort.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>

@@ -50,19 +50,10 @@ function BuildNewURI {
     param
     (
         [Parameter(Mandatory = $false)]
-        [string]$Hostname,
-        
-        [Parameter(Mandatory = $false)]
         [string[]]$Segments,
         
         [Parameter(Mandatory = $false)]
         [hashtable]$Parameters,
-        
-        [Parameter(Mandatory = $false)]
-        [boolean]$HTTPS = $true,
-        
-        [ValidateRange(1, 65535)]
-        [uint16]$Port = 443,
         
         [switch]$SkipConnectedCheck
     )
@@ -74,28 +65,8 @@ function BuildNewURI {
         $null = CheckNetboxIsConnected
     }
     
-    if (-not $Hostname) {
-        $Hostname = Get-NetboxHostname
-    }
-    
-    if ($HTTPS) {
-        Write-Verbose " Setting scheme to HTTPS"
-        $Scheme = 'https'
-    } else {
-        Write-Warning " Connecting via non-secure HTTP is not-recommended"
-        
-        Write-Verbose " Setting scheme to HTTP"
-        $Scheme = 'http'
-        
-        if (-not $PSBoundParameters.ContainsKey('Port')) {
-            # Set the port to 80 if the user did not supply it
-            Write-Verbose " Setting port to 80 as default because it was not supplied by the user"
-            $Port = 80
-        }
-    }
-    
     # Begin a URI builder with HTTP/HTTPS and the provided hostname
-    $uriBuilder = [System.UriBuilder]::new($Scheme, $Hostname, $Port)
+    $uriBuilder = [System.UriBuilder]::new($script:NetboxConfig.HostScheme, $script:NetboxConfig.Hostname, $script:NetboxConfig.HostPort)
     
     # Generate the path by trimming excess slashes and whitespace from the $segments[] and joining together
     $uriBuilder.Path = "api/{0}/" -f ($Segments.ForEach({
