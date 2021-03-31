@@ -4,22 +4,22 @@
         Connects to the Netbox API and ensures Credential work properly
     
     .DESCRIPTION
-        A detailed description of the Connect-NetboxAPI function.
+        Connects to the Netbox API and ensures Credential work properly
     
     .PARAMETER Hostname
-        A description of the Hostname parameter.
+        The hostname for the resource such as netbox.domain.com
     
     .PARAMETER Credential
-        A description of the Credential parameter.
+        Credential object containing the API key in the password. Username is not applicable
     
     .PARAMETER Scheme
-        A description of the Scheme parameter.
+        Scheme for the URI such as HTTP or HTTPS. Defaults to HTTPS
     
     .PARAMETER Port
-        A description of the Port parameter.
+        Port for the resource. Value between 1-65535
     
     .PARAMETER URI
-        A description of the URI parameter.
+        The full URI for the resource such as "https://netbox.domain.com:8443"
     
     .EXAMPLE
         PS C:\> Connect-NetboxAPI -Hostname "netbox.domain.com"
