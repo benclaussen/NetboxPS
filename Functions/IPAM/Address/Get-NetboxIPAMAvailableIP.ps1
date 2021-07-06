@@ -34,7 +34,14 @@ function Get-NetboxIPAMAvailableIP {
         A description of the NumberOfIPs parameter.
 
     .EXAMPLE
-        PS C:\> Get-NetboxIPAMAvailableIP -Prefix_ID $value1
+        Get-NetboxIPAMAvailableIP -Prefix_ID (Get-NetboxIPAMPrefix -Prefix 192.0.2.0/24).id
+
+        Get (Next) Available IP on the Prefix 192.0.2.0/24
+
+    .EXAMPLE
+        Get-NetboxIPAMAvailableIP -Prefix_ID 2 -NumberOfIPs 3
+
+        Get 3 (Next) Available IP on the Prefix 192.0.2.0/24
 
     .NOTES
         Additional information about the function.
