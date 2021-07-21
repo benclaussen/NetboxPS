@@ -49,7 +49,10 @@
 
         [Parameter(ParameterSetName = 'URI',
                    Mandatory = $true)]
-        [string]$URI
+        [string]$URI,
+
+        [Parameter(Mandatory = $false)]
+        [switch]$SkipCertificateCheck = $false
     )
 
     if (-not $Credential) {
@@ -64,7 +67,22 @@
         }
     }
 
-    $null = Set-NetboxCredential -Credential $Credential
+    $invokeParams = @{ SkipCertificateCheck = $SkipCertificateCheck; }
+
+    if ("Desktop" -eq $PSVersionTable.PsEdition) {
+        #Remove -SkipCertificateCheck from Invoke Parameter (not supported <= PS 5)
+        $invokeParams.remove("SkipCertificateCheck")
+    }
+
+    #for PowerShell (<=) 5 (Desktop), Enable TLS 1.1, 1.2 and Disable SSL chain trust
+    if ("Desktop" -eq $PSVersionTable.PsEdition) {
+        #Enable TLS 1.1 and 1.2
+        Set-NetboxCipherSSL
+        if ($SkipCertificateCheck) {
+            #Disable SSL chain trust...
+            Set-NetboxuntrustedSSL
+        }
+    }
 
     switch ($PSCmdlet.ParameterSetName) {
         'Manual' {
@@ -80,8 +98,10 @@
     }
 
     $null = Set-NetboxHostName -Hostname $uriBuilder.Host
+    $null = Set-NetboxCredential -Credential $Credential
     $null = Set-NetboxHostScheme -Scheme $uriBuilder.Scheme
     $null = Set-NetboxHostPort -Port $uriBuilder.Port
+    $null = Set-NetboxInvokeParams -invokeParams $invokeParams
 
     try {
         Write-Verbose "Verifying API connectivity..."
