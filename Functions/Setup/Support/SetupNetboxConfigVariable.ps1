@@ -4,17 +4,17 @@
     (
         [switch]$Overwrite
     )
-    
+
     Write-Verbose "Checking for NetboxConfig hashtable"
     if ((-not ($script:NetboxConfig)) -or $Overwrite) {
         Write-Verbose "Creating NetboxConfig hashtable"
         $script:NetboxConfig = @{
-            'Connected' = $false
-            'Choices'   = @{
+            'Connected'     = $false
+            'Choices'       = @{
             }
             'APIDefinition' = $null
         }
     }
-    
+
     Write-Verbose "NetboxConfig hashtable already exists"
 }
