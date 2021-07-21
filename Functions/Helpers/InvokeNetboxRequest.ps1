@@ -47,6 +47,8 @@ function InvokeNetboxRequest {
         'Verbose'     = $VerbosePreference
     }
 
+    $splat += Get-NetboxInvokeParams
+
     if ($Body) {
         Write-Verbose "BODY: $($Body | ConvertTo-Json -Compress)"
         $null = $splat.Add('Body', ($Body | ConvertTo-Json -Compress))
