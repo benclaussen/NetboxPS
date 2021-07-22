@@ -108,6 +108,13 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxHostScheme_ps1" ExportFunctions="True">Functions\Setup\Get-NetboxHostScheme.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxHostPort_ps1" ExportFunctions="True">Functions\Setup\Set-NetboxHostPort.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxHostPort_ps1" ExportFunctions="True">Functions\Setup\Get-NetboxHostPort.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxInvokeParams_ps1" ExportFunctions="True">Functions\Setup\Get-NetboxInvokeParams.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxCipherSSL_ps1" ExportFunctions="True">Functions\Setup\Set-NetboxCipherSSL.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxInvokeParams_ps1" ExportFunctions="True">Functions\Setup\Set-NetboxInvokeParams.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxUnstrustedSSL_ps1" ExportFunctions="True">Functions\Setup\Set-NetboxUnstrustedSSL.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxTimeout_ps1" ExportFunctions="True">Functions\Setup\Set-NetboxTimeout.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxTimeout_ps1" ExportFunctions="True">Functions\Setup\Get-NetboxTimeout.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxVersion_ps1" ExportFunctions="True">Functions\Setup\Get-NetboxVersion.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>

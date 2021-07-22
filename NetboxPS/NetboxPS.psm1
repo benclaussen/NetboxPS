@@ -471,56 +471,69 @@ function Connect-NetboxAPI {
 <#
     .SYNOPSIS
         Connects to the Netbox API and ensures Credential work properly
-    
+
     .DESCRIPTION
         Connects to the Netbox API and ensures Credential work properly
-    
+
     .PARAMETER Hostname
         The hostname for the resource such as netbox.domain.com
-    
+
     .PARAMETER Credential
         Credential object containing the API key in the password. Username is not applicable
-    
+
     .PARAMETER Scheme
         Scheme for the URI such as HTTP or HTTPS. Defaults to HTTPS
-    
+
     .PARAMETER Port
         Port for the resource. Value between 1-65535
-    
+
     .PARAMETER URI
         The full URI for the resource such as "https://netbox.domain.com:8443"
-    
+
+    .PARAMETER SkipCertificateCheck
+        A description of the SkipCertificateCheck parameter.
+
+    .PARAMETER TimeoutSeconds
+        The number of seconds before the HTTP call times out. Defaults to 30 seconds
+
     .EXAMPLE
         PS C:\> Connect-NetboxAPI -Hostname "netbox.domain.com"
-        
+
         This will prompt for Credential, then proceed to attempt a connection to Netbox
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(DefaultParameterSetName = 'Manual')]
     param
     (
         [Parameter(ParameterSetName = 'Manual',
                    Mandatory = $true)]
         [string]$Hostname,
-        
+
         [Parameter(Mandatory = $false)]
         [pscredential]$Credential,
-        
+
         [Parameter(ParameterSetName = 'Manual')]
         [ValidateSet('https', 'http', IgnoreCase = $true)]
         [string]$Scheme = 'https',
-        
+
         [Parameter(ParameterSetName = 'Manual')]
         [uint16]$Port = 443,
-        
+
         [Parameter(ParameterSetName = 'URI',
                    Mandatory = $true)]
-        [string]$URI
+        [string]$URI,
+
+        [Parameter(Mandatory = $false)]
+        [switch]$SkipCertificateCheck = $false,
+
+        [ValidateNotNullOrEmpty()]
+        [ValidateRange(1, 65535)]
+        [uint16]$TimeoutSeconds = 30
     )
-    
+
     if (-not $Credential) {
         try {
             $Credential = Get-NetboxCredential -ErrorAction Stop
@@ -531,14 +544,29 @@ function Connect-NetboxAPI {
             }
         }
     }
-    
-    $null = Set-NetboxCredential -Credential $Credential
-    
+
+    $invokeParams = @{ SkipCertificateCheck = $SkipCertificateCheck; }
+
+    if ("Desktop" -eq $PSVersionTable.PsEdition) {
+        #Remove -SkipCertificateCheck from Invoke Parameter (not supported <= PS 5)
+        $invokeParams.remove("SkipCertificateCheck")
+    }
+
+    #for PowerShell (<=) 5 (Desktop), Enable TLS 1.1, 1.2 and Disable SSL chain trust
+    if ("Desktop" -eq $PSVersionTable.PsEdition) {
+        #Enable TLS 1.1 and 1.2
+        Set-NetboxCipherSSL
+        if ($SkipCertificateCheck) {
+            #Disable SSL chain trust...
+            Set-NetboxuntrustedSSL
+        }
+    }
+
     switch ($PSCmdlet.ParameterSetName) {
         'Manual' {
             $uriBuilder = [System.UriBuilder]::new($Scheme, $Hostname, $Port)
         }
-        
+
         'URI' {
             $uriBuilder = [System.UriBuilder]::new($URI)
             if ([string]::IsNullOrWhiteSpace($uriBuilder.Host)) {
@@ -546,11 +574,14 @@ function Connect-NetboxAPI {
             }
         }
     }
-    
+
     $null = Set-NetboxHostName -Hostname $uriBuilder.Host
+    $null = Set-NetboxCredential -Credential $Credential
     $null = Set-NetboxHostScheme -Scheme $uriBuilder.Scheme
     $null = Set-NetboxHostPort -Port $uriBuilder.Port
-    
+    $null = Set-NetboxInvokeParams -invokeParams $invokeParams
+    $null = Set-NetboxTimeout -TimeoutSeconds $TimeoutSeconds
+
     try {
         Write-Verbose "Verifying API connectivity..."
         $null = VerifyAPIConnectivity
@@ -563,18 +594,27 @@ function Connect-NetboxAPI {
             throw $_
         }
     }
-    
-    Write-Verbose "Caching API definition"
-    $script:NetboxConfig.APIDefinition = Get-NetboxAPIDefinition
-    
-    if ([version]$script:NetboxConfig.APIDefinition.info.version -lt 2.8) {
+
+#    Write-Verbose "Caching API definition"
+#    $script:NetboxConfig.APIDefinition = Get-NetboxAPIDefinition
+#
+#    if ([version]$script:NetboxConfig.APIDefinition.info.version -lt 2.8) {
+#        $Script:NetboxConfig.Connected = $false
+#        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.APIDefinition.info.version)"
+    #    }
+
+    Write-Verbose "Checking Netbox version compatibility"
+    $script:NetboxConfig.NetboxVersion = Get-NetboxVersion
+    if ([version]$script:NetboxConfig.NetboxVersion.'netbox-version' -lt 2.8) {
         $Script:NetboxConfig.Connected = $false
-        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.APIDefinition.info.version)"
+        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.NetboxVersion.'netbox-version')"
+    } else {
+        Write-Verbose "Found compatible version [$($script:NetboxConfig.NetboxVersion.'netbox-version')]!"
     }
-    
+
     $script:NetboxConfig.Connected = $true
     Write-Verbose "Successfully connected!"
-    
+
     #Write-Verbose "Caching static choices"
     #$script:NetboxConfig.Choices.Circuits = Get-NetboxCircuitsChoices
     #$script:NetboxConfig.Choices.DCIM = Get-NetboxDCIMChoices # Not completed yet
@@ -583,7 +623,7 @@ function Connect-NetboxAPI {
     ##$script:NetboxConfig.Choices.Secrets = Get-NetboxSecretsChoices    # Not completed yet
     ##$script:NetboxConfig.Choices.Tenancy = Get-NetboxTenancyChoices
     #$script:NetboxConfig.Choices.Virtualization = Get-NetboxVirtualizationChoices
-    
+
     Write-Verbose "Connection process completed"
 }
 
@@ -706,17 +746,17 @@ function Get-ModelDefinition {
 
 #region File Get-NetboxAPIDefinition.ps1
 
-<#	
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.174
-	 Created on:   	4/28/2020 11:57
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxAPIDefinition.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
+<#
+    .NOTES
+    ===========================================================================
+     Created with:     SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.174
+     Created on:       4/28/2020 11:57
+     Created by:       Claussen
+     Organization:     NEOnet
+     Filename:         Get-NetboxAPIDefinition.ps1
+    ===========================================================================
+    .DESCRIPTION
+        A description of the file.
 #>
 
 
@@ -724,16 +764,16 @@ function Get-ModelDefinition {
 function Get-NetboxAPIDefinition {
     [CmdletBinding()]
     param ()
-    
+
     #$URI = "https://netbox.neonet.org/api/docs/?format=openapi"
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('docs'))
-    
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary @{'format' = 'openapi'}
-    
+
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary @{'format' = 'openapi' }
+
     $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters -SkipConnectedCheck
-    
-    InvokeNetboxRequest -URI $URI -Timeout 10
+
+    InvokeNetboxRequest -URI $URI
 }
 
 #endregion
@@ -1152,11 +1192,11 @@ function Get-NetboxCredential {
     [CmdletBinding()]
     [OutputType([pscredential])]
     param ()
-    
+
     if (-not $script:NetboxConfig.Credential) {
         throw "Netbox Credentials not set! You may set with Set-NetboxCredential"
     }
-    
+
     $script:NetboxConfig.Credential
 }
 
@@ -1702,12 +1742,12 @@ function Get-NetboxDCIMSite {
 function Get-NetboxHostname {
     [CmdletBinding()]
     param ()
-    
+
     Write-Verbose "Getting Netbox hostname"
     if ($null -eq $script:NetboxConfig.Hostname) {
         throw "Netbox Hostname is not set! You may set it with Set-NetboxHostname -Hostname 'hostname.domain.tld'"
     }
-    
+
     $script:NetboxConfig.Hostname
 }
 
@@ -1741,6 +1781,22 @@ function Get-NetboxHostScheme {
     }
     
     $script:NetboxConfig.HostScheme
+}
+
+#endregion
+
+#region File Get-NetboxInvokeParams.ps1
+
+function Get-NetboxInvokeParams {
+    [CmdletBinding()]
+    param ()
+
+    Write-Verbose "Getting Netbox InvokeParams"
+    if ($null -eq $script:NetboxConfig.InvokeParams) {
+        throw "Netbox Invoke Params is not set! You may set it with Set-NetboxInvokeParams -InvokeParams ..."
+    }
+
+    $script:NetboxConfig.InvokeParams
 }
 
 #endregion
@@ -2553,6 +2609,44 @@ function Get-NetboxTenant {
 
 #endregion
 
+#region File Get-NetboxTimeout.ps1
+
+
+function Get-NetboxTimeout {
+    [CmdletBinding()]
+    [OutputType([uint16])]
+    param ()
+
+    Write-Verbose "Getting Netbox Timeout"
+    if ($null -eq $script:NetboxConfig.Timeout) {
+        throw "Netbox Timeout is not set! You may set it with Set-NetboxTimeout -TimeoutSeconds [uint16]"
+    }
+
+    $script:NetboxConfig.Timeout
+}
+
+#endregion
+
+#region File Get-NetboxVersion.ps1
+
+
+function Get-NetboxVersion {
+    [CmdletBinding()]
+    param ()
+
+    $Segments = [System.Collections.ArrayList]::new(@('status'))
+
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary @{
+        'format' = 'json'
+    }
+
+    $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters -SkipConnectedCheck
+
+    InvokeNetboxRequest -URI $URI
+}
+
+#endregion
+
 #region File Get-NetboxVirtualizationCluster.ps1
 
 <#	
@@ -2969,7 +3063,7 @@ function Get-NetboxVirtualMachineInterface {
 
 #region File InvokeNetboxRequest.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -2989,44 +3083,46 @@ function InvokeNetboxRequest {
     (
         [Parameter(Mandatory = $true)]
         [System.UriBuilder]$URI,
-        
+
         [Hashtable]$Headers = @{
         },
-        
+
         [pscustomobject]$Body = $null,
-        
-        [ValidateRange(0, 60)]
-        [uint16]$Timeout = 5,
-        
+
+        [ValidateRange(1, 65535)]
+        [uint16]$Timeout = (Get-NetboxTimeout),
+
         [ValidateSet('GET', 'PATCH', 'PUT', 'POST', 'DELETE', 'OPTIONS', IgnoreCase = $true)]
         [string]$Method = 'GET',
-        
+
         [switch]$Raw
     )
-    
+
     $creds = Get-NetboxCredential
-    
+
     $Headers.Authorization = "Token {0}" -f $creds.GetNetworkCredential().Password
-    
+
     $splat = @{
-        'Method' = $Method
-        'Uri'    = $URI.Uri.AbsoluteUri # This property auto generates the scheme, hostname, path, and query
-        'Headers' = $Headers
-        'TimeoutSec' = $Timeout
+        'Method'      = $Method
+        'Uri'         = $URI.Uri.AbsoluteUri # This property auto generates the scheme, hostname, path, and query
+        'Headers'     = $Headers
+        'TimeoutSec'  = $Timeout
         'ContentType' = 'application/json'
         'ErrorAction' = 'Stop'
-        'Verbose' = $VerbosePreference
+        'Verbose'     = $VerbosePreference
     }
-    
+
+    $splat += Get-NetboxInvokeParams
+
     if ($Body) {
         Write-Verbose "BODY: $($Body | ConvertTo-Json -Compress)"
         $null = $splat.Add('Body', ($Body | ConvertTo-Json -Compress))
     }
-    
+
     $result = Invoke-RestMethod @splat
-    
+
     #region TODO: Handle errors a little more gracefully...
-    
+
     <#
     try {
         Write-Verbose "Sending request..."
@@ -3040,7 +3136,7 @@ function InvokeNetboxRequest {
                 Write-Verbose "RAW provided...throwing raw exception"
                 throw $_
             }
-            
+
             Write-Verbose "Converting response to object"
             $myError = GetNetboxAPIErrorBody -Response $_.Exception.Response | ConvertFrom-Json
         } else {
@@ -3048,18 +3144,18 @@ function InvokeNetboxRequest {
             $myError = $_
         }
     }
-    
+
     Write-Verbose "MyError is $($myError.GetType().FullName)"
-    
+
     if ($myError -is [Exception]) {
         throw $_
     } elseif ($myError -is [pscustomobject]) {
         throw $myError.detail
-    }    
+    }
     #>
-    
+
     #endregion TODO: Handle errors a little more gracefully...
-    
+
     # If the user wants the raw value from the API... otherwise return only the actual result
     if ($Raw) {
         Write-Verbose "Returning raw result by choice"
@@ -3936,37 +4032,50 @@ function Remove-NetboxVirtualMachine {
 
 #endregion
 
+#region File Set-NetboxCipherSSL.ps1
+
+Function Set-NetboxCipherSSL {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessforStateChangingFunctions", "")]
+    Param(  )
+    # Hack for allowing TLS 1.1 and TLS 1.2 (by default it is only SSL3 and TLS (1.0))
+    $AllProtocols = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
+    [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
+
+}
+
+#endregion
+
 #region File Set-NetboxCredential.ps1
 
 function Set-NetboxCredential {
     [CmdletBinding(DefaultParameterSetName = 'CredsObject',
-                   ConfirmImpact = 'Low',
-                   SupportsShouldProcess = $true)]
+        ConfirmImpact = 'Low',
+        SupportsShouldProcess = $true)]
     [OutputType([pscredential])]
     param
     (
         [Parameter(ParameterSetName = 'CredsObject',
-                   Mandatory = $true)]
+            Mandatory = $true)]
         [pscredential]$Credential,
-        
+
         [Parameter(ParameterSetName = 'UserPass',
-                   Mandatory = $true)]
+            Mandatory = $true)]
         [securestring]$Token
     )
-    
+
     if ($PSCmdlet.ShouldProcess('Netbox Credentials', 'Set')) {
         switch ($PsCmdlet.ParameterSetName) {
             'CredsObject' {
                 $script:NetboxConfig.Credential = $Credential
                 break
             }
-            
+
             'UserPass' {
                 $script:NetboxConfig.Credential = [System.Management.Automation.PSCredential]::new('notapplicable', $Token)
                 break
             }
         }
-        
+
         $script:NetboxConfig.Credential
     }
 }
@@ -4277,14 +4386,14 @@ function Set-NetboxDCIMInterfaceConnection {
 
 function Set-NetboxHostName {
     [CmdletBinding(ConfirmImpact = 'Low',
-                   SupportsShouldProcess = $true)]
+        SupportsShouldProcess = $true)]
     [OutputType([string])]
     param
     (
         [Parameter(Mandatory = $true)]
         [string]$Hostname
     )
-    
+
     if ($PSCmdlet.ShouldProcess('Netbox Hostname', 'Set')) {
         $script:NetboxConfig.Hostname = $Hostname.Trim()
         $script:NetboxConfig.Hostname
@@ -4333,6 +4442,25 @@ function Set-NetboxHostScheme {
         
         $script:NetboxConfig.HostScheme = $Scheme
         $script:NetboxConfig.HostScheme
+    }
+}
+
+#endregion
+
+#region File Set-NetboxInvokeParams.ps1
+
+function Set-NetboxInvokeParams {
+    [CmdletBinding(ConfirmImpact = 'Low',
+        SupportsShouldProcess = $true)]
+    [OutputType([string])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [array]$InvokeParams
+    )
+
+    if ($PSCmdlet.ShouldProcess('Netbox Invoke Params', 'Set')) {
+        $script:NetboxConfig.InvokeParams = $InvokeParams
+        $script:NetboxConfig.InvokeParams
     }
 }
 
@@ -4536,6 +4664,52 @@ function Set-NetboxIPAMPrefix {
 
 #endregion
 
+#region File Set-NetboxTimeout.ps1
+
+
+function Set-NetboxTimeout {
+    [CmdletBinding(ConfirmImpact = 'Low',
+                   SupportsShouldProcess = $true)]
+    [OutputType([uint16])]
+    param
+    (
+        [Parameter(Mandatory = $false)]
+        [ValidateRange(1, 65535)]
+        [uint16]$TimeoutSeconds = 30
+    )
+
+    if ($PSCmdlet.ShouldProcess('Netbox Timeout', 'Set')) {
+        $script:NetboxConfig.Timeout = $TimeoutSeconds
+        $script:NetboxConfig.Timeout
+    }
+}
+
+#endregion
+
+#region File Set-NetboxUnstrustedSSL.ps1
+
+Function Set-NetboxUntrustedSSL {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessforStateChangingFunctions", "")]
+    Param(  )
+    # Hack for allowing untrusted SSL certs with https connections
+    Add-Type -TypeDefinition @"
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    public class TrustAllCertsPolicy : ICertificatePolicy {
+        public bool CheckValidationResult(
+        ServicePoint srvPoint, X509Certificate certificate,
+        WebRequest request, int certificateProblem) {
+            return true;
+        }
+    }
+"@
+
+    [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
+
+}
+
+#endregion
+
 #region File Set-NetboxVirtualMachine.ps1
 
 <#	
@@ -4691,18 +4865,18 @@ function SetupNetboxConfigVariable {
     (
         [switch]$Overwrite
     )
-    
+
     Write-Verbose "Checking for NetboxConfig hashtable"
     if ((-not ($script:NetboxConfig)) -or $Overwrite) {
         Write-Verbose "Creating NetboxConfig hashtable"
         $script:NetboxConfig = @{
-            'Connected' = $false
-            'Choices'   = @{
+            'Connected'     = $false
+            'Choices'       = @{
             }
             'APIDefinition' = $null
         }
     }
-    
+
     Write-Verbose "NetboxConfig hashtable already exists"
 }
 
@@ -4783,11 +4957,11 @@ function ThrowNetboxRESTError {
 function VerifyAPIConnectivity {
     [CmdletBinding()]
     param ()
-    
+
     $uriSegments = [System.Collections.ArrayList]::new(@('extras'))
-    
-    $uri = BuildNewURI -Segments $uriSegments -Parameters @{'format' = 'json'} -SkipConnectedCheck
-    
+
+    $uri = BuildNewURI -Segments $uriSegments -Parameters @{'format' = 'json' } -SkipConnectedCheck
+
     InvokeNetboxRequest -URI $uri
 }
 
