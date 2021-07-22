@@ -58,8 +58,7 @@
     if (-not $Credential) {
         try {
             $Credential = Get-NetboxCredential -ErrorAction Stop
-        }
-        catch {
+        } catch {
             # Credentials are not set... Try to obtain from the user
             if (-not ($Credential = Get-Credential -UserName 'username-not-applicable' -Message "Enter token for Netbox")) {
                 throw "Token is necessary to connect to a Netbox API."
@@ -106,14 +105,12 @@
     try {
         Write-Verbose "Verifying API connectivity..."
         $null = VerifyAPIConnectivity
-    }
-    catch {
+    } catch {
         Write-Verbose "Failed to connect. Generating error"
         Write-Verbose $_.Exception.Message
         if (($_.Exception.Response) -and ($_.Exception.Response.StatusCode -eq 403)) {
             throw "Invalid token"
-        }
-        else {
+        } else {
             throw $_
         }
     }

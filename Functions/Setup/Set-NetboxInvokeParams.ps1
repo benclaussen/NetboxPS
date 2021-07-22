@@ -2,8 +2,7 @@ function Set-NetboxInvokeParams {
     [CmdletBinding(ConfirmImpact = 'Low',
         SupportsShouldProcess = $true)]
     [OutputType([string])]
-    param
-    (
+    param(
         [Parameter(Mandatory = $true)]
         [array]$InvokeParams
     )

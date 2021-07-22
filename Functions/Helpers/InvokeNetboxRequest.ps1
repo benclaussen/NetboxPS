@@ -95,13 +95,11 @@ function InvokeNetboxRequest {
     if ($Raw) {
         Write-Verbose "Returning raw result by choice"
         return $result
-    }
-    else {
+    } else {
         if ($result.psobject.Properties.Name.Contains('results')) {
             Write-Verbose "Found Results property on data, returning results directly"
             return $result.Results
-        }
-        else {
+        } else {
             Write-Verbose "Did NOT find results property on data, returning raw result"
             return $result
         }
