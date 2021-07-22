@@ -25,5 +25,5 @@ function Get-NetboxAPIDefinition {
 
 	$URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters -SkipConnectedCheck
 
-	InvokeNetboxRequest -URI $URI -Timeout 10
+	InvokeNetboxRequest -URI $URI
 }

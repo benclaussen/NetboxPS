@@ -24,8 +24,8 @@ function InvokeNetboxRequest {
 
         [pscustomobject]$Body = $null,
 
-        [ValidateRange(0, 60)]
-        [uint16]$Timeout = 5,
+        [ValidateRange(1, 65535)]
+        [uint16]$Timeout = (Get-NetboxTimeout),
 
         [ValidateSet('GET', 'PATCH', 'PUT', 'POST', 'DELETE', 'OPTIONS', IgnoreCase = $true)]
         [string]$Method = 'GET',
