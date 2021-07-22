@@ -1,4 +1,4 @@
-﻿<#	
+﻿<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.174
@@ -14,16 +14,16 @@
 
 
 function Get-NetboxAPIDefinition {
-    [CmdletBinding()]
-    param ()
-    
-    #$URI = "https://netbox.neonet.org/api/docs/?format=openapi"
-    
-    $Segments = [System.Collections.ArrayList]::new(@('docs'))
-    
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary @{'format' = 'openapi'}
-    
-    $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters -SkipConnectedCheck
-    
-    InvokeNetboxRequest -URI $URI -Timeout 10
+	[CmdletBinding()]
+	param ()
+
+	#$URI = "https://netbox.neonet.org/api/docs/?format=openapi"
+
+	$Segments = [System.Collections.ArrayList]::new(@('docs'))
+
+	$URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary @{'format' = 'openapi' }
+
+	$URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters -SkipConnectedCheck
+
+	InvokeNetboxRequest -URI $URI -Timeout 10
 }

@@ -1,4 +1,4 @@
-﻿<#	
+﻿<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -18,44 +18,46 @@ function InvokeNetboxRequest {
     (
         [Parameter(Mandatory = $true)]
         [System.UriBuilder]$URI,
-        
+
         [Hashtable]$Headers = @{
         },
-        
+
         [pscustomobject]$Body = $null,
-        
+
         [ValidateRange(0, 60)]
         [uint16]$Timeout = 5,
-        
+
         [ValidateSet('GET', 'PATCH', 'PUT', 'POST', 'DELETE', 'OPTIONS', IgnoreCase = $true)]
         [string]$Method = 'GET',
-        
+
         [switch]$Raw
     )
-    
+
     $creds = Get-NetboxCredential
-    
+
     $Headers.Authorization = "Token {0}" -f $creds.GetNetworkCredential().Password
-    
+
     $splat = @{
-        'Method' = $Method
-        'Uri'    = $URI.Uri.AbsoluteUri # This property auto generates the scheme, hostname, path, and query
-        'Headers' = $Headers
-        'TimeoutSec' = $Timeout
+        'Method'      = $Method
+        'Uri'         = $URI.Uri.AbsoluteUri # This property auto generates the scheme, hostname, path, and query
+        'Headers'     = $Headers
+        'TimeoutSec'  = $Timeout
         'ContentType' = 'application/json'
         'ErrorAction' = 'Stop'
-        'Verbose' = $VerbosePreference
+        'Verbose'     = $VerbosePreference
     }
-    
+
+    $splat += Get-NetboxInvokeParams
+
     if ($Body) {
         Write-Verbose "BODY: $($Body | ConvertTo-Json -Compress)"
         $null = $splat.Add('Body', ($Body | ConvertTo-Json -Compress))
     }
-    
+
     $result = Invoke-RestMethod @splat
-    
+
     #region TODO: Handle errors a little more gracefully...
-    
+
     <#
     try {
         Write-Verbose "Sending request..."
@@ -69,7 +71,7 @@ function InvokeNetboxRequest {
                 Write-Verbose "RAW provided...throwing raw exception"
                 throw $_
             }
-            
+
             Write-Verbose "Converting response to object"
             $myError = GetNetboxAPIErrorBody -Response $_.Exception.Response | ConvertFrom-Json
         } else {
@@ -77,27 +79,29 @@ function InvokeNetboxRequest {
             $myError = $_
         }
     }
-    
+
     Write-Verbose "MyError is $($myError.GetType().FullName)"
-    
+
     if ($myError -is [Exception]) {
         throw $_
     } elseif ($myError -is [pscustomobject]) {
         throw $myError.detail
-    }    
+    }
     #>
-    
+
     #endregion TODO: Handle errors a little more gracefully...
-    
+
     # If the user wants the raw value from the API... otherwise return only the actual result
     if ($Raw) {
         Write-Verbose "Returning raw result by choice"
         return $result
-    } else {
+    }
+    else {
         if ($result.psobject.Properties.Name.Contains('results')) {
             Write-Verbose "Found Results property on data, returning results directly"
             return $result.Results
-        } else {
+        }
+        else {
             Write-Verbose "Did NOT find results property on data, returning raw result"
             return $result
         }
