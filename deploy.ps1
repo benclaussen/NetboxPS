@@ -1,19 +1,19 @@
 ﻿<#
     .SYNOPSIS
         A brief description of the Invoke-deploy_ps1 file.
-    
+
     .DESCRIPTION
         A description of the file.
-    
+
     .PARAMETER SkipVersion
         A description of the SkipVersion parameter.
-    
+
     .PARAMETER VersionIncrease
         A description of the VersionIncrease parameter.
-    
+
     .PARAMETER NewVersion
         A description of the NewVersion parameter.
-    
+
     .NOTES
         ===========================================================================
         Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.174
@@ -28,10 +28,10 @@ param
 (
     [Parameter(ParameterSetName = 'SkipVersion')]
     [switch]$SkipVersion,
-    
+
     [Parameter(ParameterSetName = 'IncreaseVersion')]
     [version]$VersionIncrease = "0.0.1",
-    
+
     [Parameter(ParameterSetName = 'SetVersion')]
     [version]$NewVersion
 )
@@ -55,14 +55,14 @@ $Counter = 0
 Write-Host "Concatenating [$($PS1Files.Count)] PS1 files from $FunctionPath"
 foreach ($File in $PS1Files) {
     $Counter++
-    
+
     try {
         Write-Host (" Adding file {0:D2}/{1:D2}: $($File.Name)" -f $Counter, $PS1Files.Count)
-        
+
         "`r`n#region File $($File.Name)`r`n" | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8 -Append -ErrorAction Stop
-        
+
         Get-Content $File.FullName -Encoding UTF8 -ErrorAction Stop | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8 -Append -ErrorAction Stop
-        
+
         "`r`n#endregion" | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8 -Append -ErrorAction Stop
     } catch {
         Write-Host "FAILED TO WRITE CONCATENATED FILE: $($_.Exception.Message): $($_.TargetObject)" -ForegroundColor Red
@@ -85,30 +85,30 @@ switch ($PSCmdlet.ParameterSetName) {
     "SkipVersion" {
         # Dont do anything with the PSD
         Write-Host " Skipping version update, maintaining version [$CurrentVersion]"
-        
+
         break
     }
-    
+
     "IncreaseVersion" {
         # Calculate the new version
         [version]$NewVersion = "{0}.{1}.{2}" -f ($CurrentVersion.Major + $VersionIncrease.Major), ($CurrentVersion.Minor + $VersionIncrease.Minor), ($CurrentVersion.Build + $VersionIncrease.Build)
-        
+
         Write-Host " Updating version in PSD1 from [$CurrentVersion] to [$NewVersion]"
-        
+
         # Replace the version number in the content
         #$PSDContent -replace $CurrentVersion, $NewVersion | Out-File $PSScriptRoot\$ModuleName.psd1 -Encoding UTF8
         Update-ModuleManifest -Path "$PSScriptRoot\$ModuleName.psd1" -ModuleVersion $NewVersion
-        
+
         break
     }
-    
+
     "SetVersion" {
         Write-Host " Updating version in PSD1 from [$CurrentVersion] to [$NewVersion]"
-        
+
         # Replace the version number in the content
         #$PSDContent -replace $CurrentVersion, $NewVersion | Out-File $PSScriptRoot\$ModuleName.psd1 -Encoding UTF8
         Update-ModuleManifest -Path "$PSScriptRoot\$ModuleName.psd1" -ModuleVersion $NewVersion
-        
+
         break
     }
 }

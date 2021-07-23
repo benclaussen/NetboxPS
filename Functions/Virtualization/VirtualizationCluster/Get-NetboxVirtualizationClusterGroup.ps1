@@ -1,4 +1,4 @@
-﻿<#	
+﻿<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -17,27 +17,27 @@ function Get-NetboxVirtualizationClusterGroup {
     param
     (
         [string]$Name,
-        
+
         [string]$Slug,
-        
+
         [string]$Description,
-        
+
         [string]$Query,
-        
+
         [uint32[]]$Id,
-        
+
         [uint16]$Limit,
-        
+
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'cluster-groups'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
+
     $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
+
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
