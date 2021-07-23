@@ -96,6 +96,7 @@ function New-NetboxIPAMAddress {
 
         [string]$Dns_name,
 
+        [ValidateSet('dcim.interface', 'virtualization.vminterface', IgnoreCase = $true)]
         [string]$Assigned_Object_Type,
 
         [int]$Assigned_Object_Id,
