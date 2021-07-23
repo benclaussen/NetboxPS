@@ -1,14 +1,14 @@
 ﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 11:51
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	New-NetboxIPAMAddress.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
+    .NOTES
+    ===========================================================================
+     Created with:  SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
+     Created on:    3/19/2020 11:51
+     Created by:    Claussen
+     Organization:  NEOnet
+     Filename:      New-NetboxIPAMAddress.ps1
+    ===========================================================================
+    .DESCRIPTION
+        A description of the file.
 #>
 
 
@@ -50,14 +50,19 @@ function New-NetboxIPAMAddress {
     .PARAMETER Dns_name
         DNS Name of IP address (example : netbox.example.com)
 
-    .PARAMETER Force
-        Do not prompt for confirmation to create IP.
+    .PARAMETER Assigned_Object_Type
+        Assigned Object Type dcim.interface or virtualization.vminterface
+
+    .PARAMETER Assigned_Object_Id
+        Assigned Object ID
 
     .PARAMETER Raw
         Return raw results from API service
 
     .EXAMPLE
-        PS C:\> Create-NetboxIPAMAddress
+        New-NetboxIPAMAddress -Address 192.0.2.1/32
+
+        Add new IP Address 192.0.2.1/32 with status active
 
     .NOTES
         Additional information about the function.
@@ -90,7 +95,10 @@ function New-NetboxIPAMAddress {
 
         [string]$Dns_name,
 
-        [switch]$Force,
+        [ValidateSet('dcim.interface', 'virtualization.vminterface', IgnoreCase = $true)]
+        [string]$Assigned_Object_Type,
+
+        [int]$Assigned_Object_Id,
 
         [switch]$Raw
     )
@@ -99,22 +107,11 @@ function New-NetboxIPAMAddress {
         $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
         $Method = 'POST'
 
-        #    # Value validation
-        #    $ModelDefinition = GetModelDefinitionFromURIPath -Segments $Segments -Method $Method
-        #    $EnumProperties = GetModelEnumProperties -ModelDefinition $ModelDefinition
-        #
-        #    foreach ($Property in $EnumProperties.Keys) {
-        #        if ($PSBoundParameters.ContainsKey($Property)) {
-        #            Write-Verbose "Validating property [$Property] with value [$($PSBoundParameters.$Property)]"
-        #            $PSBoundParameters.$Property = ValidateValue -ModelDefinition $ModelDefinition -Property $Property -ProvidedValue $PSBoundParameters.$Property
-        #        }
-        #    }
-        #
         $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
 
         $URI = BuildNewURI -Segments $URIComponents.Segments
 
-        if ($Force -or $PSCmdlet.ShouldProcess($Address, 'Create new IP address')) {
+        if ($PSCmdlet.ShouldProcess($Address, 'Create new IP address')) {
             InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
         }
     }
