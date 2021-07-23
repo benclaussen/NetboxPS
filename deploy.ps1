@@ -1,19 +1,32 @@
 ﻿<#
     .SYNOPSIS
-        A brief description of the Invoke-deploy_ps1 file.
+        Concatenate files into single PSM1 and PSD1 files
     
     .DESCRIPTION
-        A description of the file.
+        Concatenate all ps1 files in the Functions directory, plus the root PSM1,
+        into a single PSM1 file in the NetboxPS directory.
+
+        By default, this script will increment version by 0.0.1
     
     .PARAMETER SkipVersion
-        A description of the SkipVersion parameter.
+        Do not increment the version. 
     
     .PARAMETER VersionIncrease
-        A description of the VersionIncrease parameter.
+        Increase the version by a user defined amount
     
     .PARAMETER NewVersion
-        A description of the NewVersion parameter.
-    
+        Override the new version with this version
+
+    .EXAMPLE
+        Use all defaults and concatenate all files
+
+        .\deploy.ps1
+
+    .EXAMPLE
+        Increment the version by 0.2.0. Given version 1.2.0, the resulting version will be 1.4.0
+
+        .\deploy.ps1 -VersionIncrease 0.2.0
+
     .NOTES
         ===========================================================================
         Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.174
