@@ -90,6 +90,10 @@ function New-NetboxIPAMAddress {
 
         [string]$Dns_name,
 
+        [string]$Assigned_Object_Type,
+
+        [int]$Assigned_Object_Id,
+
         [switch]$Force,
 
         [switch]$Raw
