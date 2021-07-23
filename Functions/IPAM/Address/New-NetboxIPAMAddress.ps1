@@ -56,9 +56,6 @@ function New-NetboxIPAMAddress {
     .PARAMETER Assigned_Object_Id
         Assigned Object ID
 
-    .PARAMETER Force
-        Do not prompt for confirmation to create IP.
-
     .PARAMETER Raw
         Return raw results from API service
 
@@ -103,8 +100,6 @@ function New-NetboxIPAMAddress {
 
         [int]$Assigned_Object_Id,
 
-        [switch]$Force,
-
         [switch]$Raw
     )
 
@@ -116,7 +111,7 @@ function New-NetboxIPAMAddress {
 
         $URI = BuildNewURI -Segments $URIComponents.Segments
 
-        if ($Force -or $PSCmdlet.ShouldProcess($Address, 'Create new IP address')) {
+        if ($PSCmdlet.ShouldProcess($Address, 'Create new IP address')) {
             InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
         }
     }
