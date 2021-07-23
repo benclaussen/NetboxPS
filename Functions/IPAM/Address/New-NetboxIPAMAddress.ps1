@@ -99,17 +99,6 @@ function New-NetboxIPAMAddress {
         $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
         $Method = 'POST'
 
-        #    # Value validation
-        #    $ModelDefinition = GetModelDefinitionFromURIPath -Segments $Segments -Method $Method
-        #    $EnumProperties = GetModelEnumProperties -ModelDefinition $ModelDefinition
-        #
-        #    foreach ($Property in $EnumProperties.Keys) {
-        #        if ($PSBoundParameters.ContainsKey($Property)) {
-        #            Write-Verbose "Validating property [$Property] with value [$($PSBoundParameters.$Property)]"
-        #            $PSBoundParameters.$Property = ValidateValue -ModelDefinition $ModelDefinition -Property $Property -ProvidedValue $PSBoundParameters.$Property
-        #        }
-        #    }
-        #
         $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
 
         $URI = BuildNewURI -Segments $URIComponents.Segments
