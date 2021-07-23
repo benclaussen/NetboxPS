@@ -1,4 +1,4 @@
-﻿<#	
+﻿<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -15,7 +15,7 @@
 function CheckNetboxIsConnected {
     [CmdletBinding()]
     param ()
-    
+
     Write-Verbose "Checking connection status"
     if (-not $script:NetboxConfig.Connected) {
         throw "Not connected to a Netbox API! Please run 'Connect-NetboxAPI'"

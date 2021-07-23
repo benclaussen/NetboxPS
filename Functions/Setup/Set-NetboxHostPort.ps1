@@ -7,7 +7,7 @@
         [Parameter(Mandatory = $true)]
         [uint16]$Port
     )
-    
+
     if ($PSCmdlet.ShouldProcess('Netbox Port', 'Set')) {
         $script:NetboxConfig.HostPort = $Port
         $script:NetboxConfig.HostPort

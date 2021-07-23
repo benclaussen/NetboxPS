@@ -1,0 +1,10 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "editor.formatOnSave": true,
+    "files.trimTrailingWhitespace": true,
+    "powershell.scriptAnalysis.settingsPath": ".vscode/PSScriptAnalyzerSettings.psd1",
+    "powershell.codeFormatting.newLineAfterCloseBrace": false,
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false,
+    }
+}

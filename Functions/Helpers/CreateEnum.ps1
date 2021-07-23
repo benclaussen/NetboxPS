@@ -1,4 +1,4 @@
-﻿<#	
+﻿<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -18,13 +18,13 @@ function CreateEnum {
     (
         [Parameter(Mandatory = $true)]
         [string]$EnumName,
-        
+
         [Parameter(Mandatory = $true)]
         [pscustomobject]$Values,
-        
+
         [switch]$PassThru
     )
-    
+
     $definition = @"
 public enum $EnumName
 {`n$(foreach ($value in $values) {

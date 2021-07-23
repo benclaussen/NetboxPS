@@ -2,7 +2,7 @@
 
 #region File Add-NetboxDCIMInterface.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -23,67 +23,67 @@ function Add-NetboxDCIMInterface {
     (
         [Parameter(Mandatory = $true)]
         [uint16]$Device,
-        
+
         [Parameter(Mandatory = $true)]
         [string]$Name,
-        
+
         [bool]$Enabled,
-        
+
         [object]$Form_Factor,
-        
+
         [uint16]$MTU,
-        
+
         [string]$MAC_Address,
-        
+
         [bool]$MGMT_Only,
-        
+
         [uint16]$LAG,
-        
+
         [string]$Description,
-        
+
         [ValidateSet('Access', 'Tagged', 'Tagged All', '100', '200', '300', IgnoreCase = $true)]
         [string]$Mode,
-        
+
         [ValidateRange(1, 4094)]
         [uint16]$Untagged_VLAN,
-        
+
         [ValidateRange(1, 4094)]
         [uint16[]]$Tagged_VLANs
     )
-    
+
 #    if ($null -ne $Form_Factor) {
 #        $PSBoundParameters.Form_Factor = ValidateDCIMChoice -ProvidedValue $Form_Factor -InterfaceFormFactor
 #    }
-    
+
     if (-not [System.String]::IsNullOrWhiteSpace($Mode)) {
         $PSBoundParameters.Mode = switch ($Mode) {
             'Access' {
                 100
                 break
             }
-            
+
             'Tagged' {
                 200
                 break
             }
-            
+
             'Tagged All' {
                 300
                 break
             }
-            
+
             default {
                 $_
             }
         }
     }
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-    
+
     $URI = BuildNewURI -Segments $URIComponents.Segments
-    
+
     InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
 }
 
@@ -91,7 +91,7 @@ function Add-NetboxDCIMInterface {
 
 #region File Add-NetboxDCIMInterfaceConnection.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -109,53 +109,53 @@ function Add-NetboxDCIMInterfaceConnection {
 <#
     .SYNOPSIS
         Create a new connection between two interfaces
-    
+
     .DESCRIPTION
         Create a new connection between two interfaces
-    
+
     .PARAMETER Connection_Status
         Is it connected or planned?
-    
+
     .PARAMETER Interface_A
         Database ID of interface A
-    
+
     .PARAMETER Interface_B
         Database ID of interface B
-    
+
     .EXAMPLE
         PS C:\> Add-NetboxDCIMInterfaceConnection -Interface_A $value1 -Interface_B $value2
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param
     (
         [object]$Connection_Status,
-        
+
         [Parameter(Mandatory = $true)]
         [uint16]$Interface_A,
-        
+
         [Parameter(Mandatory = $true)]
         [uint16]$Interface_B
     )
-    
+
     if ($null -ne $Connection_Status) {
         $PSBoundParameters.Connection_Status = ValidateDCIMChoice -ProvidedValue $Connection_Status -InterfaceConnectionStatus
     }
-    
+
     # Verify if both Interfaces exist
     $I_A = Get-NetboxDCIMInterface -Id $Interface_A -ErrorAction Stop
     $I_B = Get-NetboxDCIMInterface -Id $Interface_B -ErrorAction Stop
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interface-connections'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-    
+
     $URI = BuildNewURI -Segments $URIComponents.Segments
-    
+
     InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
 }
 
@@ -163,7 +163,7 @@ function Add-NetboxDCIMInterfaceConnection {
 
 #region File Add-NetboxVirtualMachineInterface.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -183,29 +183,29 @@ function Add-NetboxVirtualMachineInterface {
     (
         [Parameter(Mandatory = $true)]
         [string]$Name,
-        
+
         [Parameter(Mandatory = $true)]
         [uint16]$Virtual_Machine,
-        
+
         [boolean]$Enabled = $true,
-        
+
         [string]$MAC_Address,
-        
+
         [uint16]$MTU,
-        
+
         [string]$Description,
-        
+
         [switch]$Raw
     )
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'interfaces'))
-    
+
     $PSBoundParameters.Enabled = $Enabled
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
+
     $uri = BuildNewURI -Segments $URIComponents.Segments
-    
+
     InvokeNetboxRequest -URI $uri -Method POST -Body $URIComponents.Parameters
 }
 
@@ -213,7 +213,7 @@ function Add-NetboxVirtualMachineInterface {
 
 #region File BuildNewURI.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -231,77 +231,77 @@ function BuildNewURI {
 <#
     .SYNOPSIS
         Create a new URI for Netbox
-    
+
     .DESCRIPTION
         Internal function used to build a URIBuilder object.
-    
+
     .PARAMETER Hostname
         Hostname of the Netbox API
-    
+
     .PARAMETER Segments
         Array of strings for each segment in the URL path
-    
+
     .PARAMETER Parameters
         Hashtable of query parameters to include
-    
+
     .PARAMETER HTTPS
         Whether to use HTTPS or HTTP
-    
+
     .PARAMETER Port
         A description of the Port parameter.
-    
+
     .PARAMETER APIInfo
         A description of the APIInfo parameter.
-    
+
     .EXAMPLE
         PS C:\> BuildNewURI
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding()]
     [OutputType([System.UriBuilder])]
     param
     (
         [Parameter(Mandatory = $false)]
         [string[]]$Segments,
-        
+
         [Parameter(Mandatory = $false)]
         [hashtable]$Parameters,
-        
+
         [switch]$SkipConnectedCheck
     )
-    
+
     Write-Verbose "Building URI"
-    
+
     if (-not $SkipConnectedCheck) {
         # There is no point in continuing if we have not successfully connected to an API
         $null = CheckNetboxIsConnected
     }
-    
+
     # Begin a URI builder with HTTP/HTTPS and the provided hostname
     $uriBuilder = [System.UriBuilder]::new($script:NetboxConfig.HostScheme, $script:NetboxConfig.Hostname, $script:NetboxConfig.HostPort)
-    
+
     # Generate the path by trimming excess slashes and whitespace from the $segments[] and joining together
     $uriBuilder.Path = "api/{0}/" -f ($Segments.ForEach({
                 $_.trim('/').trim()
             }) -join '/')
-    
+
     Write-Verbose " URIPath: $($uriBuilder.Path)"
-    
+
     if ($parameters) {
         # Loop through the parameters and use the HttpUtility to create a Query string
         [System.Collections.Specialized.NameValueCollection]$URIParams = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
-        
+
         foreach ($param in $Parameters.GetEnumerator()) {
             Write-Verbose " Adding URI parameter $($param.Key):$($param.Value)"
             $URIParams[$param.Key] = $param.Value
         }
-        
+
         $uriBuilder.Query = $URIParams.ToString()
     }
-    
+
     Write-Verbose " Completed building URIBuilder"
     # Return the entire UriBuilder object
     $uriBuilder
@@ -311,7 +311,7 @@ function BuildNewURI {
 
 #region File BuildURIComponents.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -332,30 +332,30 @@ function BuildURIComponents {
     (
         [Parameter(Mandatory = $true)]
         [System.Collections.ArrayList]$URISegments,
-        
+
         [Parameter(Mandatory = $true)]
         [object]$ParametersDictionary,
-        
+
         [string[]]$SkipParameterByName
     )
-    
+
     Write-Verbose "Building URI components"
-    
+
     $URIParameters = @{
     }
-    
+
     foreach ($CmdletParameterName in $ParametersDictionary.Keys) {
         if ($CmdletParameterName -in $script:CommonParameterNames) {
             # These are common parameters and should not be appended to the URI
             Write-Debug "Skipping common parameter $CmdletParameterName"
             continue
         }
-        
+
         if ($CmdletParameterName -in $SkipParameterByName) {
             Write-Debug "Skipping parameter $CmdletParameterName by SkipParameterByName"
             continue
         }
-        
+
         switch ($CmdletParameterName) {
             "id" {
                 # Check if there is one or more values for Id and build a URI or query as appropriate
@@ -366,26 +366,26 @@ function BuildURIComponents {
                     Write-Verbose " Adding ID to segments"
                     [void]$uriSegments.Add($ParametersDictionary[$CmdletParameterName])
                 }
-                
+
                 break
             }
-            
+
             'Query' {
                 Write-Verbose " Adding query parameter"
                 $URIParameters['q'] = $ParametersDictionary[$CmdletParameterName]
                 break
             }
-            
+
             'CustomFields' {
                 Write-Verbose " Adding custom field query parameters"
                 foreach ($field in $ParametersDictionary[$CmdletParameterName].GetEnumerator()) {
                     Write-Verbose "  Adding parameter 'cf_$($field.Key) = $($field.Value)"
                     $URIParameters["cf_$($field.Key.ToLower())"] = $field.Value
                 }
-                
+
                 break
             }
-            
+
             default {
                 Write-Verbose " Adding $($CmdletParameterName.ToLower()) parameter"
                 $URIParameters[$CmdletParameterName.ToLower()] = $ParametersDictionary[$CmdletParameterName]
@@ -393,7 +393,7 @@ function BuildURIComponents {
             }
         }
     }
-    
+
     return @{
         'Segments' = [System.Collections.ArrayList]$URISegments
         'Parameters' = $URIParameters
@@ -404,7 +404,7 @@ function BuildURIComponents {
 
 #region File CheckNetboxIsConnected.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -421,7 +421,7 @@ function BuildURIComponents {
 function CheckNetboxIsConnected {
     [CmdletBinding()]
     param ()
-    
+
     Write-Verbose "Checking connection status"
     if (-not $script:NetboxConfig.Connected) {
         throw "Not connected to a Netbox API! Please run 'Connect-NetboxAPI'"
@@ -432,7 +432,7 @@ function CheckNetboxIsConnected {
 
 #region File Circuits.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2018 v5.5.148
@@ -457,7 +457,7 @@ function Clear-NetboxCredential {
     (
         [switch]$Force
     )
-    
+
     if ($Force -or ($PSCmdlet.ShouldProcess('Netbox Credentials', 'Clear'))) {
         $script:NetboxConfig.Credential = $null
     }
@@ -631,7 +631,7 @@ function Connect-NetboxAPI {
 
 #region File CreateEnum.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -651,13 +651,13 @@ function CreateEnum {
     (
         [Parameter(Mandatory = $true)]
         [string]$EnumName,
-        
+
         [Parameter(Mandatory = $true)]
         [pscustomobject]$Values,
-        
+
         [switch]$PassThru
     )
-    
+
     $definition = @"
 public enum $EnumName
 {`n$(foreach ($value in $values) {
@@ -677,7 +677,7 @@ public enum $EnumName
 
 #region File Get-ModelDefinition.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
@@ -699,47 +699,47 @@ function Get-ModelDefinition {
         [Parameter(ParameterSetName = 'ByName',
                    Mandatory = $true)]
         [string]$ModelName,
-        
+
         [Parameter(ParameterSetName = 'ByPath',
                    Mandatory = $true)]
         [string]$URIPath,
-        
+
         [Parameter(ParameterSetName = 'ByPath')]
         [string]$Method = "post"
     )
-    
+
     switch ($PsCmdlet.ParameterSetName) {
         'ByName' {
             $script:NetboxConfig.APIDefinition.definitions.$ModelName
             break
         }
-        
+
         'ByPath' {
             switch ($Method) {
                 "get" {
-                    
+
                     break
                 }
-                
+
                 "post" {
                     if (-not $URIPath.StartsWith('/')) {
                         $URIPath = "/$URIPath"
                     }
-                    
+
                     if (-not $URIPath.EndsWith('/')) {
                         $URIPath = "$URIPath/"
                     }
-                    
+
                     $ModelName = $script:NetboxConfig.APIDefinition.paths.$URIPath.post.parameters.schema.'$ref'.split('/')[-1]
                     $script:NetboxConfig.APIDefinition.definitions.$ModelName
                     break
                 }
             }
-            
+
             break
         }
     }
-    
+
 }
 
 #endregion
@@ -780,7 +780,7 @@ function Get-NetboxAPIDefinition {
 
 #region File GetNetboxAPIErrorBody.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -800,10 +800,10 @@ function GetNetboxAPIErrorBody {
         [Parameter(Mandatory = $true)]
         [System.Net.HttpWebResponse]$Response
     )
-    
+
     # This takes the $Response stream and turns it into a useable object... generally a string.
     # If the body is JSON, you should be able to use ConvertFrom-Json
-    
+
     $reader = New-Object System.IO.StreamReader($Response.GetResponseStream())
     $reader.BaseStream.Position = 0
     $reader.DiscardBufferedData()
@@ -814,7 +814,7 @@ function GetNetboxAPIErrorBody {
 
 #region File Get-NetboxCircuit.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -832,115 +832,115 @@ function Get-NetboxCircuit {
 <#
     .SYNOPSIS
         Gets one or more circuits
-    
+
     .DESCRIPTION
         A detailed description of the Get-NetboxCircuit function.
-    
+
     .PARAMETER Id
         Database ID of circuit. This will query for exactly the IDs provided
-    
+
     .PARAMETER CID
         Circuit ID
-    
+
     .PARAMETER InstallDate
         Date of installation
-    
+
     .PARAMETER CommitRate
         Committed rate in Kbps
-    
+
     .PARAMETER Query
         A raw search query... As if you were searching the web site
-    
+
     .PARAMETER Provider
         The name or ID of the provider. Provide either [string] or [int]. String will search provider names, integer will search database IDs
-    
+
     .PARAMETER Type
         Type of circuit. Provide either [string] or [int]. String will search provider type names, integer will search database IDs
-    
+
     .PARAMETER Site
         Location/site of circuit. Provide either [string] or [int]. String will search site names, integer will search database IDs
-    
+
     .PARAMETER Tenant
         Tenant assigned to circuit. Provide either [string] or [int]. String will search tenant names, integer will search database IDs
-    
+
     .PARAMETER Limit
         A description of the Limit parameter.
-    
+
     .PARAMETER Offset
         A description of the Offset parameter.
-    
+
     .PARAMETER Raw
         A description of the Raw parameter.
-    
+
     .PARAMETER ID__IN
         Multiple unique DB IDs to retrieve
-    
+
     .EXAMPLE
         PS C:\> Get-NetboxCircuit
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(DefaultParameterSetName = 'Query')]
     param
     (
         [Parameter(ParameterSetName = 'ById')]
         [uint16[]]$Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$CID,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [datetime]$InstallDate,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$CommitRate,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [object]$Provider,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [object]$Type,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Site,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($i in $ID) {
                 $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuits', $i))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $URI -Raw:$Raw
             }
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuits'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-            
+
             $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $URI -Raw:$Raw
         }
     }
@@ -950,7 +950,7 @@ function Get-NetboxCircuit {
 
 #region File Get-NetboxCircuitProvider.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
@@ -972,52 +972,52 @@ function Get-NetboxCircuitProvider {
         [Parameter(ParameterSetName = 'ById',
                    Mandatory = $true)]
         [uint16[]]$Id,
-        
+
         [Parameter(ParameterSetName = 'Query',
                    Mandatory = $false)]
         [string]$Name,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Slug,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$ASN,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Account,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($i in $ID) {
                 $Segments = [System.Collections.ArrayList]::new(@('circuits', 'providers', $i))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $URI -Raw:$Raw
             }
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('circuits', 'providers'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-            
+
             $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $URI -Raw:$Raw
         }
     }
@@ -1027,7 +1027,7 @@ function Get-NetboxCircuitProvider {
 
 #region File Get-NetboxCircuitTermination.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
@@ -1049,58 +1049,58 @@ function Get-NetboxCircuitTermination {
         [Parameter(ParameterSetName = 'ById',
                    ValueFromPipelineByPropertyName = $true)]
         [uint32[]]$Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Circuit_ID,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Term_Side,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Port_Speed,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Site_ID,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Site,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$XConnect_ID,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     process {
         switch ($PSCmdlet.ParameterSetName) {
             'ById' {
                 foreach ($i in $ID) {
                     $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuit-terminations', $i))
-                    
+
                     $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
-                    
+
                     $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                    
+
                     InvokeNetboxRequest -URI $URI -Raw:$Raw
                 }
             }
-            
+
             default {
                 $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuit-terminations'))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $URI -Raw:$Raw
             }
         }
@@ -1111,7 +1111,7 @@ function Get-NetboxCircuitTermination {
 
 #region File Get-NetboxCircuitType.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
@@ -1132,45 +1132,45 @@ function Get-NetboxCircuitType {
     (
         [Parameter(ParameterSetName = 'ById')]
         [uint16[]]$Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Name,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Slug,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($i in $ID) {
                 $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuit_types', $i))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $URI -Raw:$Raw
             }
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuit-types'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-            
+
             $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $URI -Raw:$Raw
         }
     }
@@ -1204,7 +1204,7 @@ function Get-NetboxCredential {
 
 #region File Get-NetboxDCIMDevice.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -1224,83 +1224,83 @@ function Get-NetboxDCIMDevice {
     param
     (
         [uint16]$Limit,
-        
+
         [uint16]$Offset,
-        
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
-        
+
         [string]$Query,
-        
+
         [string]$Name,
-        
+
         [uint16]$Manufacturer_Id,
-        
+
         [string]$Manufacturer,
-        
+
         [uint16]$Device_Type_Id,
-        
+
         [uint16]$Role_Id,
-        
+
         [string]$Role,
-        
+
         [uint16]$Tenant_Id,
-        
+
         [string]$Tenant,
-        
+
         [uint16]$Platform_Id,
-        
+
         [string]$Platform,
-        
+
         [string]$Asset_Tag,
-        
+
         [uint16]$Site_Id,
-        
+
         [string]$Site,
-        
+
         [uint16]$Rack_Group_Id,
-        
+
         [uint16]$Rack_Id,
-        
+
         [uint16]$Cluster_Id,
-        
+
         [uint16]$Model,
-        
+
         [object]$Status,
-        
+
         [bool]$Is_Full_Depth,
-        
+
         [bool]$Is_Console_Server,
-        
+
         [bool]$Is_PDU,
-        
+
         [bool]$Is_Network_Device,
-        
+
         [string]$MAC_Address,
-        
+
         [bool]$Has_Primary_IP,
-        
+
         [uint16]$Virtual_Chassis_Id,
-        
+
         [uint16]$Position,
-        
+
         [string]$Serial,
-        
+
         [switch]$Raw
     )
-    
+
     #endregion Parameters
-    
+
     if ($null -ne $Status) {
         $PSBoundParameters.Status = ValidateDCIMChoice -ProvidedValue $Status -DeviceStatus
     }
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('dcim', 'devices'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'
-    
+
     $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
+
     InvokeNetboxRequest -URI $URI -Raw:$Raw
 }
 
@@ -1308,7 +1308,7 @@ function Get-NetboxDCIMDevice {
 
 #region File Get-NetboxDCIMDeviceRole.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -1327,45 +1327,45 @@ function Get-NetboxDCIMDeviceRole {
     param
     (
         [uint16]$Limit,
-        
+
         [uint16]$Offset,
-        
+
         [Parameter(ParameterSetName = 'ById')]
         [uint16[]]$Id,
-        
+
         [string]$Name,
-        
+
         [string]$Slug,
-        
+
         [string]$Color,
-        
+
         [bool]$VM_Role,
-        
+
         [switch]$Raw
     )
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($DRId in $Id) {
                 $Segments = [System.Collections.ArrayList]::new(@('dcim', 'device-roles', $DRId))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Raw'
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $URI -Raw:$Raw
             }
-            
+
             break
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('dcim', 'device-roles'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'
-            
+
             $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $URI -Raw:$Raw
         }
     }
@@ -1375,7 +1375,7 @@ function Get-NetboxDCIMDeviceRole {
 
 #region File Get-NetboxDCIMDeviceType.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -1395,45 +1395,45 @@ function Get-NetboxDCIMDeviceType {
     param
     (
         [uint16]$Offset,
-        
+
         [uint16]$Limit,
-        
+
         [uint16[]]$Id,
-        
+
         [string]$Query,
-        
+
         [string]$Slug,
-        
+
         [string]$Manufacturer,
-        
+
         [uint16]$Manufacturer_Id,
-        
+
         [string]$Model,
-        
+
         [string]$Part_Number,
-        
+
         [uint16]$U_Height,
-        
+
         [bool]$Is_Full_Depth,
-        
+
         [bool]$Is_Console_Server,
-        
+
         [bool]$Is_PDU,
-        
+
         [bool]$Is_Network_Device,
-        
+
         [uint16]$Subdevice_Role,
-        
+
         [switch]$Raw
     )
     #endregion Parameters
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('dcim', 'device-types'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'
-    
+
     $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
+
     InvokeNetboxRequest -URI $URI -Raw:$Raw
 }
 
@@ -1441,7 +1441,7 @@ function Get-NetboxDCIMDeviceType {
 
 #region File Get-NetboxDCIMInterface.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -1461,45 +1461,45 @@ function Get-NetboxDCIMInterface {
     param
     (
         [uint16]$Limit,
-        
+
         [uint16]$Offset,
-        
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [uint16]$Id,
-        
+
         [uint16]$Name,
-        
+
         [object]$Form_Factor,
-        
+
         [bool]$Enabled,
-        
+
         [uint16]$MTU,
-        
+
         [bool]$MGMT_Only,
-        
+
         [string]$Device,
-        
+
         [uint16]$Device_Id,
-        
+
         [uint16]$Type,
-        
+
         [uint16]$LAG_Id,
-        
+
         [string]$MAC_Address,
-        
+
         [switch]$Raw
     )
-    
+
     if ($null -ne $Form_Factor) {
         $PSBoundParameters.Form_Factor = ValidateDCIMChoice -ProvidedValue $Form_Factor -InterfaceFormFactor
     }
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-    
+
     $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
+
     InvokeNetboxRequest -URI $URI -Raw:$Raw
 }
 
@@ -1507,7 +1507,7 @@ function Get-NetboxDCIMInterface {
 
 #region File Get-NetboxDCIMInterfaceConnection.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -1527,30 +1527,30 @@ function Get-NetboxDCIMInterfaceConnection {
     param
     (
         [uint16]$Limit,
-        
+
         [uint16]$Offset,
-        
+
         [uint16]$Id,
-        
+
         [object]$Connection_Status,
-        
+
         [uint16]$Site,
-        
+
         [uint16]$Device,
-        
+
         [switch]$Raw
     )
-    
+
     if ($null -ne $Connection_Status) {
         $PSBoundParameters.Connection_Status = ValidateDCIMChoice -ProvidedValue $Connection_Status -InterfaceConnectionStatus
     }
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interface-connections'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'
-    
+
     $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
+
     InvokeNetboxRequest -URI $URI -Raw:$Raw
 }
 
@@ -1558,7 +1558,7 @@ function Get-NetboxDCIMInterfaceConnection {
 
 #region File Get-NetboxDCIMPlatform.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -1578,45 +1578,45 @@ function Get-NetboxDCIMPlatform {
     param
     (
         [uint16]$Limit,
-        
+
         [uint16]$Offset,
-        
+
         [Parameter(ParameterSetName = 'ById')]
         [uint16[]]$Id,
-        
+
         [string]$Name,
-        
+
         [string]$Slug,
-        
+
         [uint16]$Manufacturer_Id,
-        
+
         [string]$Manufacturer,
-        
+
         [switch]$Raw
     )
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($PlatformID in $Id) {
                 $Segments = [System.Collections.ArrayList]::new(@('dcim', 'platforms', $PlatformID))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Raw'
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $URI -Raw:$Raw
             }
-            
+
             break
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('dcim', 'platforms'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'
-            
+
             $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $URI -Raw:$Raw
         }
     }
@@ -1626,7 +1626,7 @@ function Get-NetboxDCIMPlatform {
 
 #region File Get-NetboxDCIMSite.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
@@ -1648,87 +1648,87 @@ function Get-NetboxDCIMSite {
     (
         [Parameter(ParameterSetName = 'ByID', ValueFromPipelineByPropertyName = $true)]
         [uint32]$Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Name,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Slug,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Facility,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$ASN,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [decimal]$Latitude,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [decimal]$Longitude,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Contact_Name,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Contact_Phone,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Contact_Email,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Tenant_Group_ID,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant_Group,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Tenant_ID,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Status,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Region_ID,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Region,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($Site_ID in $ID) {
                 $Segments = [System.Collections.ArrayList]::new(@('dcim', 'sites', $Site_Id))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $URI -Raw:$Raw
             }
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('dcim', 'sites'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-            
+
             $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $URI -Raw:$Raw
         }
     }
@@ -1758,12 +1758,12 @@ function Get-NetboxHostname {
 function Get-NetboxHostPort {
     [CmdletBinding()]
     param ()
-    
+
     Write-Verbose "Getting Netbox host port"
     if ($null -eq $script:NetboxConfig.HostPort) {
         throw "Netbox host port is not set! You may set it with Set-NetboxHostPort -Port 'https'"
     }
-    
+
     $script:NetboxConfig.HostPort
 }
 
@@ -1774,12 +1774,12 @@ function Get-NetboxHostPort {
 function Get-NetboxHostScheme {
     [CmdletBinding()]
     param ()
-    
+
     Write-Verbose "Getting Netbox host scheme"
     if ($null -eq $script:NetboxConfig.Hostscheme) {
         throw "Netbox host sceme is not set! You may set it with Set-NetboxHostScheme -Scheme 'https'"
     }
-    
+
     $script:NetboxConfig.HostScheme
 }
 
@@ -1901,7 +1901,7 @@ function Get-NetboxIPAMAddress {
 
 #region File Get-NetboxIPAMAggregate.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -1921,61 +1921,61 @@ function Get-NetboxIPAMAggregate {
     (
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-        
+
         [Parameter(ParameterSetName = 'ByID')]
         [uint16[]]$Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Prefix,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [object]$Family,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$RIR_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$RIR,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [datetime]$Date_Added,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
 #    if ($null -ne $Family) {
 #        $PSBoundParameters.Family = ValidateIPAMChoice -ProvidedValue $Family -AggregateFamily
     #    }
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($IP_ID in $Id) {
                 $Segments = [System.Collections.ArrayList]::new(@('ipam', 'aggregates', $IP_ID))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-                
+
                 $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $uri -Raw:$Raw
             }
             break
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'aggregates'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-            
+
             $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $uri -Raw:$Raw
-            
+
             break
         }
     }
@@ -2063,7 +2063,7 @@ function Get-NetboxIPAMAvailableIP {
 
 #region File Get-NetboxIPAMPrefix.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -2081,189 +2081,189 @@ function Get-NetboxIPAMPrefix {
 <#
     .SYNOPSIS
         A brief description of the Get-NetboxIPAMPrefix function.
-    
+
     .DESCRIPTION
         A detailed description of the Get-NetboxIPAMPrefix function.
-    
+
     .PARAMETER Query
         A description of the Query parameter.
-    
+
     .PARAMETER Id
         A description of the Id parameter.
-    
+
     .PARAMETER Limit
         A description of the Limit parameter.
-    
+
     .PARAMETER Offset
         A description of the Offset parameter.
-    
+
     .PARAMETER Family
         A description of the Family parameter.
-    
+
     .PARAMETER Is_Pool
         A description of the Is_Pool parameter.
-    
+
     .PARAMETER Within
         Should be a CIDR notation prefix such as '10.0.0.0/16'
-    
+
     .PARAMETER Within_Include
         Should be a CIDR notation prefix such as '10.0.0.0/16'
-    
+
     .PARAMETER Contains
         A description of the Contains parameter.
-    
+
     .PARAMETER Mask_Length
         CIDR mask length value
-    
+
     .PARAMETER VRF
         A description of the VRF parameter.
-    
+
     .PARAMETER VRF_Id
         A description of the VRF_Id parameter.
-    
+
     .PARAMETER Tenant
         A description of the Tenant parameter.
-    
+
     .PARAMETER Tenant_Id
         A description of the Tenant_Id parameter.
-    
+
     .PARAMETER Site
         A description of the Site parameter.
-    
+
     .PARAMETER Site_Id
         A description of the Site_Id parameter.
-    
+
     .PARAMETER Vlan_VId
         A description of the Vlan_VId parameter.
-    
+
     .PARAMETER Vlan_Id
         A description of the Vlan_Id parameter.
-    
+
     .PARAMETER Status
         A description of the Status parameter.
-    
+
     .PARAMETER Role
         A description of the Role parameter.
-    
+
     .PARAMETER Role_Id
         A description of the Role_Id parameter.
-    
+
     .PARAMETER Raw
         A description of the Raw parameter.
-    
+
     .EXAMPLE
         PS C:\> Get-NetboxIPAMPrefix
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(DefaultParameterSetName = 'Query')]
     param
     (
         [Parameter(ParameterSetName = 'Query',
                    Position = 0)]
         [string]$Prefix,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-        
+
         [Parameter(ParameterSetName = 'ByID')]
         [uint32[]]$Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [object]$Family,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [boolean]$Is_Pool,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Within,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Within_Include,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Contains,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [ValidateRange(0, 127)]
         [byte]$Mask_Length,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$VRF,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$VRF_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Tenant_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Site,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Site_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Vlan_VId,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Vlan_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [object]$Status,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Role,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Role_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     #    if ($null -ne $Family) {
     #        $PSBoundParameters.Family = ValidateIPAMChoice -ProvidedValue $Family -PrefixFamily
     #    }
-    #    
+    #
     #    if ($null -ne $Status) {
     #        $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -PrefixStatus
     #    }
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($Prefix_ID in $Id) {
                 $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes', $Prefix_ID))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-                
+
                 $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $uri -Raw:$Raw
             }
-            
+
             break
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-            
+
             $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $uri -Raw:$Raw
-            
+
             break
         }
     }
@@ -2278,93 +2278,93 @@ function Get-NetboxIPAMRole {
 <#
     .SYNOPSIS
         Get IPAM Prefix/VLAN roles
-    
+
     .DESCRIPTION
         A role indicates the function of a prefix or VLAN. For example, you might define Data, Voice, and Security roles. Generally, a prefix will be assigned the same functional role as the VLAN to which it is assigned (if any).
-    
+
     .PARAMETER Id
         Unique ID
-    
+
     .PARAMETER Query
         Search query
-    
+
     .PARAMETER Name
         Role name
-    
+
     .PARAMETER Slug
         Role URL slug
-    
+
     .PARAMETER Brief
         Brief format
-    
+
     .PARAMETER Limit
         Result limit
-    
+
     .PARAMETER Offset
         Result offset
-    
+
     .PARAMETER Raw
         A description of the Raw parameter.
-    
+
     .EXAMPLE
         PS C:\> Get-NetboxIPAMRole
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding()]
     param
     (
         [Parameter(ParameterSetName = 'Query',
                    Position = 0)]
         [string]$Name,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-        
+
         [Parameter(ParameterSetName = 'ByID')]
         [uint32[]]$Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Slug,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [switch]$Brief,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($Role_ID in $Id) {
                 $Segments = [System.Collections.ArrayList]::new(@('ipam', 'roles', $Role_ID))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-                
+
                 $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $uri -Raw:$Raw
             }
-            
+
             break
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'roles'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-            
+
             $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $uri -Raw:$Raw
-            
+
             break
         }
     }
@@ -2374,7 +2374,7 @@ function Get-NetboxIPAMRole {
 
 #region File Get-NetboxIPAMVLAN.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -2396,89 +2396,89 @@ function Get-NetboxIPAMVLAN {
                    Position = 0)]
         [ValidateRange(1, 4096)]
         [uint16]$VID,
-        
+
         [Parameter(ParameterSetName = 'ByID')]
         [uint32[]]$Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Name,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Tenant_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$TenantGroup,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$TenantGroup_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [object]$Status,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Region,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Site,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Site_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Group,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Group_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Role,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Role_Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     #    if ($null -ne $Status) {
     #        $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -VLANStatus
     #    }
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($VLAN_ID in $Id) {
                 $Segments = [System.Collections.ArrayList]::new(@('ipam', 'vlans', $VLAN_ID))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-                
+
                 $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $uri -Raw:$Raw
             }
-            
+
             break
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'vlans'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-            
+
             $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $uri -Raw:$Raw
-            
+
             break
         }
     }
@@ -2492,7 +2492,7 @@ function Get-NetboxIPAMVLAN {
 
 #region File Get-NetboxTenant.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -2510,105 +2510,105 @@ function Get-NetboxTenant {
 <#
     .SYNOPSIS
         Get a tenent from Netbox
-    
+
     .DESCRIPTION
         A detailed description of the Get-NetboxTenant function.
-    
+
     .PARAMETER Name
         The specific name of the tenant. Must match exactly as is defined in Netbox
-    
+
     .PARAMETER Id
         The database ID of the tenant
-    
+
     .PARAMETER Query
         A standard search query that will match one or more tenants.
-    
+
     .PARAMETER Slug
         The specific slug of the tenant. Must match exactly as is defined in Netbox
-    
+
     .PARAMETER Group
         The specific group as defined in Netbox.
-    
+
     .PARAMETER GroupID
         The database ID of the group in Netbox
-    
+
     .PARAMETER CustomFields
         Hashtable in the format @{"field_name" = "value"} to search
-    
+
     .PARAMETER Limit
         Limit the number of results to this number
-    
+
     .PARAMETER Offset
         Start the search at this index in results
-    
+
     .PARAMETER Raw
         Return the unparsed data from the HTTP request
-    
+
     .EXAMPLE
         PS C:\> Get-NetboxTenant
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(DefaultParameterSetName = 'Query')]
     param
     (
         [Parameter(ParameterSetName = 'Query',
                    Position = 0)]
         [string]$Name,
-        
+
         [Parameter(ParameterSetName = 'ByID')]
         [uint32[]]$Id,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Slug,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [string]$Group,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$GroupID,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [hashtable]$CustomFields,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-        
+
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($Tenant_ID in $Id) {
                 $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'tenants', $Tenant_ID))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-                
+
                 $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-                
+
                 InvokeNetboxRequest -URI $uri -Raw:$Raw
             }
-            
+
             break
         }
-        
+
         default {
             $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'tenants'))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-            
+
             $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-            
+
             InvokeNetboxRequest -URI $uri -Raw:$Raw
-            
+
             break
         }
     }
@@ -2656,7 +2656,7 @@ function Get-NetboxVersion {
 
 #region File Get-NetboxVirtualizationCluster.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -2674,88 +2674,88 @@ function Get-NetboxVirtualizationCluster {
 <#
     .SYNOPSIS
         Obtains virtualization clusters from Netbox.
-    
+
     .DESCRIPTION
         Obtains one or more virtualization clusters based on provided filters.
-    
+
     .PARAMETER Limit
         Number of results to return per page
-    
+
     .PARAMETER Offset
         The initial index from which to return the results
-    
+
     .PARAMETER Query
         A general query used to search for a cluster
-    
+
     .PARAMETER Name
         Name of the cluster
-    
+
     .PARAMETER Id
         Database ID(s) of the cluster
-    
+
     .PARAMETER Group
         String value of the cluster group.
-    
+
     .PARAMETER Group_Id
         Database ID of the cluster group.
-    
+
     .PARAMETER Type
         String value of the Cluster type.
-    
+
     .PARAMETER Type_Id
         Database ID of the cluster type.
-    
+
     .PARAMETER Site
         String value of the site.
-    
+
     .PARAMETER Site_Id
         Database ID of the site.
-    
+
     .PARAMETER Raw
         A description of the Raw parameter.
-    
+
     .EXAMPLE
         PS C:\> Get-NetboxVirtualizationCluster
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding()]
     param
     (
         [string]$Name,
-        
+
         [Alias('q')]
         [string]$Query,
-        
+
         [uint16[]]$Id,
-        
+
         [string]$Group,
-        
+
         [uint16]$Group_Id,
-        
+
         [string]$Type,
-        
+
         [uint16]$Type_Id,
-        
+
         [string]$Site,
-        
+
         [uint16]$Site_Id,
-        
+
         [uint16]$Limit,
-        
+
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'clusters'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
+
     $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
+
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
 
@@ -2763,7 +2763,7 @@ function Get-NetboxVirtualizationCluster {
 
 #region File Get-NetboxVirtualizationClusterGroup.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -2782,28 +2782,28 @@ function Get-NetboxVirtualizationClusterGroup {
     param
     (
         [string]$Name,
-        
+
         [string]$Slug,
-        
+
         [string]$Description,
-        
+
         [string]$Query,
-        
+
         [uint32[]]$Id,
-        
+
         [uint16]$Limit,
-        
+
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'cluster-groups'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
+
     $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
+
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
 
@@ -2811,7 +2811,7 @@ function Get-NetboxVirtualizationClusterGroup {
 
 #region File Get-NetboxVirtualMachine.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -2829,141 +2829,141 @@ function Get-NetboxVirtualMachine {
 <#
     .SYNOPSIS
         Obtains virtual machines from Netbox.
-    
+
     .DESCRIPTION
         Obtains one or more virtual machines based on provided filters.
-    
+
     .PARAMETER Limit
         Number of results to return per page
-    
+
     .PARAMETER Offset
         The initial index from which to return the results
-    
+
     .PARAMETER Query
         A general query used to search for a VM
-    
+
     .PARAMETER Name
         Name of the VM
-    
+
     .PARAMETER Id
         Database ID of the VM
-    
+
     .PARAMETER Status
         Status of the VM
-    
+
     .PARAMETER Tenant
         String value of tenant
-    
+
     .PARAMETER Tenant_ID
         Database ID of the tenant.
-    
+
     .PARAMETER Platform
         String value of the platform
-    
+
     .PARAMETER Platform_ID
         Database ID of the platform
-    
+
     .PARAMETER Cluster_Group
         String value of the cluster group.
-    
+
     .PARAMETER Cluster_Group_Id
         Database ID of the cluster group.
-    
+
     .PARAMETER Cluster_Type
         String value of the Cluster type.
-    
+
     .PARAMETER Cluster_Type_Id
         Database ID of the cluster type.
-    
+
     .PARAMETER Cluster_Id
         Database ID of the cluster.
-    
+
     .PARAMETER Site
         String value of the site.
-    
+
     .PARAMETER Site_Id
         Database ID of the site.
-    
+
     .PARAMETER Role
         String value of the role.
-    
+
     .PARAMETER Role_Id
         Database ID of the role.
-    
+
     .PARAMETER Raw
         A description of the Raw parameter.
-    
+
     .PARAMETER TenantID
         Database ID of tenant
-    
+
     .PARAMETER PlatformID
         Database ID of the platform
-    
+
     .PARAMETER id__in
         Database IDs of VMs
-    
+
     .EXAMPLE
         PS C:\> Get-NetboxVirtualMachine
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding()]
     param
     (
         [Alias('q')]
         [string]$Query,
-        
+
         [string]$Name,
-        
+
         [uint16[]]$Id,
-        
+
         [object]$Status,
-        
+
         [string]$Tenant,
-        
+
         [uint16]$Tenant_ID,
-        
+
         [string]$Platform,
-        
+
         [uint16]$Platform_ID,
-        
+
         [string]$Cluster_Group,
-        
+
         [uint16]$Cluster_Group_Id,
-        
+
         [string]$Cluster_Type,
-        
+
         [uint16]$Cluster_Type_Id,
-        
+
         [uint16]$Cluster_Id,
-        
+
         [string]$Site,
-        
+
         [uint16]$Site_Id,
-        
+
         [string]$Role,
-        
+
         [uint16]$Role_Id,
-        
+
         [uint16]$Limit,
-        
+
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     if ($null -ne $Status) {
         $PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
     }
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
+
     $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
+
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
 
@@ -2971,7 +2971,7 @@ function Get-NetboxVirtualMachine {
 
 #region File Get-NetboxVirtualMachineInterface.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -2989,80 +2989,80 @@ function Get-NetboxVirtualMachineInterface {
 <#
     .SYNOPSIS
         Gets VM interfaces
-    
+
     .DESCRIPTION
         Obtains the interface objects for one or more VMs
-    
+
     .PARAMETER Limit
         Number of results to return per page.
-    
+
     .PARAMETER Offset
         The initial index from which to return the results.
-    
+
     .PARAMETER Id
         Database ID of the interface
-    
+
     .PARAMETER Name
         Name of the interface
-    
+
     .PARAMETER Enabled
         True/False if the interface is enabled
-    
+
     .PARAMETER MTU
         Maximum Transmission Unit size. Generally 1500 or 9000
-    
+
     .PARAMETER Virtual_Machine_Id
         ID of the virtual machine to which the interface(s) are assigned.
-    
+
     .PARAMETER Virtual_Machine
         Name of the virtual machine to get interfaces
-    
+
     .PARAMETER MAC_Address
         MAC address assigned to the interface
-    
+
     .PARAMETER Raw
         A description of the Raw parameter.
-    
+
     .EXAMPLE
         PS C:\> Get-NetboxVirtualMachineInterface
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding()]
     param
     (
         [Parameter(ValueFromPipeline = $true)]
         [uint16]$Id,
-        
+
         [string]$Name,
-        
+
         [string]$Query,
-        
+
         [boolean]$Enabled,
-        
+
         [uint16]$MTU,
-        
+
         [uint16]$Virtual_Machine_Id,
-        
+
         [string]$Virtual_Machine,
-        
+
         [string]$MAC_Address,
-        
+
         [uint16]$Limit,
-        
+
         [uint16]$Offset,
-        
+
         [switch]$Raw
     )
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'interfaces'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
+
     $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-    
+
     InvokeNetboxRequest -URI $uri -Raw:$Raw
 }
 
@@ -3182,7 +3182,7 @@ function InvokeNetboxRequest {
 
 #region File New-NetboxCircuit.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
@@ -3206,45 +3206,45 @@ function New-NetboxCircuit {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [string]$CID,
-        
+
         [Parameter(Mandatory = $true)]
         [uint32]$Provider,
-        
+
         [Parameter(Mandatory = $true)]
         [uint32]$Type,
-        
+
         #[ValidateSet('Active', 'Planned', 'Provisioning', 'Offline', 'Deprovisioning', 'Decommissioned ')]
         [uint16]$Status = 'Active',
-        
+
         [string]$Description,
-        
+
         [uint32]$Tenant,
-        
+
         [string]$Termination_A,
-        
+
         [datetime]$Install_Date,
-        
+
         [string]$Termination_Z,
-        
+
         [ValidateRange(0, 2147483647)]
         [uint32]$Commit_Rate,
-        
+
         [string]$Comments,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [switch]$Force,
-        
+
         [switch]$Raw
     )
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuits'))
     $Method = 'POST'
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
+
     $URI = BuildNewURI -Segments $URIComponents.Segments
-    
+
     if ($Force -or $PSCmdlet.ShouldProcess($CID, 'Create new circuit')) {
         InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
     }
@@ -3254,7 +3254,7 @@ function New-NetboxCircuit {
 
 #region File New-NetboxDCIMDevice.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -3276,72 +3276,72 @@ function New-NetboxDCIMDevice {
     (
         [Parameter(Mandatory = $true)]
         [string]$Name,
-        
+
         [Parameter(Mandatory = $true)]
         [object]$Device_Role,
-        
+
         [Parameter(Mandatory = $true)]
         [object]$Device_Type,
-        
+
         [Parameter(Mandatory = $true)]
         [uint16]$Site,
-        
+
         [object]$Status = 'Active',
-        
+
         [uint16]$Platform,
-        
+
         [uint16]$Tenant,
-        
+
         [uint16]$Cluster,
-        
+
         [uint16]$Rack,
-        
+
         [uint16]$Position,
-        
+
         [object]$Face,
-        
+
         [string]$Serial,
-        
+
         [string]$Asset_Tag,
-        
+
         [uint16]$Virtual_Chassis,
-        
+
         [uint16]$VC_Priority,
-        
+
         [uint16]$VC_Position,
-        
+
         [uint16]$Primary_IP4,
-        
+
         [uint16]$Primary_IP6,
-        
+
         [string]$Comments,
-        
+
         [hashtable]$Custom_Fields
     )
     #endregion Parameters
-    
+
 #    if ($null -ne $Device_Role) {
 #        # Validate device role?
 #    }
-#    
+
 #    if ($null -ne $Device_Type) {
 #        # Validate device type?
 #    }
-#    
+
 #    if ($null -ne $Status) {
 #        $PSBoundParameters.Status = ValidateDCIMChoice -ProvidedValue $Status -DeviceStatus
 #    }
-#    
+
 #    if ($null -ne $Face) {
 #        $PSBoundParameters.Face = ValidateDCIMChoice -ProvidedValue $Face -DeviceFace
 #    }
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('dcim', 'devices'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-    
+
     $URI = BuildNewURI -Segments $URIComponents.Segments
-    
+
     InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
 }
 
@@ -3480,7 +3480,7 @@ function New-NetboxIPAMAddress {
 
 #region File New-NetboxIPAMPrefix.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -3500,43 +3500,43 @@ function New-NetboxIPAMPrefix {
     (
         [Parameter(Mandatory = $true)]
         [string]$Prefix,
-        
+
         [object]$Status = 'Active',
-        
+
         [uint16]$Tenant,
-        
+
         [object]$Role,
-        
+
         [bool]$IsPool,
-        
+
         [string]$Description,
-        
+
         [uint16]$Site,
-        
+
         [uint16]$VRF,
-        
+
         [uint16]$VLAN,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [switch]$Raw
     )
-    
+
 #    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -PrefixStatus
-    
+
     <#
     # As of 2018/10/18, this does not appear to be a validated IPAM choice
     if ($null -ne $Role) {
         $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -PrefixRole
     }
     #>
-    
+
     $segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $segments -ParametersDictionary $PSBoundParameters
-    
+
     $URI = BuildNewURI -Segments $URIComponents.Segments
-    
+
     InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
 }
 
@@ -3548,79 +3548,79 @@ function New-NetboxIPAMVLAN {
 <#
     .SYNOPSIS
         Create a new VLAN
-    
+
     .DESCRIPTION
         Create a new VLAN in Netbox with a status of Active by default.
-    
+
     .PARAMETER VID
         The VLAN ID.
-    
+
     .PARAMETER Name
         The name of the VLAN.
-    
+
     .PARAMETER Status
         Status of the VLAN. Defaults to Active
-    
+
     .PARAMETER Tenant
         Tenant ID
-    
+
     .PARAMETER Role
         Role such as anycast, loopback, etc... Defaults to nothing
-    
+
     .PARAMETER Description
         Description of IP address
-    
+
     .PARAMETER Custom_Fields
         Custom field hash table. Will be validated by the API service
-    
+
     .PARAMETER Raw
         Return raw results from API service
-    
+
     .PARAMETER Address
         IP address in CIDR notation: 192.168.1.1/24
-    
+
     .EXAMPLE
         PS C:\> Create-NetboxIPAMAddress
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param
     (
         [Parameter(Mandatory = $true)]
         [uint16]$VID,
-        
+
         [Parameter(Mandatory = $true)]
         [string]$Name,
-        
+
         [object]$Status = 'Active',
-        
+
         [uint16]$Tenant,
-        
+
         [object]$Role,
-        
+
         [string]$Description,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [switch]$Raw
     )
-    
+
 #    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -VLANStatus
-#    
+
 #    if ($null -ne $Role) {
 #        $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -IPAddressRole
 #    }
-    
+
     $segments = [System.Collections.ArrayList]::new(@('ipam', 'vlans'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $segments -ParametersDictionary $PSBoundParameters
-    
+
     $URI = BuildNewURI -Segments $URIComponents.Segments
-    
+
     InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
 }
 
@@ -3628,7 +3628,7 @@ function New-NetboxIPAMVLAN {
 
 #region File New-NetboxVirtualMachine.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -3649,48 +3649,48 @@ function New-NetboxVirtualMachine {
     (
         [Parameter(Mandatory = $true)]
         [string]$Name,
-        
+
         [Parameter(Mandatory = $true)]
         [uint16]$Cluster,
-        
+
         [uint16]$Tenant,
-        
+
         [object]$Status = 'Active',
-        
+
         [uint16]$Role,
-        
+
         [uint16]$Platform,
-        
+
         [uint16]$vCPUs,
-        
+
         [uint16]$Memory,
-        
+
         [uint16]$Disk,
-        
+
         [uint16]$Primary_IP4,
-        
+
         [uint16]$Primary_IP6,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [string]$Comments
     )
-    
+
 #    $ModelDefinition = $script:NetboxConfig.APIDefinition.definitions.WritableVirtualMachineWithConfigContext
-#    
+
 #    # Validate the status against the APIDefinition
 #    if ($ModelDefinition.properties.status.enum -inotcontains $Status) {
 #        throw ("Invalid value [] for Status. Must be one of []" -f $Status, ($ModelDefinition.properties.status.enum -join ', '))
 #    }
-#    
+
     #$PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
-    
+
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
-    
+
     $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-    
+
     $URI = BuildNewURI -Segments $URIComponents.Segments
-    
+
     InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters
 }
 
@@ -3702,7 +3702,7 @@ function New-NetboxVirtualMachine {
 
 #region File Remove-NetboxDCIMDevice.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -3720,23 +3720,23 @@ function Remove-NetboxDCIMDevice {
 <#
     .SYNOPSIS
         Delete a device
-    
+
     .DESCRIPTION
         Deletes a device from Netbox by ID
-    
+
     .PARAMETER Id
         Database ID of the device
-    
+
     .PARAMETER Force
         Force deletion without any prompts
-    
+
     .EXAMPLE
         PS C:\> Remove-NetboxDCIMDevice -Id $value1
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'High',
                    SupportsShouldProcess = $true)]
     param
@@ -3744,30 +3744,30 @@ function Remove-NetboxDCIMDevice {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
-        
+
         [switch]$Force
     )
-    
+
     begin {
-        
+
     }
-    
+
     process {
         foreach ($DeviceID in $Id) {
             $CurrentDevice = Get-NetboxDCIMDevice -Id $DeviceID -ErrorAction Stop
-            
+
             if ($Force -or $pscmdlet.ShouldProcess("Name: $($CurrentDevice.Name) | ID: $($CurrentDevice.Id)", "Remove")) {
                 $Segments = [System.Collections.ArrayList]::new(@('dcim', 'devices', $CurrentDevice.Id))
-                
+
                 $URI = BuildNewURI -Segments $Segments
-                
+
                 InvokeNetboxRequest -URI $URI -Method DELETE
             }
         }
     }
-    
+
     end {
-        
+
     }
 }
 
@@ -3775,7 +3775,7 @@ function Remove-NetboxDCIMDevice {
 
 #region File Remove-NetboxDCIMInterface.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -3793,23 +3793,23 @@ function Remove-NetboxDCIMInterface {
 <#
     .SYNOPSIS
         Removes an interface
-    
+
     .DESCRIPTION
         Removes an interface by ID from a device
-    
+
     .PARAMETER Id
         A description of the Id parameter.
-    
+
     .PARAMETER Force
         A description of the Force parameter.
-    
+
     .EXAMPLE
         		PS C:\> Remove-NetboxDCIMInterface -Id $value1
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'High',
                    SupportsShouldProcess = $true)]
     param
@@ -3817,30 +3817,30 @@ function Remove-NetboxDCIMInterface {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
-        
+
         [switch]$Force
     )
-    
+
     begin {
-        
+
     }
-    
+
     process {
         foreach ($InterfaceId in $Id) {
             $CurrentInterface = Get-NetboxDCIMInterface -Id $InterfaceId -ErrorAction Stop
-            
+
             if ($Force -or $pscmdlet.ShouldProcess("Name: $($CurrentInterface.Name) | ID: $($CurrentInterface.Id)", "Remove")) {
                 $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces', $CurrentInterface.Id))
-                
+
                 $URI = BuildNewURI -Segments $Segments
-                
+
                 InvokeNetboxRequest -URI $URI -Method DELETE
             }
         }
     }
-    
+
     end {
-        
+
     }
 }
 
@@ -3848,7 +3848,7 @@ function Remove-NetboxDCIMInterface {
 
 #region File Remove-NetboxDCIMInterfaceConnection.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -3871,32 +3871,32 @@ function Remove-NetboxDCIMInterfaceConnection {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
-        
+
         [switch]$Force
     )
-    
+
     begin {
-        
+
     }
-    
+
     process {
         foreach ($ConnectionID in $Id) {
             $CurrentConnection = Get-NetboxDCIMInterfaceConnection -Id $ConnectionID -ErrorAction Stop
-            
+
             if ($Force -or $pscmdlet.ShouldProcess("Connection ID $($ConnectionID.Id)", "REMOVE")) {
                 $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interface-connections', $CurrentConnection.Id))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments
-                
+
                 InvokeNetboxRequest -URI $URI -Method DELETE
             }
         }
     }
-    
+
     end {
-        
+
     }
 }
 
@@ -3968,7 +3968,7 @@ function Remove-NetboxIPAMAddress {
 
 #region File Remove-NetboxVirtualMachine.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -3986,23 +3986,23 @@ function Remove-NetboxVirtualMachine {
 <#
     .SYNOPSIS
         Delete a virtual machine
-    
+
     .DESCRIPTION
         Deletes a virtual machine from Netbox by ID
-    
+
     .PARAMETER Id
         Database ID of the virtual machine
-    
+
     .PARAMETER Force
         Force deletion without any prompts
-    
+
     .EXAMPLE
         PS C:\> Remove-NetboxVirtualMachine -Id $value1
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'High',
                    SupportsShouldProcess = $true)]
     param
@@ -4010,30 +4010,30 @@ function Remove-NetboxVirtualMachine {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
-        
+
         [switch]$Force
     )
-    
+
     begin {
-        
+
     }
-    
+
     process {
         foreach ($VMId in $Id) {
             $CurrentVM = Get-NetboxVirtualMachine -Id $VMId -ErrorAction Stop
-            
+
             if ($Force -or $pscmdlet.ShouldProcess("$($CurrentVM.Name)/$($CurrentVM.Id)", "Remove")) {
                 $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines', $CurrentVM.Id))
-                
+
                 $URI = BuildNewURI -Segments $Segments
-                
+
                 InvokeNetboxRequest -URI $URI -Method DELETE
             }
         }
     }
-    
+
     end {
-        
+
     }
 }
 
@@ -4091,7 +4091,7 @@ function Set-NetboxCredential {
 
 #region File Set-NetboxDCIMDevice.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -4112,78 +4112,78 @@ function Set-NetboxDCIMDevice {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
-        
+
         [string]$Name,
-        
+
         [object]$Device_Role,
-        
+
         [object]$Device_Type,
-        
+
         [uint16]$Site,
-        
+
         [object]$Status,
-        
+
         [uint16]$Platform,
-        
+
         [uint16]$Tenant,
-        
+
         [uint16]$Cluster,
-        
+
         [uint16]$Rack,
-        
+
         [uint16]$Position,
-        
+
         [object]$Face,
-        
+
         [string]$Serial,
-        
+
         [string]$Asset_Tag,
-        
+
         [uint16]$Virtual_Chassis,
-        
+
         [uint16]$VC_Priority,
-        
+
         [uint16]$VC_Position,
-        
+
         [uint16]$Primary_IP4,
-        
+
         [uint16]$Primary_IP6,
-        
+
         [string]$Comments,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [switch]$Force
     )
-    
+
     begin {
 #        if ($null -ne $Status) {
 #            $PSBoundParameters.Status = ValidateDCIMChoice -ProvidedValue $Status -DeviceStatus
 #        }
-#        
+
 #        if ($null -ne $Face) {
 #            $PSBoundParameters.Face = ValidateDCIMChoice -ProvidedValue $Face -DeviceFace
 #        }
     }
-    
+
     process {
         foreach ($DeviceID in $Id) {
             $CurrentDevice = Get-NetboxDCIMDevice -Id $DeviceID -ErrorAction Stop
-            
+
             if ($Force -or $pscmdlet.ShouldProcess("$($CurrentDevice.Name)", "Set")) {
                 $Segments = [System.Collections.ArrayList]::new(@('dcim', 'devices', $CurrentDevice.Id))
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments
-                
+
                 InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
             }
         }
     }
-    
+
     end {
-        
+
     }
 }
 
@@ -4191,7 +4191,7 @@ function Set-NetboxDCIMDevice {
 
 #region File Set-NetboxDCIMInterface.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -4213,80 +4213,80 @@ function Set-NetboxDCIMInterface {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
-        
+
         [uint16]$Device,
-        
+
         [string]$Name,
-        
+
         [bool]$Enabled,
-        
+
         [object]$Form_Factor,
-        
+
         [uint16]$MTU,
-        
+
         [string]$MAC_Address,
-        
+
         [bool]$MGMT_Only,
-        
+
         [uint16]$LAG,
-        
+
         [string]$Description,
-        
+
         [ValidateSet('Access', 'Tagged', 'Tagged All', '100', '200', '300', IgnoreCase = $true)]
         [string]$Mode,
-        
+
         [ValidateRange(1, 4094)]
         [uint16]$Untagged_VLAN,
-        
+
         [ValidateRange(1, 4094)]
         [uint16[]]$Tagged_VLANs
     )
-    
+
     begin {
 #        if ($null -ne $Form_Factor) {
 #            $PSBoundParameters.Form_Factor = ValidateDCIMChoice -ProvidedValue $Form_Factor -InterfaceFormFactor
 #        }
-        
+
         if (-not [System.String]::IsNullOrWhiteSpace($Mode)) {
             $PSBoundParameters.Mode = switch ($Mode) {
                 'Access' {
                     100
                     break
                 }
-                
+
                 'Tagged' {
                     200
                     break
                 }
-                
+
                 'Tagged All' {
                     300
                     break
                 }
-                
+
                 default {
                     $_
                 }
             }
         }
     }
-    
+
     process {
         foreach ($InterfaceId in $Id) {
             $CurrentInterface = Get-NetboxDCIMInterface -Id $InterfaceId -ErrorAction Stop
-            
+
             $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces', $CurrentInterface.Id))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-            
+
             $URI = BuildNewURI -Segments $Segments
-            
+
             InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
         }
     }
-    
+
     end {
-        
+
     }
 }
 
@@ -4294,7 +4294,7 @@ function Set-NetboxDCIMInterface {
 
 #region File Set-NetboxDCIMInterfaceConnection.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -4312,32 +4312,32 @@ function Set-NetboxDCIMInterfaceConnection {
 <#
     .SYNOPSIS
         Update an interface connection
-    
+
     .DESCRIPTION
         Update an interface connection
-    
+
     .PARAMETER Id
         A description of the Id parameter.
-    
+
     .PARAMETER Connection_Status
         A description of the Connection_Status parameter.
-    
+
     .PARAMETER Interface_A
         A description of the Interface_A parameter.
-    
+
     .PARAMETER Interface_B
         A description of the Interface_B parameter.
-    
+
     .PARAMETER Force
         A description of the Force parameter.
-    
+
     .EXAMPLE
         PS C:\> Set-NetboxDCIMInterfaceConnection -Id $value1
-    
+
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'Medium',
                    SupportsShouldProcess = $true)]
     param
@@ -4345,45 +4345,45 @@ function Set-NetboxDCIMInterfaceConnection {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
-        
+
         [object]$Connection_Status,
-        
+
         [uint16]$Interface_A,
-        
+
         [uint16]$Interface_B,
-        
+
         [switch]$Force
     )
-    
+
     begin {
 #        if ($null -ne $Connection_Status) {
 #            $PSBoundParameters.Connection_Status = ValidateDCIMChoice -ProvidedValue $Connection_Status -InterfaceConnectionStatus
 #        }
-        
+
         if ((@($ID).Count -gt 1) -and ($Interface_A -or $Interface_B)) {
             throw "Cannot set multiple connections to the same interface"
         }
     }
-    
+
     process {
         foreach ($ConnectionID in $Id) {
             $CurrentConnection = Get-NetboxDCIMInterfaceConnection -Id $ConnectionID -ErrorAction Stop
-            
+
             $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interface-connections', $CurrentConnection.Id))
-            
+
             if ($Force -or $pscmdlet.ShouldProcess("Connection ID $($CurrentConnection.Id)", "Set")) {
-                
+
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments
-                
+
                 InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
             }
         }
     }
-    
+
     end {
-        
+
     }
 }
 
@@ -4420,7 +4420,7 @@ function Set-NetboxHostPort {
         [Parameter(Mandatory = $true)]
         [uint16]$Port
     )
-    
+
     if ($PSCmdlet.ShouldProcess('Netbox Port', 'Set')) {
         $script:NetboxConfig.HostPort = $Port
         $script:NetboxConfig.HostPort
@@ -4441,12 +4441,12 @@ function Set-NetboxHostScheme {
         [ValidateSet('https', 'http', IgnoreCase = $true)]
         [string]$Scheme = 'https'
     )
-    
+
     if ($PSCmdlet.ShouldProcess('Netbox Host Scheme', 'Set')) {
         if ($Scheme -eq 'http') {
             Write-Warning "Connecting via non-secure HTTP is not-recommended"
         }
-        
+
         $script:NetboxConfig.HostScheme = $Scheme
         $script:NetboxConfig.HostScheme
     }
@@ -4576,7 +4576,7 @@ function Set-NetboxIPAMAddress {
 
 #region File Set-NetboxIPAMPrefix.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2021 v5.8.186
@@ -4598,39 +4598,39 @@ function Set-NetboxIPAMPrefix {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
-        
+
         [string]$Prefix,
-        
+
         [string]$Status,
-        
+
         [uint16]$Tenant,
-        
+
         [uint16]$Site,
-        
+
         [uint16]$VRF,
-        
+
         [uint16]$VLAN,
-        
+
         [object]$Role,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [string]$Description,
-        
+
         [switch]$Is_Pool,
-        
+
         [switch]$Force
     )
-    
+
     begin {
         #        Write-Verbose "Validating enum properties"
         #        $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', 0))
         $Method = 'PATCH'
-        #        
+        #
         #        # Value validation
         #        $ModelDefinition = GetModelDefinitionFromURIPath -Segments $Segments -Method $Method
         #        $EnumProperties = GetModelEnumProperties -ModelDefinition $ModelDefinition
-        #        
+        #
         #        foreach ($Property in $EnumProperties.Keys) {
         #            if ($PSBoundParameters.ContainsKey($Property)) {
         #                Write-Verbose "Validating property [$Property] with value [$($PSBoundParameters.$Property)]"
@@ -4639,22 +4639,22 @@ function Set-NetboxIPAMPrefix {
         #                Write-Verbose "User did not provide a value for [$Property]"
         #            }
         #        }
-        #        
+        #
         #        Write-Verbose "Finished enum validation"
     }
-    
+
     process {
         foreach ($PrefixId in $Id) {
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes', $PrefixId))
-            
+
             Write-Verbose "Obtaining Prefix from ID $PrefixId"
             $CurrentPrefix = Get-NetboxIPAMPrefix -Id $PrefixId -ErrorAction Stop
-            
+
             if ($Force -or $PSCmdlet.ShouldProcess($CurrentPrefix.Prefix, 'Set')) {
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments
-                
+
                 InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method $Method
             }
         }
@@ -4719,7 +4719,7 @@ Function Set-NetboxUntrustedSSL {
 
 #region File Set-NetboxVirtualMachine.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -4741,53 +4741,53 @@ function Set-NetboxVirtualMachine {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint16]$Id,
-        
+
         [string]$Name,
-        
+
         [uint16]$Role,
-        
+
         [uint16]$Cluster,
-        
+
         [object]$Status,
-        
+
         [uint16]$Platform,
-        
+
         [uint16]$Primary_IP4,
-        
+
         [uint16]$Primary_IP6,
-        
+
         [byte]$VCPUs,
-        
+
         [uint16]$Memory,
-        
+
         [uint16]$Disk,
-        
+
         [uint16]$Tenant,
-        
+
         [string]$Comments,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [switch]$Force
     )
-    
+
 #    if ($null -ne $Status) {
 #        $PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
 #    }
-#    
+
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines', $Id))
-    
+
     Write-Verbose "Obtaining VM from ID $Id"
-    
+
     #$CurrentVM = Get-NetboxVirtualMachine -Id $Id -ErrorAction Stop
-    
+
     Write-Verbose "Finished obtaining VM"
-    
+
     if ($Force -or $pscmdlet.ShouldProcess($ID, "Set properties on VM ID")) {
         $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-        
+
         $URI = BuildNewURI -Segments $URIComponents.Segments
-        
+
         InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
     }
 }
@@ -4796,7 +4796,7 @@ function Set-NetboxVirtualMachine {
 
 #region File Set-NetboxVirtualMachineInterface.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -4819,46 +4819,46 @@ function Set-NetboxVirtualMachineInterface {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
-        
+
         [string]$Name,
-        
+
         [string]$MAC_Address,
-        
+
         [uint16]$MTU,
-        
+
         [string]$Description,
-        
+
         [boolean]$Enabled,
-        
+
         [uint16]$Virtual_Machine,
-        
+
         [switch]$Force
     )
-    
+
     begin {
-        
+
     }
-    
+
     process {
         foreach ($VMI_ID in $Id) {
             Write-Verbose "Obtaining VM Interface..."
             $CurrentVMI = Get-NetboxVirtualMachineInterface -Id $VMI_ID -ErrorAction Stop
             Write-Verbose "Finished obtaining VM Interface"
-            
+
             $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'interfaces', $CurrentVMI.Id))
-            
+
             if ($Force -or $pscmdlet.ShouldProcess("Interface $($CurrentVMI.Id) on VM $($CurrentVMI.Virtual_Machine.Name)", "Set")) {
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-                
+
                 $URI = BuildNewURI -Segments $URIComponents.Segments
-                
+
                 InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
             }
         }
     }
-    
+
     end {
-        
+
     }
 }
 
@@ -4891,7 +4891,7 @@ function SetupNetboxConfigVariable {
 
 #region File Tenancy.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2018 v5.5.152
@@ -4932,7 +4932,7 @@ function SetupNetboxConfigVariable {
 
 #region File ThrowNetboxRESTError.ps1
 
-<#	
+<#
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
@@ -4948,12 +4948,12 @@ function SetupNetboxConfigVariable {
 
 function ThrowNetboxRESTError {
     $uriSegments = [System.Collections.ArrayList]::new(@('fake', 'url'))
-    
+
     $URIParameters = @{
     }
-    
+
     $uri = BuildNewURI -Segments $uriSegments -Parameters $URIParameters
-    
+
     InvokeNetboxRequest -URI $uri -Raw
 }
 
