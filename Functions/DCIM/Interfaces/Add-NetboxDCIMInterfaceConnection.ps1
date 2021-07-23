@@ -13,7 +13,7 @@
 
 
 function Add-NetboxDCIMInterfaceConnection {
-<#
+    <#
     .SYNOPSIS
         Create a new connection between two interfaces
 
@@ -54,8 +54,8 @@ function Add-NetboxDCIMInterfaceConnection {
     }
 
     # Verify if both Interfaces exist
-    $I_A = Get-NetboxDCIMInterface -Id $Interface_A -ErrorAction Stop
-    $I_B = Get-NetboxDCIMInterface -Id $Interface_B -ErrorAction Stop
+    Get-NetboxDCIMInterface -Id $Interface_A -ErrorAction Stop | Out-null
+    Get-NetboxDCIMInterface -Id $Interface_B -ErrorAction Stop | Out-null
 
     $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interface-connections'))
 
