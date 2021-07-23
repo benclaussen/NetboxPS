@@ -15,12 +15,12 @@
 
 function New-NetboxCircuit {
     [CmdletBinding(ConfirmImpact = 'Low',
-                   SupportsShouldProcess = $true)]
+        SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
     param
     (
         [Parameter(Mandatory = $true,
-                   ValueFromPipelineByPropertyName = $true)]
+            ValueFromPipelineByPropertyName = $true)]
         [string]$CID,
 
         [Parameter(Mandatory = $true)]
@@ -54,14 +54,16 @@ function New-NetboxCircuit {
         [switch]$Raw
     )
 
-    $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuits'))
-    $Method = 'POST'
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuits'))
+        $Method = 'POST'
 
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
 
-    $URI = BuildNewURI -Segments $URIComponents.Segments
+        $URI = BuildNewURI -Segments $URIComponents.Segments
 
-    if ($Force -or $PSCmdlet.ShouldProcess($CID, 'Create new circuit')) {
-        InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        if ($Force -or $PSCmdlet.ShouldProcess($CID, 'Create new circuit')) {
+            InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        }
     }
 }

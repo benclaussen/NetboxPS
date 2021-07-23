@@ -14,11 +14,11 @@
 
 function Set-NetboxVirtualMachine {
     [CmdletBinding(ConfirmImpact = 'Medium',
-                   SupportsShouldProcess = $true)]
+        SupportsShouldProcess = $true)]
     param
     (
         [Parameter(Mandatory = $true,
-                   ValueFromPipelineByPropertyName = $true)]
+            ValueFromPipelineByPropertyName = $true)]
         [uint16]$Id,
 
         [string]$Name,
@@ -50,23 +50,25 @@ function Set-NetboxVirtualMachine {
         [switch]$Force
     )
 
-#    if ($null -ne $Status) {
-#        $PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
-#    }
+    #    if ($null -ne $Status) {
+    #        $PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
+    #    }
 
-    $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines', $Id))
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines', $Id))
 
-    Write-Verbose "Obtaining VM from ID $Id"
+        Write-Verbose "Obtaining VM from ID $Id"
 
-    #$CurrentVM = Get-NetboxVirtualMachine -Id $Id -ErrorAction Stop
+        #$CurrentVM = Get-NetboxVirtualMachine -Id $Id -ErrorAction Stop
 
-    Write-Verbose "Finished obtaining VM"
+        Write-Verbose "Finished obtaining VM"
 
-    if ($Force -or $pscmdlet.ShouldProcess($ID, "Set properties on VM ID")) {
-        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+        if ($Force -or $pscmdlet.ShouldProcess($ID, "Set properties on VM ID")) {
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
 
-        $URI = BuildNewURI -Segments $URIComponents.Segments
+            $URI = BuildNewURI -Segments $URIComponents.Segments
 
-        InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+            InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+        }
     }
 }

@@ -81,27 +81,29 @@ function Get-NetboxDCIMSite {
         [switch]$Raw
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'ById' {
-            foreach ($Site_ID in $ID) {
-                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'sites', $Site_Id))
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'ById' {
+                foreach ($Site_ID in $ID) {
+                    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'sites', $Site_Id))
 
-                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
+                    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
+
+                    $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+                    InvokeNetboxRequest -URI $URI -Raw:$Raw
+                }
+            }
+
+            default {
+                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'sites'))
+
+                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
 
                 $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
 
                 InvokeNetboxRequest -URI $URI -Raw:$Raw
             }
-        }
-
-        default {
-            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'sites'))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-
-            $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-            InvokeNetboxRequest -URI $URI -Raw:$Raw
         }
     }
 }

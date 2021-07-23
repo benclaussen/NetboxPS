@@ -13,7 +13,7 @@
 
 
 function Get-NetboxVirtualMachineInterface {
-<#
+    <#
     .SYNOPSIS
         Gets VM interfaces
 
@@ -84,11 +84,13 @@ function Get-NetboxVirtualMachineInterface {
         [switch]$Raw
     )
 
-    $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'interfaces'))
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'interfaces'))
 
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
 
-    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+        $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
 
-    InvokeNetboxRequest -URI $uri -Raw:$Raw
+        InvokeNetboxRequest -URI $uri -Raw:$Raw
+    }
 }

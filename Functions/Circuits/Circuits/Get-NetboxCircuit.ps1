@@ -13,7 +13,7 @@
 
 
 function Get-NetboxCircuit {
-<#
+    <#
     .SYNOPSIS
         Gets one or more circuits
 
@@ -105,27 +105,29 @@ function Get-NetboxCircuit {
         [switch]$Raw
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'ById' {
-            foreach ($i in $ID) {
-                $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuits', $i))
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'ById' {
+                foreach ($i in $ID) {
+                    $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuits', $i))
 
-                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
+                    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
+
+                    $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+                    InvokeNetboxRequest -URI $URI -Raw:$Raw
+                }
+            }
+
+            default {
+                $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuits'))
+
+                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
 
                 $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
 
                 InvokeNetboxRequest -URI $URI -Raw:$Raw
             }
-        }
-
-        default {
-            $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuits'))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-
-            $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-            InvokeNetboxRequest -URI $URI -Raw:$Raw
         }
     }
 }

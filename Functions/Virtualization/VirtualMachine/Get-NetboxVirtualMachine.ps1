@@ -13,7 +13,7 @@
 
 
 function Get-NetboxVirtualMachine {
-<#
+    <#
     .SYNOPSIS
         Obtains virtual machines from Netbox.
 
@@ -141,15 +141,17 @@ function Get-NetboxVirtualMachine {
         [switch]$Raw
     )
 
-    if ($null -ne $Status) {
-        $PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
+    process {
+        if ($null -ne $Status) {
+            $PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
+        }
+
+        $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
+
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+        $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+        InvokeNetboxRequest -URI $uri -Raw:$Raw
     }
-
-    $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
-
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
-    $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-    InvokeNetboxRequest -URI $uri -Raw:$Raw
 }

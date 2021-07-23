@@ -47,15 +47,17 @@ function Get-NetboxDCIMInterface {
         [switch]$Raw
     )
 
-    if ($null -ne $Form_Factor) {
-        $PSBoundParameters.Form_Factor = ValidateDCIMChoice -ProvidedValue $Form_Factor -InterfaceFormFactor
+    process {
+        if ($null -ne $Form_Factor) {
+            $PSBoundParameters.Form_Factor = ValidateDCIMChoice -ProvidedValue $Form_Factor -InterfaceFormFactor
+        }
+
+        $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces'))
+
+        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+        $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+        InvokeNetboxRequest -URI $URI -Raw:$Raw
     }
-
-    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces'))
-
-    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-
-    $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-    InvokeNetboxRequest -URI $URI -Raw:$Raw
 }
