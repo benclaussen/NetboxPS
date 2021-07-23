@@ -13,12 +13,13 @@
 
 
 function Set-NetboxDCIMInterface {
-    [CmdletBinding()]
+    [CmdletBinding(ConfirmImpact = 'Medium',
+        SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
     param
     (
         [Parameter(Mandatory = $true,
-                   ValueFromPipelineByPropertyName = $true)]
+            ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
 
         [uint16]$Device,
@@ -50,9 +51,9 @@ function Set-NetboxDCIMInterface {
     )
 
     begin {
-#        if ($null -ne $Form_Factor) {
-#            $PSBoundParameters.Form_Factor = ValidateDCIMChoice -ProvidedValue $Form_Factor -InterfaceFormFactor
-#        }
+        #        if ($null -ne $Form_Factor) {
+        #            $PSBoundParameters.Form_Factor = ValidateDCIMChoice -ProvidedValue $Form_Factor -InterfaceFormFactor
+        #        }
 
         if (-not [System.String]::IsNullOrWhiteSpace($Mode)) {
             $PSBoundParameters.Mode = switch ($Mode) {
@@ -88,7 +89,9 @@ function Set-NetboxDCIMInterface {
 
             $URI = BuildNewURI -Segments $Segments
 
-            InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+            if ($Force -or $pscmdlet.ShouldProcess("Interface ID $($CurrentInterface.Id)", "Set")) {
+                InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+            }
         }
     }
 

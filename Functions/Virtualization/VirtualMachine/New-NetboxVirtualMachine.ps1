@@ -13,7 +13,8 @@
 
 
 function New-NetboxVirtualMachine {
-    [CmdletBinding()]
+    [CmdletBinding(ConfirmImpact = 'low',
+        SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
     param
     (
@@ -46,12 +47,12 @@ function New-NetboxVirtualMachine {
         [string]$Comments
     )
 
-#    $ModelDefinition = $script:NetboxConfig.APIDefinition.definitions.WritableVirtualMachineWithConfigContext
+    #    $ModelDefinition = $script:NetboxConfig.APIDefinition.definitions.WritableVirtualMachineWithConfigContext
 
-#    # Validate the status against the APIDefinition
-#    if ($ModelDefinition.properties.status.enum -inotcontains $Status) {
-#        throw ("Invalid value [] for Status. Must be one of []" -f $Status, ($ModelDefinition.properties.status.enum -join ', '))
-#    }
+    #    # Validate the status against the APIDefinition
+    #    if ($ModelDefinition.properties.status.enum -inotcontains $Status) {
+    #        throw ("Invalid value [] for Status. Must be one of []" -f $Status, ($ModelDefinition.properties.status.enum -join ', '))
+    #    }
 
     #$PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
 
@@ -61,7 +62,9 @@ function New-NetboxVirtualMachine {
 
     $URI = BuildNewURI -Segments $URIComponents.Segments
 
-    InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters
+    if ($PSCmdlet.ShouldProcess($name, 'Create new Virtual Machine')) {
+        InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters
+    }
 }
 
 

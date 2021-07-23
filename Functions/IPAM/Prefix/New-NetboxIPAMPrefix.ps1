@@ -13,6 +13,8 @@
 
 
 function New-NetboxIPAMPrefix {
+    [CmdletBinding(ConfirmImpact = 'low',
+        SupportsShouldProcess = $true)]
     [CmdletBinding()]
     param
     (
@@ -40,7 +42,7 @@ function New-NetboxIPAMPrefix {
         [switch]$Raw
     )
 
-#    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -PrefixStatus
+    #    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -PrefixStatus
 
     <#
     # As of 2018/10/18, this does not appear to be a validated IPAM choice
@@ -55,5 +57,7 @@ function New-NetboxIPAMPrefix {
 
     $URI = BuildNewURI -Segments $URIComponents.Segments
 
-    InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
+    if ($PSCmdlet.ShouldProcess($Prefix, 'Create new Prefix')) {
+        InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
+    }
 }

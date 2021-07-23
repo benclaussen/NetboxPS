@@ -1,5 +1,5 @@
 ﻿function New-NetboxIPAMVLAN {
-<#
+    <#
     .SYNOPSIS
         Create a new VLAN
 
@@ -40,7 +40,8 @@
         Additional information about the function.
 #>
 
-    [CmdletBinding()]
+    [CmdletBinding(ConfirmImpact = 'low',
+        SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
     param
     (
@@ -63,11 +64,11 @@
         [switch]$Raw
     )
 
-#    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -VLANStatus
+    #    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -VLANStatus
 
-#    if ($null -ne $Role) {
-#        $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -IPAddressRole
-#    }
+    #    if ($null -ne $Role) {
+    #        $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -IPAddressRole
+    #    }
 
     $segments = [System.Collections.ArrayList]::new(@('ipam', 'vlans'))
 
@@ -75,5 +76,7 @@
 
     $URI = BuildNewURI -Segments $URIComponents.Segments
 
-    InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
+    if ($PSCmdlet.ShouldProcess($nae, 'Create new Vlan $($vid)')) {
+        InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
+    }
 }
