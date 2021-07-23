@@ -50,6 +50,12 @@ function New-NetboxIPAMAddress {
     .PARAMETER Dns_name
         DNS Name of IP address (example : netbox.example.com)
 
+    .PARAMETER Assigned_Object_Type
+        Assigned Object Type dcim.interface or virtualization.vminterface
+
+    .PARAMETER Assigned_Object_Id
+        Assigned Object ID
+
     .PARAMETER Force
         Do not prompt for confirmation to create IP.
 
