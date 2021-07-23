@@ -63,7 +63,9 @@ function New-NetboxIPAMAddress {
         Return raw results from API service
 
     .EXAMPLE
-        PS C:\> Create-NetboxIPAMAddress
+        New-NetboxIPAMAddress -Address 192.0.2.1/32
+
+        Add new IP Address 192.0.2.1/32 with status active
 
     .NOTES
         Additional information about the function.
