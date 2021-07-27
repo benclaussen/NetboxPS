@@ -14,7 +14,7 @@
 
 
 function Get-NetboxDCIMSite {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
     [OutputType([pscustomobject])]
     param
     (
@@ -107,4 +107,3 @@ function Get-NetboxDCIMSite {
         }
     }
 }
-
