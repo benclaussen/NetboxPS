@@ -38,6 +38,7 @@
 #>
 [CmdletBinding(DefaultParameterSetName = 'IncreaseVersion')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
 param
 (
     [Parameter(ParameterSetName = 'SkipVersion')]
