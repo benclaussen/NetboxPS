@@ -47,7 +47,7 @@ Describe "Setup tests" -Tag 'Core', 'Setup' -Fixture {
         }
 
         It "Checks the set credentials" {
-            $Creds = Set-NetboxCredential -Token (ConvertTo-SecureString -String "faketoken" -Force -AsPlainText)
+            Set-NetboxCredential -Token (ConvertTo-SecureString -String "faketoken" -Force -AsPlainText)
             (Get-NetboxCredential).GetNetworkCredential().Password | Should -BeExactly "faketoken"
         }
     }
