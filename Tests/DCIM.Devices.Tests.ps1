@@ -28,12 +28,12 @@ Describe -Name "DCIM Devices Tests" -Tag 'DCIM', 'Devices' -Fixture {
     Mock -CommandName 'Invoke-RestMethod' -Verifiable -ModuleName 'NetboxPS' -MockWith {
         # Return a hashtable of the items we would normally pass to Invoke-RestMethod
         return [ordered]@{
-            'Method' = $Method
-            'Uri' = $Uri
-            'Headers' = $Headers
-            'Timeout' = $Timeout
+            'Method'      = $Method
+            'Uri'         = $Uri
+            'Headers'     = $Headers
+            'Timeout'     = $Timeout
             'ContentType' = $ContentType
-            'Body' = $Body
+            'Body'        = $Body
         }
     }
 
@@ -363,7 +363,7 @@ Describe -Name "DCIM Devices Tests" -Tag 'DCIM', 'Devices' -Fixture {
 
         Mock -CommandName "Get-NetboxDCIMDevice" -ModuleName NetboxPS -MockWith {
             return [pscustomobject]@{
-                'Id' = $Id
+                'Id'   = $Id
                 'Name' = $Name
             }
         }

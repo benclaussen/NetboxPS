@@ -28,12 +28,12 @@ Describe -Name "DCIM Interfaces Tests" -Tag 'DCIM', 'Interfaces' -Fixture {
     Mock -CommandName 'Invoke-RestMethod' -Verifiable -ModuleName 'NetboxPS' -MockWith {
         # Return a hashtable of the items we would normally pass to Invoke-RestMethod
         return [ordered]@{
-            'Method' = $Method
-            'Uri' = $Uri
-            'Headers' = $Headers
-            'Timeout' = $Timeout
+            'Method'      = $Method
+            'Uri'         = $Uri
+            'Headers'     = $Headers
+            'Timeout'     = $Timeout
             'ContentType' = $ContentType
-            'Body' = $Body
+            'Body'        = $Body
         }
     }
 
@@ -139,13 +139,13 @@ Describe -Name "DCIM Interfaces Tests" -Tag 'DCIM', 'Interfaces' -Fixture {
 
             It "Should add an interface to a device with lots of properties" {
                 $paramAddNetboxDCIMInterface = @{
-                    Device = 123
-                    Name = "TestInterface"
+                    Device      = 123
+                    Name        = "TestInterface"
                     Form_Factor = '10GBASE-T (10GE)'
-                    MTU = 9000
-                    MGMT_Only = $true
+                    MTU         = 9000
+                    MGMT_Only   = $true
                     Description = 'Test Description'
-                    Mode = 'Access'
+                    Mode        = 'Access'
                 }
 
                 $Result = Add-NetboxDCIMInterface @paramAddNetboxDCIMInterface

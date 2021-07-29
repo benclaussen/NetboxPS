@@ -28,12 +28,12 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
     Mock -CommandName 'Invoke-RestMethod' -Verifiable -ModuleName 'NetboxPS' -MockWith {
         # Return a hashtable of the items we would normally pass to Invoke-RestMethod
         return [ordered]@{
-            'Method' = $Method
-            'Uri' = $Uri
-            'Headers' = $Headers
-            'Timeout' = $Timeout
+            'Method'      = $Method
+            'Uri'         = $Uri
+            'Headers'     = $Headers
+            'Timeout'     = $Timeout
             'ContentType' = $ContentType
-            'Body' = $Body
+            'Body'        = $Body
         }
     }
 
@@ -365,7 +365,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
 
         Mock -CommandName "Get-NetboxVirtualMachine" -ModuleName NetboxPS -MockWith {
             return [pscustomobject]@{
-                'Id' = $Id
+                'Id'   = $Id
                 'Name' = $Name
             }
         }
@@ -406,7 +406,7 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
 
         Mock -CommandName "Get-NetboxVirtualMachineInterface" -ModuleName NetboxPS -MockWith {
             return [pscustomobject]@{
-                'Id' = $Id
+                'Id'   = $Id
                 'Name' = $Name
             }
         }
@@ -426,12 +426,12 @@ Describe -Name "Virtualization tests" -Tag 'Virtualization' -Fixture {
 
             It "Should set an interface to a new name, MTU, MAC address and description" {
                 $paramSetNetboxVirtualMachineInterface = @{
-                    Id = 1234
-                    Name = 'newtestname'
+                    Id          = 1234
+                    Name        = 'newtestname'
                     MAC_Address = '11:22:33:44:55:66'
-                    MTU = 9000
+                    MTU         = 9000
                     Description = "Test description"
-                    Force = $true
+                    Force       = $true
                 }
 
                 $Result = Set-NetboxVirtualMachineInterface @paramSetNetboxVirtualMachineInterface
