@@ -11,6 +11,10 @@
 		IPAM Pester tests
 #>
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+param
+(
+)
 Import-Module Pester
 Remove-Module NetboxPS -Force -ErrorAction SilentlyContinue
 
@@ -29,12 +33,12 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
     Mock -CommandName 'Invoke-RestMethod' -Verifiable -ModuleName 'NetboxPS' -MockWith {
         # Return a hashtable of the items we would normally pass to Invoke-RestMethod
         return [ordered]@{
-            'Method' = $Method
-            'Uri' = $Uri
-            'Headers' = $Headers
-            'Timeout' = $Timeout
+            'Method'      = $Method
+            'Uri'         = $Uri
+            'Headers'     = $Headers
+            'Timeout'     = $Timeout
             'ContentType' = $ContentType
-            'Body' = $Body
+            'Body'        = $Body
         }
     }
 
@@ -422,7 +426,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
             Mock -CommandName "Get-NetboxIPAMAddress" -ModuleName NetboxPS -MockWith {
                 return @{
                     'address' = "10.1.1.1/$Id"
-                    'id' = $id
+                    'id'      = $id
                 }
             }
 
@@ -486,7 +490,7 @@ Describe -Name "IPAM tests" -Tag 'Ipam' -Fixture {
             Mock -CommandName "Get-NetboxIPAMAddress" -ModuleName NetboxPS -MockWith {
                 return @{
                     'address' = '10.1.1.1/24'
-                    'id' = $id
+                    'id'      = $id
                 }
             }
 

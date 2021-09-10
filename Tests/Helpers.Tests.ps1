@@ -11,6 +11,10 @@
 		Helper functions Pester tests
 #>
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+param
+(
+)
 Import-Module Pester
 Remove-Module NetboxPS -Force -ErrorAction SilentlyContinue
 
@@ -88,7 +92,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
 
         Context -Name "Building URI components" -Fixture {
             It "Should give a basic hashtable" {
-                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'param1' = 1}
+                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'param1' = 1 }
 
                 $URIComponents | Should -BeOfType [hashtable]
                 $URIComponents.Keys.Count | Should -BeExactly 2
@@ -100,7 +104,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
             }
 
             It "Should add a single ID parameter to the segments" {
-                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'id' = 123}
+                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'id' = 123 }
 
                 $URIComponents | Should -BeOfType [hashtable]
                 $URIComponents.Keys.Count | Should -BeExactly 2
@@ -111,7 +115,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
             }
 
             It "Should add multiple IDs to the parameters id__in" {
-                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'id' = "123", "456"}
+                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'id' = "123", "456" }
 
                 $URIComponents | Should -BeOfType [hashtable]
                 $URIComponents.Keys.Count | Should -BeExactly 2
@@ -123,7 +127,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
             }
 
             It "Should skip a particular parameter name" {
-                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'param1' = 1; 'param2' = 2} -SkipParameterByName 'param2'
+                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'param1' = 1; 'param2' = 2 } -SkipParameterByName 'param2'
 
                 $URIComponents | Should -BeOfType [hashtable]
                 $URIComponents.Keys.Count | Should -BeExactly 2
@@ -136,7 +140,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
             }
 
             It "Should add a query (q) parameter" {
-                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'query' = 'mytestquery'}
+                $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{'query' = 'mytestquery' }
 
                 $URIComponents | Should -BeOfType [hashtable]
                 $URIComponents.Keys.Count | Should -BeExactly 2
@@ -150,7 +154,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
             It "Should generate custom field parameters" {
                 $URIComponents = BuildURIComponents -URISegments @('segment1', 'segment2') -ParametersDictionary @{
                     'CustomFields' = @{
-                        'PRTG_Id' = 1234
+                        'PRTG_Id'     = 1234
                         'Customer_Id' = 'abc'
                     }
                 }
@@ -170,13 +174,13 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' -Fixture {
             Mock -CommandName 'Invoke-RestMethod' -Verifiable -MockWith {
                 # Return an object of the items we would normally pass to Invoke-RestMethod
                 return [pscustomobject]@{
-                    'Method' = $Method
-                    'Uri' = $Uri
-                    'Headers' = $Headers
-                    'Timeout' = $Timeout
+                    'Method'      = $Method
+                    'Uri'         = $Uri
+                    'Headers'     = $Headers
+                    'Timeout'     = $Timeout
                     'ContentType' = $ContentType
-                    'Body' = $Body
-                    'results' = 'Only results'
+                    'Body'        = $Body
+                    'results'     = 'Only results'
                 }
             }
 
