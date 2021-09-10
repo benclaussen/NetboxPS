@@ -48,7 +48,6 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-BuildURIComponents_ps1" ExportFunctions="True">Functions\Helpers\BuildURIComponents.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-GetNetboxAPIErrorBody_ps1" ExportFunctions="True">Functions\Helpers\GetNetboxAPIErrorBody.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-InvokeNetboxRequest_ps1" ExportFunctions="True">Functions\Helpers\InvokeNetboxRequest.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-ThrowNetboxRESTError_ps1" ExportFunctions="True">Functions\Helpers\ThrowNetboxRESTError.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-CreateEnum_ps1" ExportFunctions="True">Functions\Helpers\CreateEnum.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-VerifyAPIConnectivity_ps1" ExportFunctions="True">Functions\Setup\Support\VerifyAPIConnectivity.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-SetupNetboxConfigVariable_ps1" ExportFunctions="True">Functions\Setup\Support\SetupNetboxConfigVariable.ps1</File>
