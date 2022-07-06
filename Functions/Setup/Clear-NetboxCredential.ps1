@@ -4,7 +4,7 @@
     (
         [switch]$Force
     )
-    
+
     if ($Force -or ($PSCmdlet.ShouldProcess('Netbox Credentials', 'Clear'))) {
         $script:NetboxConfig.Credential = $null
     }
