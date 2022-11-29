@@ -16,7 +16,7 @@
         [object]$Family,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Parent,
+        [string]$Parent,
 
         [Parameter(ParameterSetName = 'Query')]
         [byte]$Mask_Length,
