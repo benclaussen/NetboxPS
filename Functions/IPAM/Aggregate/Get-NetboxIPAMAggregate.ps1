@@ -1,17 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 11:49
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxIPAMAggregate.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
+﻿
 function Get-NetboxIPAMAggregate {
     [CmdletBinding(DefaultParameterSetName = 'Query')]
     param

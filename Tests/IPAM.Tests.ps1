@@ -1,16 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2018 v5.5.150
-	 Created on:   	5/10/2018 3:41 PM
-	 Created by:   	Ben Claussen
-	 Organization: 	NEOnet
-	 Filename:     	IPAM.Tests.ps1
-	===========================================================================
-	.DESCRIPTION
-		IPAM Pester tests
-#>
-
+﻿
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
 param
 (

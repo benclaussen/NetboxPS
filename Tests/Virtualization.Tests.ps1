@@ -1,16 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2018 v5.5.150
-	 Created on:   	5/8/2018 4:01 PM
-	 Created by:   	Ben Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Virtualization.Tests.ps1
-	===========================================================================
-	.DESCRIPTION
-		Virtualization Pester tests
-#>
-
+﻿
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
 param
 (

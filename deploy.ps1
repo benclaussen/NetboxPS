@@ -30,15 +30,6 @@
         Increment the version by 0.2.0. Given version 1.2.0, the resulting version will be 1.4.0
 
         .\deploy.ps1 -VersionIncrease 0.2.0
-
-    .NOTES
-        ===========================================================================
-        Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.174
-        Created on:   	4/9/2020 09:43
-        Created by:   	Claussen
-        Organization: 	NEOnet
-        Filename:     	deploy.ps1
-        ===========================================================================
 #>
 [CmdletBinding(DefaultParameterSetName = 'IncreaseVersion')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]

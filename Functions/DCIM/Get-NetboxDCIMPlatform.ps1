@@ -1,17 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:13
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxDCIMPlatform.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
+﻿
 function Get-NetboxDCIMPlatform {
     [CmdletBinding()]
     [OutputType([pscustomobject])]

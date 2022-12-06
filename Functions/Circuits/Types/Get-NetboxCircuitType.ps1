@@ -1,18 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
-	 Created on:   	2020-11-04 12:34
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxCircuitType.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
-
+﻿
 function Get-NetboxCircuitType {
     [CmdletBinding(DefaultParameterSetName = 'Query')]
     param

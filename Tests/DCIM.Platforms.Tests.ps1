@@ -1,16 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2018 v5.5.152
-	 Created on:   	5/25/2018 1:03 PM
-	 Created by:   	Ben Claussen
-	 Organization: 	NEOnet
-	 Filename:     	DCIM.Platforms.Tests.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
+﻿
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
 param
 (

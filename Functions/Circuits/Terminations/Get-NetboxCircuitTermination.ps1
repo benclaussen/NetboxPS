@@ -1,18 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
-	 Created on:   	2020-11-04 10:22
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxCircuitTermination.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
-
+﻿
 function Get-NetboxCircuitTermination {
     [CmdletBinding(DefaultParameterSetName = 'Query')]
     param

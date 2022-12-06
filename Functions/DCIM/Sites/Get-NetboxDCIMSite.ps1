@@ -1,18 +1,4 @@
-﻿<#
-    .NOTES
-    ===========================================================================
-     Created with:  SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
-     Created on:    2020-10-02 15:52
-     Created by:    Claussen
-     Organization:  NEOnet
-     Filename:      Get-NetboxDCIMSite.ps1
-    ===========================================================================
-    .DESCRIPTION
-        A description of the file.
-#>
-
-
-
+﻿
 function Get-NetboxDCIMSite {
     [CmdletBinding(DefaultParameterSetName = 'Query')]
     [OutputType([pscustomobject])]
