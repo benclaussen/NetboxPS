@@ -12,7 +12,7 @@
 RootModule = 'NetboxPS.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.5.5'
+ModuleVersion = '1.5.6'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -70,13 +70,10 @@ NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Add-NetboxDCIMInterface', 'Add-NetboxDCIMInterfaceConnection', 
-               'Add-NetboxVirtualMachineInterface', 'BuildNewURI', 
-               'BuildURIComponents', 'CheckNetboxIsConnected', 
-               'Clear-NetboxCredential', 'Connect-NetboxAPI', 'CreateEnum', 
-               'Get-ModelDefinition', 'Get-NetboxAPIDefinition', 
-               'GetNetboxAPIErrorBody', 'Get-NetboxCircuit', 
-               'Get-NetboxCircuitProvider', 'Get-NetboxCircuitTermination', 
-               'Get-NetboxCircuitType', 'GetNetboxConfigVariable', 
+               'Add-NetboxVirtualMachineInterface', 'Clear-NetboxCredential', 
+               'Connect-NetboxAPI', 'Get-ModelDefinition', 'Get-NetboxAPIDefinition', 
+               'Get-NetboxCircuit', 'Get-NetboxCircuitProvider', 
+               'Get-NetboxCircuitTermination', 'Get-NetboxCircuitType', 
                'Get-NetboxCredential', 'Get-NetboxDCIMDevice', 
                'Get-NetboxDCIMDeviceRole', 'Get-NetboxDCIMDeviceType', 
                'Get-NetboxDCIMInterface', 'Get-NetboxDCIMInterfaceConnection', 
@@ -88,9 +85,9 @@ FunctionsToExport = 'Add-NetboxDCIMInterface', 'Add-NetboxDCIMInterfaceConnectio
                'Get-NetboxTenant', 'Get-NetboxTimeout', 'Get-NetboxVersion', 
                'Get-NetboxVirtualizationCluster', 
                'Get-NetboxVirtualizationClusterGroup', 'Get-NetboxVirtualMachine', 
-               'Get-NetboxVirtualMachineInterface', 'InvokeNetboxRequest', 
-               'New-NetboxCircuit', 'New-NetboxDCIMDevice', 'New-NetboxDCIMSite', 
-               'New-NetboxIPAMAddress', 'New-NetboxIPAMPrefix', 'New-NetboxIPAMVLAN', 
+               'Get-NetboxVirtualMachineInterface', 'New-NetboxCircuit', 
+               'New-NetboxDCIMDevice', 'New-NetboxDCIMSite', 'New-NetboxIPAMAddress', 
+               'New-NetboxIPAMPrefix', 'New-NetboxIPAMVLAN', 
                'New-NetboxVirtualMachine', 'Remove-NetboxDCIMDevice', 
                'Remove-NetboxDCIMInterface', 
                'Remove-NetboxDCIMInterfaceConnection', 'Remove-NetboxDCIMSite', 
@@ -101,8 +98,7 @@ FunctionsToExport = 'Add-NetboxDCIMInterface', 'Add-NetboxDCIMInterfaceConnectio
                'Set-NetboxInvokeParams', 'Set-NetboxIPAMAddress', 
                'Set-NetboxIPAMPrefix', 'Set-NetboxTimeout', 
                'Set-NetboxUnstrustedSSL', 'Set-NetboxVirtualMachine', 
-               'Set-NetboxVirtualMachineInterface', 'SetupNetboxConfigVariable', 
-               'VerifyAPIConnectivity'
+               'Set-NetboxVirtualMachineInterface'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = '*'
