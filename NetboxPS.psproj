@@ -73,7 +73,7 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxIPAMPrefix_ps1" ExportFunctions="True">Functions\IPAM\Prefix\New-NetboxIPAMPrefix.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Remove-NetboxIPAMAddress_ps1" ExportFunctions="True">Functions\IPAM\Address\Remove-NetboxIPAMAddress.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxIPAMAddress_ps1" ExportFunctions="True">Functions\IPAM\Address\Set-NetboxIPAMAddress.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxTenant_ps1" ExportFunctions="True">Functions\Tenancy\Get-NetboxTenant.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxTenant_ps1" ExportFunctions="True">Functions\Tenancy\Tenants\Get-NetboxTenant.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxVirtualMachine_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachine\Get-NetboxVirtualMachine.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxVirtualMachine_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachine\New-NetboxVirtualMachine.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxVirtualMachine_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachine\Set-NetboxVirtualMachine.ps1</File>
@@ -123,6 +123,7 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxContact_ps1" ExportFunctions="True">Functions\Tenancy\Contacts\New-NetboxContact.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxContactRole_ps1" ExportFunctions="True">Functions\Tenancy\ContactRoles\Get-NetboxContactRole.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxContactRole_ps1" ExportFunctions="True">Functions\Tenancy\ContactRoles\New-NetboxContactRole.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxTenant_ps1" ExportFunctions="True">Functions\Tenancy\Tenants\New-NetboxTenant.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>
