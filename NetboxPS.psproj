@@ -33,6 +33,7 @@
     <Folder>Functions\Tenancy\Contacts</Folder>
     <Folder>Functions\Tenancy\Tenants</Folder>
     <Folder>Functions\Tenancy\ContactRoles</Folder>
+    <Folder>Functions\Tenancy\ContactAssignment</Folder>
   </Folders>
   <Files>
     <File Build="2">NetboxPS.psd1</File>
@@ -124,6 +125,10 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxContactRole_ps1" ExportFunctions="True">Functions\Tenancy\ContactRoles\Get-NetboxContactRole.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxContactRole_ps1" ExportFunctions="True">Functions\Tenancy\ContactRoles\New-NetboxContactRole.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxTenant_ps1" ExportFunctions="True">Functions\Tenancy\Tenants\New-NetboxTenant.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxContactAssignment_ps1" ExportFunctions="True">Functions\Tenancy\ContactAssignment\Get-NetboxContactAssignment.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-Get-NetboxContentType_ps1" ExportFunctions="False">Functions\Setup\Support\Get-NetboxContentType.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-Initialize-NetboxContentTypeEnum_ps1" ExportFunctions="False">Functions\Setup\Support\Initialize-NetboxContentTypeEnum.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxContactAssignment_ps1" ExportFunctions="True">Functions\Tenancy\ContactAssignment\New-NetboxContactAssignment.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>
