@@ -13,6 +13,7 @@
             'Choices'       = @{
             }
             'APIDefinition' = $null
+            'ContentTypes' = $null
         }
     }
 
