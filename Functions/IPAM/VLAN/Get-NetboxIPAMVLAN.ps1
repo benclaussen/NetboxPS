@@ -61,7 +61,7 @@ function Get-NetboxIPAMVLAN {
 
         [switch]$Raw
     )
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($VLAN_ID in $Id) {
