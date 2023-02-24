@@ -1,17 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 14:10
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxVirtualizationCluster.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
+﻿
 function Get-NetboxVirtualizationCluster {
 <#
     .SYNOPSIS

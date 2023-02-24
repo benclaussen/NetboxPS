@@ -1,17 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2021 v5.8.186
-	 Created on:   	2021-03-23 13:54
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Set-NetboxIPAMPrefix.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
+﻿
 function Set-NetboxIPAMPrefix {
     [CmdletBinding(ConfirmImpact = 'Medium',
                    SupportsShouldProcess = $true)]

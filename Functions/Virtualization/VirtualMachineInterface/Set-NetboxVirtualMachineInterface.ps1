@@ -1,17 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 12:47
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Set-NetboxVirtualMachineInterface.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
+﻿
 function Set-NetboxVirtualMachineInterface {
     [CmdletBinding(ConfirmImpact = 'Medium',
                    SupportsShouldProcess = $true)]

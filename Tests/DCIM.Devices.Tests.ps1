@@ -1,16 +1,8 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2018 v5.5.152
-	 Created on:   	5/22/2018 4:48 PM
-	 Created by:   	Ben Claussen
-	 Organization: 	NEOnet
-	 Filename:     	DCIM.Tests.ps1
-	===========================================================================
-	.DESCRIPTION
-		DCIM tests.
-#>
-
+﻿
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+param
+(
+)
 Import-Module Pester
 Remove-Module NetboxPS -Force -ErrorAction SilentlyContinue
 
@@ -28,12 +20,12 @@ Describe -Name "DCIM Devices Tests" -Tag 'DCIM', 'Devices' -Fixture {
     Mock -CommandName 'Invoke-RestMethod' -Verifiable -ModuleName 'NetboxPS' -MockWith {
         # Return a hashtable of the items we would normally pass to Invoke-RestMethod
         return [ordered]@{
-            'Method' = $Method
-            'Uri' = $Uri
-            'Headers' = $Headers
-            'Timeout' = $Timeout
+            'Method'      = $Method
+            'Uri'         = $Uri
+            'Headers'     = $Headers
+            'Timeout'     = $Timeout
             'ContentType' = $ContentType
-            'Body' = $Body
+            'Body'        = $Body
         }
     }
 
@@ -363,7 +355,7 @@ Describe -Name "DCIM Devices Tests" -Tag 'DCIM', 'Devices' -Fixture {
 
         Mock -CommandName "Get-NetboxDCIMDevice" -ModuleName NetboxPS -MockWith {
             return [pscustomobject]@{
-                'Id' = $Id
+                'Id'   = $Id
                 'Name' = $Name
             }
         }

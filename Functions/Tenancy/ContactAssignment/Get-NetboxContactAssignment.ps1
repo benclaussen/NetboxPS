@@ -1,120 +1,107 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 11:56
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxTenant.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
-
-function Get-NetboxTenant {
+function Get-NetboxContactAssignment {
 <#
     .SYNOPSIS
-        Get a tenent from Netbox
-
+        Get a contact Assignment from Netbox
+    
     .DESCRIPTION
-        A detailed description of the Get-NetboxTenant function.
-
+        A detailed description of the Get-NetboxContactAssignment function.
+    
     .PARAMETER Name
-        The specific name of the tenant. Must match exactly as is defined in Netbox
-
+        The specific name of the contact Assignment. Must match exactly as is defined in Netbox
+    
     .PARAMETER Id
-        The database ID of the tenant
-
-    .PARAMETER Query
-        A standard search query that will match one or more tenants.
-
-    .PARAMETER Slug
-        The specific slug of the tenant. Must match exactly as is defined in Netbox
-
-    .PARAMETER Group
-        The specific group as defined in Netbox.
-
-    .PARAMETER GroupID
-        The database ID of the group in Netbox
-
-    .PARAMETER CustomFields
-        Hashtable in the format @{"field_name" = "value"} to search
-
+        The database ID of the contact Assignment
+    
+    .PARAMETER Content_Type_Id
+        A description of the Content_Type_Id parameter.
+    
+    .PARAMETER Content_Type
+        A description of the Content_Type parameter.
+    
+    .PARAMETER Object_Id
+        A description of the Object_Id parameter.
+    
+    .PARAMETER Contact_Id
+        A description of the Contact_Id parameter.
+    
+    .PARAMETER Role_Id
+        A description of the Role_Id parameter.
+    
     .PARAMETER Limit
         Limit the number of results to this number
-
+    
     .PARAMETER Offset
         Start the search at this index in results
-
+    
     .PARAMETER Raw
         Return the unparsed data from the HTTP request
-
+    
     .EXAMPLE
-        PS C:\> Get-NetboxTenant
-
+        PS C:\> Get-NetboxContactAssignment
+    
     .NOTES
         Additional information about the function.
 #>
-
+    
     [CmdletBinding(DefaultParameterSetName = 'Query')]
     param
     (
         [Parameter(ParameterSetName = 'Query',
                    Position = 0)]
         [string]$Name,
-
+        
         [Parameter(ParameterSetName = 'ByID')]
         [uint32[]]$Id,
-
+        
         [Parameter(ParameterSetName = 'Query')]
-        [string]$Query,
-
+        [uint32]$Content_Type_Id,
+        
         [Parameter(ParameterSetName = 'Query')]
-        [string]$Slug,
-
+        [string]$Content_Type,
+        
         [Parameter(ParameterSetName = 'Query')]
-        [string]$Group,
-
+        [uint32]$Object_Id,
+        
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$GroupID,
-
+        [uint32]$Contact_Id,
+        
         [Parameter(ParameterSetName = 'Query')]
-        [hashtable]$CustomFields,
-
+        [uint32]$Role_Id,
+        
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-
+        
         [switch]$Raw
     )
-
+    
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
-            foreach ($Tenant_ID in $Id) {
-                $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'tenants', $Tenant_ID))
-
+            foreach ($ContactAssignment_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-assignments', $ContactAssignment_ID))
+                
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-
+                
                 $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
+                
                 InvokeNetboxRequest -URI $uri -Raw:$Raw
             }
-
+            
             break
         }
-
+        
         default {
-            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'tenants'))
-
+            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-assignments'))
+            
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
+            
             $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
+            
             InvokeNetboxRequest -URI $uri -Raw:$Raw
-
+            
             break
         }
     }

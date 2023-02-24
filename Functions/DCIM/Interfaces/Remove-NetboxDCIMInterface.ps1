@@ -1,17 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:11
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Remove-NetboxDCIMInterface.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
+﻿
 function Remove-NetboxDCIMInterface {
 <#
     .SYNOPSIS

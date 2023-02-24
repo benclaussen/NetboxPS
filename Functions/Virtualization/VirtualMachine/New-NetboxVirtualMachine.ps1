@@ -1,17 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 12:44
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	New-NetboxVirtualMachine.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
+﻿
 function New-NetboxVirtualMachine {
     [CmdletBinding(ConfirmImpact = 'low',
         SupportsShouldProcess = $true)]
@@ -22,6 +9,8 @@ function New-NetboxVirtualMachine {
         [string]$Name,
 
         [Parameter(Mandatory = $true)]
+        [uint16]$Site,
+
         [uint16]$Cluster,
 
         [uint16]$Tenant,
@@ -55,6 +44,10 @@ function New-NetboxVirtualMachine {
     #    }
 
     #$PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
+
+    if ($PSBoundParameters.ContainsKey('Cluster') -and (-not $PSBoundParameters.ContainsKey('Site'))) {
+        throw "You must specify a site ID with a cluster ID"
+    }
 
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
 

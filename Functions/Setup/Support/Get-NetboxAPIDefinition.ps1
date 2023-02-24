@@ -1,18 +1,4 @@
-﻿<#
-    .NOTES
-    ===========================================================================
-     Created with:     SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.174
-     Created on:       4/28/2020 11:57
-     Created by:       Claussen
-     Organization:     NEOnet
-     Filename:         Get-NetboxAPIDefinition.ps1
-    ===========================================================================
-    .DESCRIPTION
-        A description of the file.
-#>
-
-
-
+﻿
 function Get-NetboxAPIDefinition {
     [CmdletBinding()]
     param ()

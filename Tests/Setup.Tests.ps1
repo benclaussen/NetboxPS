@@ -1,16 +1,8 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2018 v5.5.150
-	 Created on:   	5/8/2018 10:33 AM
-	 Created by:   	Ben Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Setup.Tests.ps1
-	===========================================================================
-	.DESCRIPTION
-		Setup function Pester tests
-#>
-
+﻿
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+param
+(
+)
 Import-Module Pester
 Remove-Module NetboxPS -Force -ErrorAction SilentlyContinue
 
@@ -43,7 +35,7 @@ Describe "Setup tests" -Tag 'Core', 'Setup' -Fixture {
         }
 
         It "Checks the set credentials" {
-            $Creds = Set-NetboxCredential -Token (ConvertTo-SecureString -String "faketoken" -Force -AsPlainText)
+            Set-NetboxCredential -Token (ConvertTo-SecureString -String "faketoken" -Force -AsPlainText)
             (Get-NetboxCredential).GetNetworkCredential().Password | Should -BeExactly "faketoken"
         }
     }

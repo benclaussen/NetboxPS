@@ -1,18 +1,4 @@
-﻿<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
-	 Created on:   	2020-11-04 11:48
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	New-NetboxCircuit.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
-
+﻿
 function New-NetboxCircuit {
     [CmdletBinding(ConfirmImpact = 'Low',
         SupportsShouldProcess = $true)]

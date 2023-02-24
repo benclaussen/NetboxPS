@@ -2,19 +2,6 @@
 
 #region File Add-NetboxDCIMInterface.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:10
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Add-NetboxDCIMInterface.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Add-NetboxDCIMInterface {
     [CmdletBinding()]
@@ -91,19 +78,6 @@ function Add-NetboxDCIMInterface {
 
 #region File Add-NetboxDCIMInterfaceConnection.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:10
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Add-NetboxDCIMInterfaceConnection.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Add-NetboxDCIMInterfaceConnection {
     <#
@@ -163,19 +137,6 @@ function Add-NetboxDCIMInterfaceConnection {
 
 #region File Add-NetboxVirtualMachineInterface.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 12:46
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Add-NetboxVirtualMachineInterface.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Add-NetboxVirtualMachineInterface {
     [CmdletBinding()]
@@ -212,19 +173,6 @@ function Add-NetboxVirtualMachineInterface {
 #endregion
 
 #region File BuildNewURI.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/26/2020 14:22
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	BuildNewURI.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function BuildNewURI {
@@ -311,19 +259,6 @@ function BuildNewURI {
 
 #region File BuildURIComponents.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/26/2020 14:23
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	BuildURIComponents.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function BuildURIComponents {
     [CmdletBinding()]
@@ -404,19 +339,6 @@ function BuildURIComponents {
 
 #region File CheckNetboxIsConnected.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/26/2020 14:22
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	CheckNetboxIsConnected.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function CheckNetboxIsConnected {
     [CmdletBinding()]
@@ -438,7 +360,7 @@ function Clear-NetboxCredential {
     (
         [switch]$Force
     )
-    
+
     if ($Force -or ($PSCmdlet.ShouldProcess('Netbox Credentials', 'Clear'))) {
         $script:NetboxConfig.Credential = $null
     }
@@ -535,6 +457,8 @@ function Connect-NetboxAPI {
 
     #for PowerShell (<=) 5 (Desktop), Enable TLS 1.1, 1.2 and Disable SSL chain trust
     if ("Desktop" -eq $PSVersionTable.PsEdition) {
+        #Add System.web (Need for ParseQueryString)
+        Add-Type -AssemblyName System.Web
         #Enable TLS 1.1 and 1.2
         Set-NetboxCipherSSL
         if ($SkipCertificateCheck) {
@@ -592,18 +516,11 @@ function Connect-NetboxAPI {
     } else {
         Write-Verbose "Found compatible version [$($script:NetboxConfig.NetboxVersion.'netbox-version')]!"
     }
-
+    
     $script:NetboxConfig.Connected = $true
     Write-Verbose "Successfully connected!"
-
-    #Write-Verbose "Caching static choices"
-    #$script:NetboxConfig.Choices.Circuits = Get-NetboxCircuitsChoices
-    #$script:NetboxConfig.Choices.DCIM = Get-NetboxDCIMChoices # Not completed yet
-    #$script:NetboxConfig.Choices.Extras = Get-NetboxExtrasChoices
-    #$script:NetboxConfig.Choices.IPAM = Get-NetboxIPAMChoices
-    ##$script:NetboxConfig.Choices.Secrets = Get-NetboxSecretsChoices    # Not completed yet
-    ##$script:NetboxConfig.Choices.Tenancy = Get-NetboxTenancyChoices
-    #$script:NetboxConfig.Choices.Virtualization = Get-NetboxVirtualizationChoices
+    
+    $script:NetboxConfig.ContentTypes = Get-NetboxContentType -Limit 500
 
     Write-Verbose "Connection process completed"
 }
@@ -611,19 +528,6 @@ function Connect-NetboxAPI {
 #endregion
 
 #region File CreateEnum.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/26/2020 14:25
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	CreateEnum.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function CreateEnum {
@@ -657,20 +561,6 @@ public enum $EnumName
 #endregion
 
 #region File Get-ModelDefinition.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
-	 Created on:   	2020-11-04 14:23
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-ModelDefinition.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 
 function Get-ModelDefinition {
@@ -727,20 +617,6 @@ function Get-ModelDefinition {
 
 #region File Get-NetboxAPIDefinition.ps1
 
-<#
-    .NOTES
-    ===========================================================================
-     Created with:     SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.174
-     Created on:       4/28/2020 11:57
-     Created by:       Claussen
-     Organization:     NEOnet
-     Filename:         Get-NetboxAPIDefinition.ps1
-    ===========================================================================
-    .DESCRIPTION
-        A description of the file.
-#>
-
-
 
 function Get-NetboxAPIDefinition {
     [CmdletBinding()]
@@ -760,19 +636,6 @@ function Get-NetboxAPIDefinition {
 #endregion
 
 #region File GetNetboxAPIErrorBody.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/26/2020 14:23
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	GetNetboxAPIErrorBody.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function GetNetboxAPIErrorBody {
@@ -794,19 +657,6 @@ function GetNetboxAPIErrorBody {
 #endregion
 
 #region File Get-NetboxCircuit.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:15
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxCircuit.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Get-NetboxCircuit {
@@ -933,20 +783,6 @@ function Get-NetboxCircuit {
 
 #region File Get-NetboxCircuitProvider.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
-	 Created on:   	2020-11-04 12:06
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxCircuitProvider.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
 
 function Get-NetboxCircuitProvider {
     [CmdletBinding(DefaultParameterSetName = 'Query')]
@@ -1009,20 +845,6 @@ function Get-NetboxCircuitProvider {
 #endregion
 
 #region File Get-NetboxCircuitTermination.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
-	 Created on:   	2020-11-04 10:22
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxCircuitTermination.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 
 function Get-NetboxCircuitTermination {
@@ -1094,20 +916,6 @@ function Get-NetboxCircuitTermination {
 
 #region File Get-NetboxCircuitType.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
-	 Created on:   	2020-11-04 12:34
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxCircuitType.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
 
 function Get-NetboxCircuitType {
     [CmdletBinding(DefaultParameterSetName = 'Query')]
@@ -1169,6 +977,433 @@ function GetNetboxConfigVariable {
 
 #endregion
 
+#region File Get-NetboxContact.ps1
+
+
+function Get-NetboxContact {
+<#
+    .SYNOPSIS
+        Get a contact from Netbox
+    
+    .DESCRIPTION
+        Obtain a contact or contacts from Netbox by ID or query
+    
+    .PARAMETER Name
+        The specific name of the Contact. Must match exactly as is defined in Netbox
+    
+    .PARAMETER Id
+        The database ID of the Contact
+    
+    .PARAMETER Query
+        A standard search query that will match one or more Contacts.
+    
+    .PARAMETER Email
+        Email address of the contact
+    
+    .PARAMETER Title
+        Title of the contact
+    
+    .PARAMETER Phone
+        Telephone number of the contact
+    
+    .PARAMETER Address
+        Physical address of the contact
+    
+    .PARAMETER Group
+        The specific group as defined in Netbox.
+    
+    .PARAMETER GroupID
+        The database ID of the group in Netbox
+    
+    .PARAMETER Limit
+        Limit the number of results to this number
+    
+    .PARAMETER Offset
+        Start the search at this index in results
+    
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+    
+    .EXAMPLE
+        PS C:\> Get-NetboxContact
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    param
+    (
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
+        [string]$Name,
+        
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint32[]]$Id,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Query,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Email,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Title,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Phone,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Address,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Group,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$GroupID,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Limit,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Offset,
+        
+        [switch]$Raw
+    )
+    
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($Contact_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts', $Contact_ID))
+                
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+                
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+                
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+            
+            break
+        }
+        
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts'))
+            
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+            
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+            
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+            
+            break
+        }
+    }
+}
+
+#endregion
+
+#region File Get-NetboxContactAssignment.ps1
+
+
+function Get-NetboxContactAssignment {
+<#
+    .SYNOPSIS
+        Get a contact Assignment from Netbox
+    
+    .DESCRIPTION
+        A detailed description of the Get-NetboxContactAssignment function.
+    
+    .PARAMETER Name
+        The specific name of the contact Assignment. Must match exactly as is defined in Netbox
+    
+    .PARAMETER Id
+        The database ID of the contact Assignment
+    
+    .PARAMETER Content_Type_Id
+        A description of the Content_Type_Id parameter.
+    
+    .PARAMETER Content_Type
+        A description of the Content_Type parameter.
+    
+    .PARAMETER Object_Id
+        A description of the Object_Id parameter.
+    
+    .PARAMETER Contact_Id
+        A description of the Contact_Id parameter.
+    
+    .PARAMETER Role_Id
+        A description of the Role_Id parameter.
+    
+    .PARAMETER Limit
+        Limit the number of results to this number
+    
+    .PARAMETER Offset
+        Start the search at this index in results
+    
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+    
+    .EXAMPLE
+        PS C:\> Get-NetboxContactAssignment
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    param
+    (
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
+        [string]$Name,
+        
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint32[]]$Id,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$Content_Type_Id,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Content_Type,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$Object_Id,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$Contact_Id,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$Role_Id,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Limit,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Offset,
+        
+        [switch]$Raw
+    )
+    
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($ContactAssignment_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-assignments', $ContactAssignment_ID))
+                
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+                
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+                
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+            
+            break
+        }
+        
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-assignments'))
+            
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+            
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+            
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+            
+            break
+        }
+    }
+}
+
+#endregion
+
+#region File Get-NetboxContactRole.ps1
+
+
+function Get-NetboxContactRole {
+<#
+    .SYNOPSIS
+        Get a contact role from Netbox
+    
+    .DESCRIPTION
+        A detailed description of the Get-NetboxContactRole function.
+    
+    .PARAMETER Name
+        The specific name of the contact role. Must match exactly as is defined in Netbox
+    
+    .PARAMETER Id
+        The database ID of the contact role
+    
+    .PARAMETER Query
+        A standard search query that will match one or more contact roles.
+    
+    .PARAMETER Limit
+        Limit the number of results to this number
+    
+    .PARAMETER Offset
+        Start the search at this index in results
+    
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+    
+    .EXAMPLE
+        PS C:\> Get-NetboxContactRole
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    param
+    (
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
+        [string]$Name,
+        
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint32[]]$Id,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Query,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Slug,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Description,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Limit,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Offset,
+        
+        [switch]$Raw
+    )
+    
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($ContactRole_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-roles', $ContactRole_ID))
+                
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+                
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+                
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+            
+            break
+        }
+        
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-roles'))
+            
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+            
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+            
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+            
+            break
+        }
+    }
+}
+
+#endregion
+
+#region File Get-NetboxContentType.ps1
+
+function Get-NetboxContentType {
+<#
+    .SYNOPSIS
+        Get a content type definition from Netbox
+    
+    .DESCRIPTION
+        A detailed description of the Get-NetboxContentType function.
+    
+    .PARAMETER Model
+        A description of the Model parameter.
+    
+    .PARAMETER Id
+        The database ID of the contact role
+    
+    .PARAMETER App_Label
+        A description of the App_Label parameter.
+    
+    .PARAMETER Query
+        A standard search query that will match one or more contact roles.
+    
+    .PARAMETER Limit
+        Limit the number of results to this number
+    
+    .PARAMETER Offset
+        Start the search at this index in results
+    
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+    
+    .EXAMPLE
+        PS C:\> Get-NetboxContentType
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    param
+    (
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
+        [string]$Model,
+        
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint32[]]$Id,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$App_Label,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Query,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Limit,
+        
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Offset,
+        
+        [switch]$Raw
+    )
+    
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($ContentType_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('extras', 'content-types', $ContentType_ID))
+                
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+                
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+                
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+            
+            break
+        }
+        
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('extras', 'content-types'))
+            
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+            
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+            
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+            
+            break
+        }
+    }
+}
+
+#endregion
+
 #region File Get-NetboxCredential.ps1
 
 function Get-NetboxCredential {
@@ -1186,19 +1421,6 @@ function Get-NetboxCredential {
 #endregion
 
 #region File Get-NetboxDCIMDevice.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:06
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxDCIMDevice.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Get-NetboxDCIMDevice {
@@ -1293,19 +1515,6 @@ function Get-NetboxDCIMDevice {
 
 #region File Get-NetboxDCIMDeviceRole.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:07
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxDCIMDeviceRole.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Get-NetboxDCIMDeviceRole {
     [CmdletBinding()]
@@ -1360,19 +1569,6 @@ function Get-NetboxDCIMDeviceRole {
 
 #region File Get-NetboxDCIMDeviceType.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:07
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxDCIMDeviceType.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Get-NetboxDCIMDeviceType {
     [CmdletBinding()]
@@ -1425,19 +1621,6 @@ function Get-NetboxDCIMDeviceType {
 #endregion
 
 #region File Get-NetboxDCIMInterface.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:09
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxDCIMInterface.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Get-NetboxDCIMInterface {
@@ -1494,19 +1677,6 @@ function Get-NetboxDCIMInterface {
 
 #region File Get-NetboxDCIMInterfaceConnection.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:10
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxDCIMInterfaceConnection.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Get-NetboxDCIMInterfaceConnection {
     [CmdletBinding()]
@@ -1544,19 +1714,6 @@ function Get-NetboxDCIMInterfaceConnection {
 #endregion
 
 #region File Get-NetboxDCIMPlatform.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:13
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxDCIMPlatform.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Get-NetboxDCIMPlatform {
@@ -1613,23 +1770,9 @@ function Get-NetboxDCIMPlatform {
 
 #region File Get-NetboxDCIMSite.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
-	 Created on:   	2020-10-02 15:52
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxDCIMSite.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
 
 function Get-NetboxDCIMSite {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
     [OutputType([pscustomobject])]
     param
     (
@@ -1723,7 +1866,6 @@ function Get-NetboxDCIMSite {
     }
 }
 
-
 #endregion
 
 #region File Get-NetboxHostname.ps1
@@ -1810,7 +1952,7 @@ function Get-NetboxIPAMAddress {
         [object]$Family,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Parent,
+        [string]$Parent,
 
         [Parameter(ParameterSetName = 'Query')]
         [byte]$Mask_Length,
@@ -1890,19 +2032,6 @@ function Get-NetboxIPAMAddress {
 
 #region File Get-NetboxIPAMAggregate.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 11:49
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxIPAMAggregate.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Get-NetboxIPAMAggregate {
     [CmdletBinding(DefaultParameterSetName = 'Query')]
@@ -1974,19 +2103,6 @@ function Get-NetboxIPAMAggregate {
 
 #region File Get-NetboxIPAMAvailableIP.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 11:50
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxIPAMAvailableIP.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Get-NetboxIPAMAvailableIP {
     <#
@@ -2051,19 +2167,6 @@ function Get-NetboxIPAMAvailableIP {
 #endregion
 
 #region File Get-NetboxIPAMPrefix.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 11:51
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxIPAMPrefix.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Get-NetboxIPAMPrefix {
@@ -2363,22 +2466,9 @@ function Get-NetboxIPAMRole {
 
 #region File Get-NetboxIPAMVLAN.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/16/2020 16:34
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxIPAMVLAN.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Get-NetboxIPAMVLAN {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
     param
     (
         [Parameter(ParameterSetName = 'Query',
@@ -2439,11 +2529,7 @@ function Get-NetboxIPAMVLAN {
 
         [switch]$Raw
     )
-
-    #    if ($null -ne $Status) {
-    #        $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -VLANStatus
-    #    }
-
+    
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($VLAN_ID in $Id) {
@@ -2480,19 +2566,6 @@ function Get-NetboxIPAMVLAN {
 #endregion
 
 #region File Get-NetboxTenant.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 11:56
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxTenant.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Get-NetboxTenant {
@@ -2645,19 +2718,6 @@ function Get-NetboxVersion {
 
 #region File Get-NetboxVirtualizationCluster.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 14:10
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxVirtualizationCluster.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Get-NetboxVirtualizationCluster {
 <#
@@ -2752,19 +2812,6 @@ function Get-NetboxVirtualizationCluster {
 
 #region File Get-NetboxVirtualizationClusterGroup.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 14:11
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxVirtualizationClusterGroup.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Get-NetboxVirtualizationClusterGroup {
     [CmdletBinding()]
@@ -2799,19 +2846,6 @@ function Get-NetboxVirtualizationClusterGroup {
 #endregion
 
 #region File Get-NetboxVirtualMachine.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 12:44
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxVirtualMachine.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Get-NetboxVirtualMachine {
@@ -2962,19 +2996,6 @@ function Get-NetboxVirtualMachine {
 
 #region File Get-NetboxVirtualMachineInterface.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 12:47
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Get-NetboxVirtualMachineInterface.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Get-NetboxVirtualMachineInterface {
     <#
@@ -3062,19 +3083,6 @@ function Get-NetboxVirtualMachineInterface {
 #endregion
 
 #region File InvokeNetboxRequest.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/26/2020 14:24
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	InvokeNetboxRequest.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function InvokeNetboxRequest {
@@ -3175,20 +3183,6 @@ function InvokeNetboxRequest {
 
 #region File New-NetboxCircuit.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
-	 Created on:   	2020-11-04 11:48
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	New-NetboxCircuit.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
 
 function New-NetboxCircuit {
     [CmdletBinding(ConfirmImpact = 'Low',
@@ -3247,20 +3241,300 @@ function New-NetboxCircuit {
 
 #endregion
 
-#region File New-NetboxDCIMDevice.ps1
+#region File New-NetboxContact.ps1
 
+
+function New-NetboxContact {
 <#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:08
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	New-NetboxDCIMDevice.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
+    .SYNOPSIS
+        Create a new contact in Netbox
+    
+    .DESCRIPTION
+        Creates a new contact object in Netbox which can be linked to other objects
+    
+    .PARAMETER Name
+        The contacts full name, e.g "Leroy Jenkins"
+    
+    .PARAMETER Email
+        Email address of the contact
+    
+    .PARAMETER Title
+        Job title or other title related to the contact
+    
+    .PARAMETER Phone
+        Telephone number
+    
+    .PARAMETER Address
+        Physical address, usually mailing address
+    
+    .PARAMETER Description
+        Short description of the contact
+    
+    .PARAMETER Comments
+        Detailed comments. Markdown supported.
+    
+    .PARAMETER Link
+        URI related to the contact
+    
+    .PARAMETER Custom_Fields
+        A description of the Custom_Fields parameter.
+    
+    .PARAMETER Raw
+        A description of the Raw parameter.
+    
+    .EXAMPLE
+        PS C:\> New-NetboxContact -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+    
+    .NOTES
+        Additional information about the function.
 #>
+    
+    [CmdletBinding(ConfirmImpact = 'Low',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [ValidateLength(1, 100)]
+        [string]$Name,
+        
+        [Parameter(Mandatory = $true)]
+        [ValidateLength(0, 254)]
+        [string]$Email,
+        
+        [ValidateLength(0, 100)]
+        [string]$Title,
+        
+        [ValidateLength(0, 50)]
+        [string]$Phone,
+        
+        [ValidateLength(0, 200)]
+        [string]$Address,
+        
+        [ValidateLength(0, 200)]
+        [string]$Description,
+        
+        [string]$Comments,
+        
+        [ValidateLength(0, 200)]
+        [string]$Link,
+        
+        [hashtable]$Custom_Fields,
+        
+        [switch]$Raw
+    )
+    
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts'))
+        $Method = 'POST'
+        
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+        
+        $URI = BuildNewURI -Segments $URIComponents.Segments
+        
+        if ($PSCmdlet.ShouldProcess($Address, 'Create new contact')) {
+            InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        }
+    }
+}
+
+
+
+
+
+#endregion
+
+#region File New-NetboxContactAssignment.ps1
+
+
+function New-NetboxContactRole {
+<#
+    .SYNOPSIS
+        Create a new contact role in Netbox
+    
+    .DESCRIPTION
+        Creates a new contact role object in Netbox
+    
+    .PARAMETER Content_Type
+        A description of the Content_Type parameter.
+    
+    .PARAMETER Object_Id
+        A description of the Object_Id parameter.
+    
+    .PARAMETER Contact
+        A description of the Contact parameter.
+    
+    .PARAMETER Role
+        A description of the Role parameter.
+    
+    .PARAMETER Priority
+        A description of the Priority parameter.
+    
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+    
+    .EXAMPLE
+        PS C:\> New-NetboxContactAssignment -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(ConfirmImpact = 'Low',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [object]$Content_Type,
+        
+        [Parameter(Mandatory = $true)]
+        [uint32]$Object_Id,
+        
+        [Parameter(Mandatory = $true)]
+        [uint32]$Contact,
+        
+        [Parameter(Mandatory = $true)]
+        [uint32]$Role,
+        
+        [ValidateSet('primary', 'secondary', 'tertiary', 'inactive', IgnoreCase = $true)]
+        [string]$Priority,
+        
+        [switch]$Raw
+    )
+    
+    begin {
+        # https://docs.netbox.dev/en/stable/features/contacts/
+        $AllowedContentTypes = @{
+            10 = "circuits.circuit"
+            7  = "circuits.provider"
+            19 = "dcim.device"
+            25 = "dcim.location"
+            29 = "dcim.manufacturer"
+            77 = "dcim.powerpanel"
+            20 = "dcim.rack"
+            30 = "dcim.region"
+            18 = "dcim.site"
+            92 = "dcim.sitegroup"
+            58 = "tenancy.tenant"
+            63 = "virtualization.cluster"
+            64 = "virtualization.clustergroup"
+            61 = "virtualization.virtualmachine"
+        }
+    }
+    
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-assignment'))
+        $Method = 'POST'
+        
+        if ($Content_Type -is [string]) {
+            # Need to convert this to an integer
+            $Content_Type = ($AllowedContentTypes.GetEnumerator() | Where-Object {
+                    $_.Value -eq $Content_Type
+                }).Key
+        } elseif ($Content_Type -is [int]) {
+            if ($Content_Type -notin $($AllowedContentTypes).Keys) {
+                throw "Invalid content type defined"
+            }
+        } else {
+            throw "Invalid content type defined"
+        }
+        
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+        
+        $URI = BuildNewURI -Segments $URIComponents.Segments
+        
+        if ($PSCmdlet.ShouldProcess($Address, 'Create new contact assignment')) {
+            InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        }
+    }
+}
+
+
+
+
+
+#endregion
+
+#region File New-NetboxContactRole.ps1
+
+
+function New-NetboxContactRole {
+<#
+    .SYNOPSIS
+        Create a new contact role in Netbox
+    
+    .DESCRIPTION
+        Creates a new contact role object in Netbox
+    
+    .PARAMETER Name
+        The contact role name, e.g "Network Support"
+    
+    .PARAMETER Slug
+        The unique URL for the role. Can only contain hypens, A-Z, a-z, 0-9, and underscores
+    
+    .PARAMETER Description
+        Short description of the contact role
+    
+    .PARAMETER Custom_Fields
+        A description of the Custom_Fields parameter.
+    
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+    
+    .EXAMPLE
+        PS C:\> New-NetboxContact -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(ConfirmImpact = 'Low',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [ValidateLength(1, 100)]
+        [string]$Name,
+        
+        [Parameter(Mandatory = $true)]
+        [ValidateLength(1, 100)]
+        [ValidatePattern('^[-a-zA-Z0-9_]+$')]
+        [string]$Slug,
+        
+        [ValidateLength(0, 200)]
+        [string]$Description,
+        
+        [hashtable]$Custom_Fields,
+        
+        [switch]$Raw
+    )
+    
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts'))
+        $Method = 'POST'
+        
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+        
+        $URI = BuildNewURI -Segments $URIComponents.Segments
+        
+        if ($PSCmdlet.ShouldProcess($Address, 'Create new contact')) {
+            InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        }
+    }
+}
+
+
+
+
+
+#endregion
+
+#region File New-NetboxDCIMDevice.ps1
 
 
 function New-NetboxDCIMDevice {
@@ -3345,20 +3619,98 @@ function New-NetboxDCIMDevice {
 
 #endregion
 
-#region File New-NetboxIPAMAddress.ps1
+#region File New-NetboxDCIMSite.ps1
 
 <#
     .NOTES
     ===========================================================================
-     Created with:  SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-     Created on:    3/19/2020 11:51
+     Created with:  SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
+     Created on:    2020-10-02 15:52
      Created by:    Claussen
      Organization:  NEOnet
-     Filename:      New-NetboxIPAMAddress.ps1
+     Filename:      New-NetboxDCIMSite.ps1
     ===========================================================================
     .DESCRIPTION
         A description of the file.
 #>
+
+
+
+function New-NetboxDCIMSite {
+    <#
+    .SYNOPSIS
+        Create a new Site to Netbox
+
+    .DESCRIPTION
+        Create a new Site to Netbox
+
+    .EXAMPLE
+        New-NetboxDCIMSite -name MySite
+
+        Add new Site MySite on Netbox
+
+    #>
+
+    [CmdletBinding(ConfirmImpact = 'Low',
+        SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [string]$Slug,
+
+        [string]$Facility,
+
+        [uint32]$ASN,
+
+        [decimal]$Latitude,
+
+        [decimal]$Longitude,
+
+        [string]$Contact_Name,
+
+        [string]$Contact_Phone,
+
+        [string]$Contact_Email,
+
+        [int]$Tenant_Group,
+
+        [int]$Tenant,
+
+        [string]$Status,
+
+        [uint32]$Region,
+
+        [string]$Description,
+
+        [string]$Comments,
+
+        [switch]$Raw
+    )
+
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('dcim', 'sites'))
+        $Method = 'POST'
+
+        if (-not $PSBoundParameters.ContainsKey('slug')) {
+            $PSBoundParameters.Add('slug', $name)
+        }
+
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+        $URI = BuildNewURI -Segments $URIComponents.Segments
+
+        if ($PSCmdlet.ShouldProcess($name, 'Create new Site')) {
+            InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        }
+    }
+}
+
+#endregion
+
+#region File New-NetboxIPAMAddress.ps1
 
 
 function New-NetboxIPAMAddress {
@@ -3474,19 +3826,6 @@ function New-NetboxIPAMAddress {
 #endregion
 
 #region File New-NetboxIPAMPrefix.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 11:52
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	New-NetboxIPAMPrefix.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function New-NetboxIPAMPrefix {
@@ -3628,20 +3967,83 @@ function New-NetboxIPAMVLAN {
 
 #endregion
 
-#region File New-NetboxVirtualMachine.ps1
+#region File New-NetboxTenant.ps1
 
+
+function New-NetboxTenant {
 <#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 12:44
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	New-NetboxVirtualMachine.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
+    .SYNOPSIS
+        Create a new tenant in Netbox
+    
+    .DESCRIPTION
+        Creates a new tenant object in Netbox
+    
+    .PARAMETER Name
+        The tenant name, e.g "Contoso Inc"
+    
+    .PARAMETER Slug
+        The unique URL for the tenant. Can only contain hypens, A-Z, a-z, 0-9, and underscores
+    
+    .PARAMETER Description
+        Short description of the tenant
+    
+    .PARAMETER Custom_Fields
+        Hashtable of custom field values.
+    
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+    
+    .EXAMPLE
+        PS C:\> New-NetboxTenant -Name 'Contoso Inc' -Slug 'contoso-inc'
+    
+    .NOTES
+        Additional information about the function.
 #>
+    
+    [CmdletBinding(ConfirmImpact = 'Low',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [ValidateLength(1, 100)]
+        [string]$Name,
+        
+        [Parameter(Mandatory = $true)]
+        [ValidateLength(1, 100)]
+        [ValidatePattern('^[-a-zA-Z0-9_]+$')]
+        [string]$Slug,
+        
+        [ValidateLength(0, 200)]
+        [string]$Description,
+        
+        [hashtable]$Custom_Fields,
+        
+        [switch]$Raw
+    )
+    
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'tenants'))
+        $Method = 'POST'
+        
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+        
+        $URI = BuildNewURI -Segments $URIComponents.Segments
+        
+        if ($PSCmdlet.ShouldProcess($Address, 'Create new tenant')) {
+            InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        }
+    }
+}
+
+
+
+
+
+#endregion
+
+#region File New-NetboxVirtualMachine.ps1
 
 
 function New-NetboxVirtualMachine {
@@ -3654,6 +4056,8 @@ function New-NetboxVirtualMachine {
         [string]$Name,
 
         [Parameter(Mandatory = $true)]
+        [uint16]$Site,
+
         [uint16]$Cluster,
 
         [uint16]$Tenant,
@@ -3688,6 +4092,10 @@ function New-NetboxVirtualMachine {
 
     #$PSBoundParameters.Status = ValidateVirtualizationChoice -ProvidedValue $Status -VirtualMachineStatus
 
+    if ($PSBoundParameters.ContainsKey('Cluster') -and (-not $PSBoundParameters.ContainsKey('Site'))) {
+        throw "You must specify a site ID with a cluster ID"
+    }
+
     $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
 
     $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
@@ -3706,19 +4114,6 @@ function New-NetboxVirtualMachine {
 #endregion
 
 #region File Remove-NetboxDCIMDevice.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:08
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Remove-NetboxDCIMDevice.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Remove-NetboxDCIMDevice {
@@ -3780,19 +4175,6 @@ function Remove-NetboxDCIMDevice {
 
 #region File Remove-NetboxDCIMInterface.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:11
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Remove-NetboxDCIMInterface.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Remove-NetboxDCIMInterface {
 <#
@@ -3853,19 +4235,6 @@ function Remove-NetboxDCIMInterface {
 
 #region File Remove-NetboxDCIMInterfaceConnection.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:12
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Remove-NetboxDCIMInterfaceConnection.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Remove-NetboxDCIMInterfaceConnection {
     [CmdletBinding(ConfirmImpact = 'High',
@@ -3907,20 +4276,77 @@ function Remove-NetboxDCIMInterfaceConnection {
 
 #endregion
 
-#region File Remove-NetboxIPAMAddress.ps1
+#region File Remove-NetboxDCIMSite.ps1
 
 <#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 11:52
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Remove-NetboxIPAMAddress.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
+    .NOTES
+    ===========================================================================
+     Created with:  SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.181
+     Created on:    2020-10-02 15:52
+     Created by:    Claussen
+     Organization:  NEOnet
+     Filename:      New-NetboxDCIMSite.ps1
+    ===========================================================================
+    .DESCRIPTION
+        A description of the file.
 #>
+
+
+function Remove-NetboxDCIMSite {
+    <#
+        .SYNOPSIS
+            Remove a Site
+
+        .DESCRIPTION
+            Remove a DCIM Site from Netbox
+
+        .EXAMPLE
+            Remove-NetboxDCIMSite -Id 1
+
+            Remove DCM Site with id 1
+
+        .EXAMPLE
+            Get-NetboxDCIMSite -name My Site | Remove-NetboxDCIMSite -confirm:$false
+
+            Remove DCM Site with name My Site without confirmation
+
+    #>
+
+    [CmdletBinding(ConfirmImpact = 'High',
+        SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true)]
+        [uint]$Id
+
+    )
+
+    begin {
+
+    }
+
+    process {
+        $CurrentSite = Get-NetboxDCIMSite -Id $Id -ErrorAction Stop
+
+        if ($pscmdlet.ShouldProcess("$($CurrentSite.Name)/$($CurrentSite.Id)", "Remove Site")) {
+            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'sites', $CurrentSite.Id))
+
+            $URI = BuildNewURI -Segments $Segments
+
+            InvokeNetboxRequest -URI $URI -Method DELETE
+        }
+    }
+
+    end {
+
+    }
+}
+
+#endregion
+
+#region File Remove-NetboxIPAMAddress.ps1
+
 
 function Remove-NetboxIPAMAddress {
     <#
@@ -3972,19 +4398,6 @@ function Remove-NetboxIPAMAddress {
 #endregion
 
 #region File Remove-NetboxVirtualMachine.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 12:45
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Remove-NetboxVirtualMachine.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Remove-NetboxVirtualMachine {
@@ -4057,6 +4470,131 @@ Function Set-NetboxCipherSSL {
 
 #endregion
 
+#region File Set-NetboxContact.ps1
+
+
+function Set-NetboxContact {
+<#
+    .SYNOPSIS
+        Update a contact in Netbox
+    
+    .DESCRIPTION
+        Updates a contact object in Netbox which can be linked to other objects
+    
+    .PARAMETER Id
+        A description of the Id parameter.
+    
+    .PARAMETER Name
+        The contacts full name, e.g "Leroy Jenkins"
+    
+    .PARAMETER Email
+        Email address of the contact
+    
+    .PARAMETER Group
+        Database ID of assigned group
+    
+    .PARAMETER Title
+        Job title or other title related to the contact
+    
+    .PARAMETER Phone
+        Telephone number
+    
+    .PARAMETER Address
+        Physical address, usually mailing address
+    
+    .PARAMETER Description
+        Short description of the contact
+    
+    .PARAMETER Comments
+        Detailed comments. Markdown supported.
+    
+    .PARAMETER Link
+        URI related to the contact
+    
+    .PARAMETER Custom_Fields
+        A description of the Custom_Fields parameter.
+    
+    .PARAMETER Force
+        A description of the Force parameter.
+    
+    .PARAMETER Raw
+        A description of the Raw parameter.
+    
+    .EXAMPLE
+        PS C:\> Set-NetboxContact -Id 10 -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(ConfirmImpact = 'Low',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint32[]]$Id,
+        
+        [ValidateLength(1, 100)]
+        [string]$Name,
+        
+        [ValidateLength(0, 254)]
+        [string]$Email,
+        
+        [uint32]$Group,
+        
+        [ValidateLength(0, 100)]
+        [string]$Title,
+        
+        [ValidateLength(0, 50)]
+        [string]$Phone,
+        
+        [ValidateLength(0, 200)]
+        [string]$Address,
+        
+        [ValidateLength(0, 200)]
+        [string]$Description,
+        
+        [string]$Comments,
+        
+        [ValidateLength(0, 200)]
+        [string]$Link,
+        
+        [hashtable]$Custom_Fields,
+        
+        [switch]$Force,
+        
+        [switch]$Raw
+    )
+    
+    begin {
+        $Method = 'PATCH'
+    }
+    
+    process {
+        foreach ($ContactId in $Id) {
+            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts', $ContactId))
+            
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+            
+            $URI = BuildNewURI -Segments $URIComponents.Segments
+            
+            $CurrentContact = Get-NetboxContact -Id $ContactId
+            
+            if ($Force -or $PSCmdlet.ShouldProcess($CurrentContact.Name, 'Update contact')) {
+                InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+            }
+        }
+    }
+}
+
+
+
+
+
+#endregion
+
 #region File Set-NetboxCredential.ps1
 
 function Set-NetboxCredential {
@@ -4095,19 +4633,6 @@ function Set-NetboxCredential {
 #endregion
 
 #region File Set-NetboxDCIMDevice.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:08
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Set-NetboxDCIMDevice.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Set-NetboxDCIMDevice {
@@ -4195,19 +4720,6 @@ function Set-NetboxDCIMDevice {
 #endregion
 
 #region File Set-NetboxDCIMInterface.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:11
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Set-NetboxDCIMInterface.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Set-NetboxDCIMInterface {
@@ -4301,19 +4813,6 @@ function Set-NetboxDCIMInterface {
 #endregion
 
 #region File Set-NetboxDCIMInterfaceConnection.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/23/2020 12:11
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Set-NetboxDCIMInterfaceConnection.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Set-NetboxDCIMInterfaceConnection {
@@ -4483,19 +4982,6 @@ function Set-NetboxInvokeParams {
 
 #region File Set-NetboxIPAMAddress.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 11:53
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Set-NetboxIPAMAddress.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Set-NetboxIPAMAddress {
     [CmdletBinding(ConfirmImpact = 'Medium',
@@ -4583,19 +5069,6 @@ function Set-NetboxIPAMAddress {
 #endregion
 
 #region File Set-NetboxIPAMPrefix.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2021 v5.8.186
-	 Created on:   	2021-03-23 13:54
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Set-NetboxIPAMPrefix.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Set-NetboxIPAMPrefix {
@@ -4727,19 +5200,6 @@ Function Set-NetboxUntrustedSSL {
 
 #region File Set-NetboxVirtualMachine.ps1
 
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 12:45
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Set-NetboxVirtualMachine.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
 
 function Set-NetboxVirtualMachine {
     [CmdletBinding(ConfirmImpact = 'Medium',
@@ -4805,19 +5265,6 @@ function Set-NetboxVirtualMachine {
 #endregion
 
 #region File Set-NetboxVirtualMachineInterface.ps1
-
-<#
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-	 Created on:   	3/19/2020 12:47
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Set-NetboxVirtualMachineInterface.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
 
 
 function Set-NetboxVirtualMachineInterface {
@@ -4891,6 +5338,7 @@ function SetupNetboxConfigVariable {
             'Choices'       = @{
             }
             'APIDefinition' = $null
+            'ContentTypes' = $null
         }
     }
 
@@ -4943,18 +5391,6 @@ function VerifyAPIConnectivity {
 
 #endregion
 
-<#
-    .NOTES
-    --------------------------------------------------------------------------------
-     Code generated by:  SAPIEN Technologies, Inc., PowerShell Studio 2020 v5.7.172
-     Generated on:       3/26/2020 15:16
-     Generated by:       Claussen
-     Organization:       NEOnet
-    --------------------------------------------------------------------------------
-    .DESCRIPTION
-        Script generated by PowerShell Studio 2020
-#>
-
 # Build a list of common parameters so we can omit them to build URI parameters
 $script:CommonParameterNames = New-Object System.Collections.ArrayList
 [void]$script:CommonParameterNames.AddRange(@([System.Management.Automation.PSCmdlet]::CommonParameters))
@@ -4962,6 +5398,3 @@ $script:CommonParameterNames = New-Object System.Collections.ArrayList
 [void]$script:CommonParameterNames.Add('Raw')
 
 SetupNetboxConfigVariable
-
-Export-ModuleMember -Function *
-#Export-ModuleMember -Function *-*

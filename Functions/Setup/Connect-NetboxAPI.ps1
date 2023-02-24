@@ -85,6 +85,8 @@
 
     #for PowerShell (<=) 5 (Desktop), Enable TLS 1.1, 1.2 and Disable SSL chain trust
     if ("Desktop" -eq $PSVersionTable.PsEdition) {
+        #Add System.web (Need for ParseQueryString)
+        Add-Type -AssemblyName System.Web
         #Enable TLS 1.1 and 1.2
         Set-NetboxCipherSSL
         if ($SkipCertificateCheck) {
@@ -142,18 +144,11 @@
     } else {
         Write-Verbose "Found compatible version [$($script:NetboxConfig.NetboxVersion.'netbox-version')]!"
     }
-
+    
     $script:NetboxConfig.Connected = $true
     Write-Verbose "Successfully connected!"
-
-    #Write-Verbose "Caching static choices"
-    #$script:NetboxConfig.Choices.Circuits = Get-NetboxCircuitsChoices
-    #$script:NetboxConfig.Choices.DCIM = Get-NetboxDCIMChoices # Not completed yet
-    #$script:NetboxConfig.Choices.Extras = Get-NetboxExtrasChoices
-    #$script:NetboxConfig.Choices.IPAM = Get-NetboxIPAMChoices
-    ##$script:NetboxConfig.Choices.Secrets = Get-NetboxSecretsChoices    # Not completed yet
-    ##$script:NetboxConfig.Choices.Tenancy = Get-NetboxTenancyChoices
-    #$script:NetboxConfig.Choices.Virtualization = Get-NetboxVirtualizationChoices
+    
+    $script:NetboxConfig.ContentTypes = Get-NetboxContentType -Limit 500
 
     Write-Verbose "Connection process completed"
 }
