@@ -516,7 +516,9 @@ function Connect-NetboxAPI {
     } else {
         Write-Verbose "Found compatible version [$($script:NetboxConfig.NetboxVersion.'netbox-version')]!"
     }
-
+    
+    $script:NetboxConfig.ContentTypes = Get-NetboxContentType -Limit 500
+    
     $script:NetboxConfig.Connected = $true
     Write-Verbose "Successfully connected!"
 
@@ -2475,96 +2477,92 @@ function Get-NetboxIPAMRole {
 
 
 function Get-NetboxIPAMVLAN {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
     param
     (
         [Parameter(ParameterSetName = 'Query',
                    Position = 0)]
         [ValidateRange(1, 4096)]
         [uint16]$VID,
-
+        
         [Parameter(ParameterSetName = 'ByID')]
         [uint32[]]$Id,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [string]$Name,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Tenant_Id,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [string]$TenantGroup,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$TenantGroup_Id,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [object]$Status,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [string]$Region,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [string]$Site,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Site_Id,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [string]$Group,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Group_Id,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [string]$Role,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [uint32]$Role_Id,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
-
+        
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Offset,
-
+        
         [switch]$Raw
     )
-
-    #    if ($null -ne $Status) {
-    #        $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -VLANStatus
-    #    }
-
+    
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
             foreach ($VLAN_ID in $Id) {
                 $Segments = [System.Collections.ArrayList]::new(@('ipam', 'vlans', $VLAN_ID))
-
+                
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-
+                
                 $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
+                
                 InvokeNetboxRequest -URI $uri -Raw:$Raw
             }
-
+            
             break
         }
-
+        
         default {
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'vlans'))
-
+            
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
+            
             $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
+            
             InvokeNetboxRequest -URI $uri -Raw:$Raw
-
+            
             break
         }
     }
@@ -3093,26 +3091,6 @@ function Get-NetboxVirtualMachineInterface {
 
 #endregion
 
-#region File Initialize-NetboxContentTypeEnum.ps1
-
-<#	
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2022 v5.8.212
-	 Created on:   	2023-02-15 16:47
-	 Created by:   	Claussen
-	 Organization: 	NEOnet
-	 Filename:     	Initialize-NetboxContentTypeEnum.ps1
-	===========================================================================
-	.DESCRIPTION
-		A description of the file.
-#>
-
-
-
-
-#endregion
-
 #region File InvokeNetboxRequest.ps1
 
 
@@ -3365,6 +3343,119 @@ function New-NetboxContact {
         $URI = BuildNewURI -Segments $URIComponents.Segments
         
         if ($PSCmdlet.ShouldProcess($Address, 'Create new contact')) {
+            InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        }
+    }
+}
+
+
+
+
+
+#endregion
+
+#region File New-NetboxContactAssignment.ps1
+
+
+function New-NetboxContactRole {
+<#
+    .SYNOPSIS
+        Create a new contact role in Netbox
+    
+    .DESCRIPTION
+        Creates a new contact role object in Netbox
+    
+    .PARAMETER Content_Type
+        A description of the Content_Type parameter.
+    
+    .PARAMETER Object_Id
+        A description of the Object_Id parameter.
+    
+    .PARAMETER Contact
+        A description of the Contact parameter.
+    
+    .PARAMETER Role
+        A description of the Role parameter.
+    
+    .PARAMETER Priority
+        A description of the Priority parameter.
+    
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+    
+    .EXAMPLE
+        PS C:\> New-NetboxContactAssignment -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(ConfirmImpact = 'Low',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [object]$Content_Type,
+        
+        [Parameter(Mandatory = $true)]
+        [uint32]$Object_Id,
+        
+        [Parameter(Mandatory = $true)]
+        [uint32]$Contact,
+        
+        [Parameter(Mandatory = $true)]
+        [uint32]$Role,
+        
+        [ValidateSet('primary', 'secondary', 'tertiary', 'inactive', IgnoreCase = $true)]
+        [string]$Priority,
+        
+        [switch]$Raw
+    )
+    
+    begin {
+        # https://docs.netbox.dev/en/stable/features/contacts/
+        $AllowedContentTypes = @{
+            10 = "circuits.circuit"
+            7  = "circuits.provider"
+            19 = "dcim.device"
+            25 = "dcim.location"
+            29 = "dcim.manufacturer"
+            77 = "dcim.powerpanel"
+            20 = "dcim.rack"
+            30 = "dcim.region"
+            18 = "dcim.site"
+            92 = "dcim.sitegroup"
+            58 = "tenancy.tenant"
+            63 = "virtualization.cluster"
+            64 = "virtualization.clustergroup"
+            61 = "virtualization.virtualmachine"
+        }
+    }
+    
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-assignment'))
+        $Method = 'POST'
+        
+        if ($Content_Type -is [string]) {
+            # Need to convert this to an integer
+            $Content_Type = ($AllowedContentTypes.GetEnumerator() | Where-Object {
+                    $_.Value -eq $Content_Type
+                }).Key
+        } elseif ($Content_Type -is [int]) {
+            if ($Content_Type -notin $($AllowedContentTypes).Keys) {
+                throw "Invalid content type defined"
+            }
+        } else {
+            throw "Invalid content type defined"
+        }
+        
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+        
+        $URI = BuildNewURI -Segments $URIComponents.Segments
+        
+        if ($PSCmdlet.ShouldProcess($Address, 'Create new contact assignment')) {
             InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
         }
     }
@@ -4388,6 +4479,131 @@ Function Set-NetboxCipherSSL {
 
 #endregion
 
+#region File Set-NetboxContact.ps1
+
+
+function Set-NetboxContact {
+<#
+    .SYNOPSIS
+        Update a contact in Netbox
+    
+    .DESCRIPTION
+        Updates a contact object in Netbox which can be linked to other objects
+    
+    .PARAMETER Id
+        A description of the Id parameter.
+    
+    .PARAMETER Name
+        The contacts full name, e.g "Leroy Jenkins"
+    
+    .PARAMETER Email
+        Email address of the contact
+    
+    .PARAMETER Group
+        Database ID of assigned group
+    
+    .PARAMETER Title
+        Job title or other title related to the contact
+    
+    .PARAMETER Phone
+        Telephone number
+    
+    .PARAMETER Address
+        Physical address, usually mailing address
+    
+    .PARAMETER Description
+        Short description of the contact
+    
+    .PARAMETER Comments
+        Detailed comments. Markdown supported.
+    
+    .PARAMETER Link
+        URI related to the contact
+    
+    .PARAMETER Custom_Fields
+        A description of the Custom_Fields parameter.
+    
+    .PARAMETER Force
+        A description of the Force parameter.
+    
+    .PARAMETER Raw
+        A description of the Raw parameter.
+    
+    .EXAMPLE
+        PS C:\> Set-NetboxContact -Id 10 -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+    
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(ConfirmImpact = 'Low',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint32[]]$Id,
+        
+        [ValidateLength(1, 100)]
+        [string]$Name,
+        
+        [ValidateLength(0, 254)]
+        [string]$Email,
+        
+        [uint32]$Group,
+        
+        [ValidateLength(0, 100)]
+        [string]$Title,
+        
+        [ValidateLength(0, 50)]
+        [string]$Phone,
+        
+        [ValidateLength(0, 200)]
+        [string]$Address,
+        
+        [ValidateLength(0, 200)]
+        [string]$Description,
+        
+        [string]$Comments,
+        
+        [ValidateLength(0, 200)]
+        [string]$Link,
+        
+        [hashtable]$Custom_Fields,
+        
+        [switch]$Force,
+        
+        [switch]$Raw
+    )
+    
+    begin {
+        $Method = 'PATCH'
+    }
+    
+    process {
+        foreach ($ContactId in $Id) {
+            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts', $ContactId))
+            
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+            
+            $URI = BuildNewURI -Segments $URIComponents.Segments
+            
+            $CurrentContact = Get-NetboxContact -Id $ContactId
+            
+            if ($Force -or $PSCmdlet.ShouldProcess($CurrentContact.Name, 'Update contact')) {
+                InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+            }
+        }
+    }
+}
+
+
+
+
+
+#endregion
+
 #region File Set-NetboxCredential.ps1
 
 function Set-NetboxCredential {
@@ -5131,6 +5347,7 @@ function SetupNetboxConfigVariable {
             'Choices'       = @{
             }
             'APIDefinition' = $null
+            'ContentTypes' = $null
         }
     }
 
