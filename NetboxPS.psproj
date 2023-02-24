@@ -1,7 +1,9 @@
-﻿<Project Synchronized="False" SyncFilter="*.ps1;*.psm1;*.psd1;*.ps1xml;*.psf;*.pss;*.xml;*.help.txt" AutoExportFunctions="True" AutoExportPS1XMLFiles="False">
+<Project Synchronized="False" SyncFilter="*.ps1;*.psm1;*.psd1;*.ps1xml;*.psf;*.pss;*.xml;*.help.txt" AutoExportFunctions="True" ExportToLocalMachine="False" AutoExportPS1XMLFiles="False" StagingFolderName="bin">
   <Version>2.1</Version>
   <FileID>bba9b06c-49c8-47cf-8358-aca7c4e78896</FileID>
   <ProjectType>1</ProjectType>
+  <RememberPowerShellVersion>True</RememberPowerShellVersion>
+  <PowerShellVersion>Local Machine - PowerShell V5 (64 Bit)</PowerShellVersion>
   <Folders>
     <Folder>Functions</Folder>
     <Folder>Functions\DCIM</Folder>
@@ -28,6 +30,10 @@
     <Folder>Functions\Circuits\Providers</Folder>
     <Folder>Functions\Circuits\Types</Folder>
     <Folder>Functions\Circuits\Terminations</Folder>
+    <Folder>Functions\Tenancy\Contacts</Folder>
+    <Folder>Functions\Tenancy\Tenants</Folder>
+    <Folder>Functions\Tenancy\ContactRoles</Folder>
+    <Folder>Functions\Tenancy\ContactAssignment</Folder>
   </Folders>
   <Files>
     <File Build="2">NetboxPS.psd1</File>
@@ -68,7 +74,7 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxIPAMPrefix_ps1" ExportFunctions="True">Functions\IPAM\Prefix\New-NetboxIPAMPrefix.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Remove-NetboxIPAMAddress_ps1" ExportFunctions="True">Functions\IPAM\Address\Remove-NetboxIPAMAddress.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxIPAMAddress_ps1" ExportFunctions="True">Functions\IPAM\Address\Set-NetboxIPAMAddress.ps1</File>
-    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxTenant_ps1" ExportFunctions="True">Functions\Tenancy\Get-NetboxTenant.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxTenant_ps1" ExportFunctions="True">Functions\Tenancy\Tenants\Get-NetboxTenant.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxVirtualMachine_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachine\Get-NetboxVirtualMachine.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxVirtualMachine_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachine\New-NetboxVirtualMachine.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxVirtualMachine_ps1" ExportFunctions="True">Functions\Virtualization\VirtualMachine\Set-NetboxVirtualMachine.ps1</File>
@@ -114,6 +120,15 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxTimeout_ps1" ExportFunctions="True">Functions\Setup\Set-NetboxTimeout.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxTimeout_ps1" ExportFunctions="True">Functions\Setup\Get-NetboxTimeout.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxVersion_ps1" ExportFunctions="True">Functions\Setup\Get-NetboxVersion.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxContact_ps1" ExportFunctions="True">Functions\Tenancy\Contacts\Get-NetboxContact.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxContact_ps1" ExportFunctions="True">Functions\Tenancy\Contacts\New-NetboxContact.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxContactRole_ps1" ExportFunctions="True">Functions\Tenancy\ContactRoles\Get-NetboxContactRole.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxContactRole_ps1" ExportFunctions="True">Functions\Tenancy\ContactRoles\New-NetboxContactRole.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxTenant_ps1" ExportFunctions="True">Functions\Tenancy\Tenants\New-NetboxTenant.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxContactAssignment_ps1" ExportFunctions="True">Functions\Tenancy\ContactAssignment\Get-NetboxContactAssignment.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-Get-NetboxContentType_ps1" ExportFunctions="False">Functions\Setup\Support\Get-NetboxContentType.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-Initialize-NetboxContentTypeEnum_ps1" ExportFunctions="False">Functions\Setup\Support\Initialize-NetboxContentTypeEnum.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxContactAssignment_ps1" ExportFunctions="True">Functions\Tenancy\ContactAssignment\New-NetboxContactAssignment.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>

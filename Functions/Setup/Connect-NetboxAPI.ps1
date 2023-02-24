@@ -144,7 +144,9 @@
     } else {
         Write-Verbose "Found compatible version [$($script:NetboxConfig.NetboxVersion.'netbox-version')]!"
     }
-
+    
+    $script:NetboxConfig.ContentTypes = Get-NetboxContentType -Limit 500
+    
     $script:NetboxConfig.Connected = $true
     Write-Verbose "Successfully connected!"
 
