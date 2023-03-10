@@ -7,10 +7,10 @@
         into a single PSM1 file in the NetboxPS directory.
 
         By default, this script will increment version by 0.0.1
-    
+
     .PARAMETER SkipVersion
-        Do not increment the version. 
-    
+        Do not increment the version.
+
     .PARAMETER VersionIncrease
         Increase the version by a user defined amount
 
@@ -19,10 +19,10 @@
 
     .PARAMETER Environment
         A description of the Environment parameter.
-	
+
     .PARAMETER ResetCurrentEnvironment
         A description of the ResetCurrentEnvironment parameter.
-	
+
     .EXAMPLE
         Use all defaults and concatenate all files
 
@@ -46,17 +46,18 @@ param
 
     [Parameter(ParameterSetName = 'SetVersion')]
     [version]$NewVersion,
-    
+
     [ValidateSet('dev', 'development', 'prod', 'production', IgnoreCase = $true)]
     [string]$Environment = 'development',
     [switch]$ResetCurrentEnvironment
 )
 
-
 Write-Host "Beginning deployment" -ForegroundColor Green
-
 Write-Host "Importing required modules" -ForegroundColor Green
-Import-Module "Microsoft.PowerShell.Utility" -ErrorAction Stop
+
+Import-Module "PSScriptAnalyzer", "Microsoft.PowerShell.Utility" -ErrorAction Stop
+
+
 $ModuleName = 'NetboxPS'
 $ConcatenatedFilePath = "$PSScriptRoot\concatenated.ps1"
 $FunctionPath = "$PSScriptRoot\Functions"
@@ -64,12 +65,17 @@ $OutputDirectory = "$PSScriptRoot\$ModuleName"
 $PSD1OutputPath = "$OutputDirectory\$ModuleName.psd1"
 $PSM1OutputPath = "$OutputDirectory\$ModuleName.psm1"
 
+
+Write-Host "Removing whitespace from files" -ForegroundColor Green
+Invoke-ScriptAnalyzer -Path $FunctionPath -IncludeRule 'PSAvoidTrailingWhitespace' -Recurse -Fix
+
+
+Write-Host "Concatenating [$($PS1FunctionFiles.Count)] PS1 files from $FunctionPath"
 $PS1FunctionFiles = Get-ChildItem $FunctionPath -Filter "*.ps1" -Recurse | Sort-Object Name
 
 "" | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8
 
 $Counter = 0
-Write-Host "Concatenating [$($PS1FunctionFiles.Count)] PS1 files from $FunctionPath"
 foreach ($File in $PS1FunctionFiles) {
     $Counter++
 
@@ -89,16 +95,10 @@ foreach ($File in $PS1FunctionFiles) {
 
 "" | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8 -Append
 
-if (-not (Test-Path $OutputDirectory)) {
-    try {
-        Write-Warning "Creating path [$OutputDirectory]"
-        $null = New-Item -Path $OutputDirectory -ItemType Directory -Force
-    } catch {
-        throw "Failed to create output directory [$OutputDirectory]: $($_.Exception.Message)"
-    }
-}
+
 Write-Host " Adding psm1"
 Get-Content "$PSScriptRoot\$ModuleName.psm1" | Out-File -FilePath $ConcatenatedFilePath -Encoding UTF8 -Append
+
 
 $PSDManifest = Import-PowerShellDataFile -Path "$PSScriptRoot\$ModuleName.psd1"
 # Get the version from the PSD1
@@ -115,6 +115,8 @@ if ($Environment -ilike 'dev*') {
 } else {
     $UpdateModuleManifestSplat['FunctionsToExport'] = ($PS1FunctionFiles.BaseName | Where-Object { $_ -like '*-*' })
 }
+
+
 Write-Host "Comparing versions"
 switch ($PSCmdlet.ParameterSetName) {
     "SkipVersion" {
@@ -146,14 +148,27 @@ switch ($PSCmdlet.ParameterSetName) {
     }
 }
 
+
 Write-Host "Updating Module Manifest"
 Update-ModuleManifest @UpdateModuleManifestSplat
+
+if (-not (Test-Path $OutputDirectory)) {
+    try {
+        Write-Warning "Creating output directory [$OutputDirectory]"
+        $null = New-Item -Path $OutputDirectory -ItemType Directory -Force
+    } catch {
+        throw "Failed to create output directory [$OutputDirectory]: $($_.Exception.Message)"
+    }
+}
+
 
 Write-Host " Copying psd1"
 Copy-Item -Path "$PSScriptRoot\$ModuleName.psd1" -Destination $PSD1OutputPath -Force
 
+
 Write-Host " Copying psm1"
 Copy-Item -Path $ConcatenatedFilePath -Destination $PSM1OutputPath -Force
+
 
 Write-Host "Deployment complete" -ForegroundColor Green
 if ($ResetCurrentEnvironment) {
@@ -161,9 +176,9 @@ if ($ResetCurrentEnvironment) {
     if (Get-Module 'NetboxPS') {
         Remove-Module NetboxPS -Force
     }
-    
+
     Write-Host " Reimporting module"
     Import-Module $PSM1OutputPath, $PSD1OutputPath -Force -ErrorAction Stop
-    
+
     Write-Host "Reset complete" -ForegroundColor Green
 }
