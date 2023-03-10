@@ -129,6 +129,7 @@
     <File Build="2" Shared="True" ReferenceFunction="Invoke-Get-NetboxContentType_ps1" ExportFunctions="False">Functions\Setup\Support\Get-NetboxContentType.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxContactAssignment_ps1" ExportFunctions="True">Functions\Tenancy\ContactAssignment\New-NetboxContactAssignment.ps1</File>
     <File Build="0" Shared="False" ReferenceFunction="Invoke-Set-NetboxContact_ps1" ExportFunctions="False">Functions\Tenancy\Contacts\Set-NetboxContact.ps1</File>
+    <File Build="2" Shared="True" ReferenceFunction="Invoke-Test-NetboxAPIConnected_ps1" ExportFunctions="False">Functions\Setup\Support\Test-NetboxAPIConnected.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>
