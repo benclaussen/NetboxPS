@@ -47,10 +47,6 @@ function Set-NetboxDCIMInterfaceConnection {
     )
 
     begin {
-#        if ($null -ne $Connection_Status) {
-#            $PSBoundParameters.Connection_Status = ValidateDCIMChoice -ProvidedValue $Connection_Status -InterfaceConnectionStatus
-#        }
-
         if ((@($ID).Count -gt 1) -and ($Interface_A -or $Interface_B)) {
             throw "Cannot set multiple connections to the same interface"
         }

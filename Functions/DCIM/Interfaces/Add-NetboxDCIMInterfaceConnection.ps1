@@ -36,10 +36,6 @@ function Add-NetboxDCIMInterfaceConnection {
         [uint16]$Interface_B
     )
 
-    if ($null -ne $Connection_Status) {
-        $PSBoundParameters.Connection_Status = ValidateDCIMChoice -ProvidedValue $Connection_Status -InterfaceConnectionStatus
-    }
-
     # Verify if both Interfaces exist
     Get-NetboxDCIMInterface -Id $Interface_A -ErrorAction Stop | Out-null
     Get-NetboxDCIMInterface -Id $Interface_B -ErrorAction Stop | Out-null

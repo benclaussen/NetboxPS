@@ -19,10 +19,6 @@ function Get-NetboxDCIMInterfaceConnection {
         [switch]$Raw
     )
 
-    if ($null -ne $Connection_Status) {
-        $PSBoundParameters.Connection_Status = ValidateDCIMChoice -ProvidedValue $Connection_Status -InterfaceConnectionStatus
-    }
-
     $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interface-connections'))
 
     $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'

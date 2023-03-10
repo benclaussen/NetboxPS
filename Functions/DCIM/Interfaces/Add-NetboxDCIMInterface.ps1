@@ -34,10 +34,6 @@ function Add-NetboxDCIMInterface {
         [uint16[]]$Tagged_VLANs
     )
 
-#    if ($null -ne $Form_Factor) {
-#        $PSBoundParameters.Form_Factor = ValidateDCIMChoice -ProvidedValue $Form_Factor -InterfaceFormFactor
-#    }
-
     if (-not [System.String]::IsNullOrWhiteSpace($Mode)) {
         $PSBoundParameters.Mode = switch ($Mode) {
             'Access' {

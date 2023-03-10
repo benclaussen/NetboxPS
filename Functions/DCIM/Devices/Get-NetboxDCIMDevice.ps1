@@ -73,10 +73,6 @@ function Get-NetboxDCIMDevice {
     #endregion Parameters
 
     process {
-        if ($null -ne $Status) {
-            $PSBoundParameters.Status = ValidateDCIMChoice -ProvidedValue $Status -DeviceStatus
-        }
-
         $Segments = [System.Collections.ArrayList]::new(@('dcim', 'devices'))
 
         $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'

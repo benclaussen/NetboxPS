@@ -51,13 +51,7 @@ function Set-NetboxDCIMDevice {
     )
 
     begin {
-#        if ($null -ne $Status) {
-#            $PSBoundParameters.Status = ValidateDCIMChoice -ProvidedValue $Status -DeviceStatus
-#        }
 
-#        if ($null -ne $Face) {
-#            $PSBoundParameters.Face = ValidateDCIMChoice -ProvidedValue $Face -DeviceFace
-#        }
     }
 
     process {

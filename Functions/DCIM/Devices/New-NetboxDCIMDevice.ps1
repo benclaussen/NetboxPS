@@ -52,22 +52,6 @@ function New-NetboxDCIMDevice {
     )
     #endregion Parameters
 
-    #    if ($null -ne $Device_Role) {
-    #        # Validate device role?
-    #    }
-
-    #    if ($null -ne $Device_Type) {
-    #        # Validate device type?
-    #    }
-
-    #    if ($null -ne $Status) {
-    #        $PSBoundParameters.Status = ValidateDCIMChoice -ProvidedValue $Status -DeviceStatus
-    #    }
-
-    #    if ($null -ne $Face) {
-    #        $PSBoundParameters.Face = ValidateDCIMChoice -ProvidedValue $Face -DeviceFace
-    #    }
-
     $Segments = [System.Collections.ArrayList]::new(@('dcim', 'devices'))
 
     $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
