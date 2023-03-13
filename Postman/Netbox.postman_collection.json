@@ -954,50 +954,6 @@
 					"response": []
 				},
 				{
-					"name": "Get Device Rear Ports",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/rear-ports/",
-							"protocol": "{{SCHEME}}",
-							"host": [
-								"{{HOSTNAME}}"
-							],
-							"port": "{{PORT}}",
-							"path": [
-								"api",
-								"dcim",
-								"rear-ports",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Device Front Ports",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/front-ports/",
-							"protocol": "{{SCHEME}}",
-							"host": [
-								"{{HOSTNAME}}"
-							],
-							"port": "{{PORT}}",
-							"path": [
-								"api",
-								"dcim",
-								"rear-ports",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Add Interface",
 					"request": {
 						"method": "POST",
