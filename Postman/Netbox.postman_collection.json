@@ -1062,6 +1062,33 @@
 			]
 		},
 		{
+			"name": "Extras",
+			"item": [
+				{
+					"name": "Get Tags",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/extras/tags/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"extras",
+								"tags",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Circuits",
 			"item": [
 				{
