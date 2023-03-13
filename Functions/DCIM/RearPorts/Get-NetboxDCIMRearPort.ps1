@@ -12,13 +12,13 @@ function Get-NetboxDCIMRearPort
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [uint16]$Id,
 
-        [uint16]$Name,
+        [string]$Name,
 
         [string]$Device,
 
         [uint16]$Device_Id,
 
-        [uint16]$Type,
+        [string]$Type,
 
         [switch]$Raw
     )
