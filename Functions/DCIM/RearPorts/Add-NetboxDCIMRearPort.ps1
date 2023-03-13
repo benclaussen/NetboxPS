@@ -20,11 +20,11 @@ function Add-NetboxDCIMRearPort
 
         [string]$Color,
 
-        [uint16]$Positions,
+        [uint16]$Positions = 1,
 
         [string]$Description,
 
-        [string]$Tags
+        [uint16[]]$Tags
 
     )
 
