@@ -1,6 +1,5 @@
 ﻿
-function Add-NetboxDCIMInterface
-{
+function Add-NetboxDCIMInterface {
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param
@@ -38,30 +37,24 @@ function Add-NetboxDCIMInterface
         [uint16[]]$Tagged_VLANs
     )
 
-    if (-not [System.String]::IsNullOrWhiteSpace($Mode))
-    {
-        $PSBoundParameters.Mode = switch ($Mode)
-        {
-            'Access'
-            {
+    if (-not [System.String]::IsNullOrWhiteSpace($Mode)) {
+        $PSBoundParameters.Mode = switch ($Mode) {
+            'Access' {
                 100
                 break
             }
 
-            'Tagged'
-            {
+            'Tagged' {
                 200
                 break
             }
 
-            'Tagged All'
-            {
+            'Tagged All' {
                 300
                 break
             }
 
-            default
-            {
+            default {
                 $_
             }
         }

@@ -1,6 +1,5 @@
 ﻿
-function Get-NetboxDCIMInterface
-{
+function Get-NetboxDCIMInterface {
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param
@@ -36,8 +35,7 @@ function Get-NetboxDCIMInterface
         [switch]$Raw
     )
 
-    process
-    {
+    process {
         $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces'))
 
         $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
