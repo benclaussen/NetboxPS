@@ -64,6 +64,7 @@ $FunctionPath = "$PSScriptRoot\Functions"
 $OutputDirectory = "$PSScriptRoot\$ModuleName"
 $PSD1OutputPath = "$OutputDirectory\$ModuleName.psd1"
 $PSM1OutputPath = "$OutputDirectory\$ModuleName.psm1"
+$PS1FunctionFiles = Get-ChildItem $FunctionPath -Filter "*.ps1" -Recurse | Sort-Object Name
 
 
 Write-Host "Removing whitespace from files" -ForegroundColor Green
@@ -71,7 +72,6 @@ Invoke-ScriptAnalyzer -Path $FunctionPath -IncludeRule 'PSAvoidTrailingWhitespac
 
 
 Write-Host "Concatenating [$($PS1FunctionFiles.Count)] PS1 files from $FunctionPath"
-$PS1FunctionFiles = Get-ChildItem $FunctionPath -Filter "*.ps1" -Recurse | Sort-Object Name
 
 "" | Out-File -FilePath $ConcatenatedFilePath -Encoding utf8
 
@@ -152,6 +152,10 @@ switch ($PSCmdlet.ParameterSetName) {
 Write-Host "Updating Module Manifest"
 Update-ModuleManifest @UpdateModuleManifestSplat
 
+Write-Host " Removing trailing whitespaces from psd1"
+Invoke-ScriptAnalyzer -Path $UpdateModuleManifestSplat.Path -IncludeRule 'PSAvoidTrailingWhitespace' -Fix
+
+
 if (-not (Test-Path $OutputDirectory)) {
     try {
         Write-Warning "Creating output directory [$OutputDirectory]"
@@ -164,7 +168,6 @@ if (-not (Test-Path $OutputDirectory)) {
 
 Write-Host " Copying psd1"
 Copy-Item -Path "$PSScriptRoot\$ModuleName.psd1" -Destination $PSD1OutputPath -Force
-
 
 Write-Host " Copying psm1"
 Copy-Item -Path $ConcatenatedFilePath -Destination $PSM1OutputPath -Force
