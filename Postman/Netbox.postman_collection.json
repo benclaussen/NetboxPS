@@ -983,6 +983,37 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Add Rear Port",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"device\": 62,\r\n  \"name\": \"RearPort1\",\r\n  \"type\": 110-punch\r\n}"
+						},
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/rear-ports/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"dcim",
+								"rear-ports",
+								""
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
