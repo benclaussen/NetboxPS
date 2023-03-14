@@ -38,7 +38,9 @@ function Set-NetboxDCIMInterface
         [uint16]$Untagged_VLAN,
 
         [ValidateRange(1, 4094)]
-        [uint16[]]$Tagged_VLANs
+        [uint16[]]$Tagged_VLANs,
+
+        [switch]$Force
     )
 
     begin

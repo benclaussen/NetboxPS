@@ -29,7 +29,9 @@ function Set-NetboxDCIMRearPort
 
         [bool]$Mark_Connected,
 
-        [uint16[]]$Tags
+        [uint16[]]$Tags,
+
+        [switch]$Force
     )
 
     begin
