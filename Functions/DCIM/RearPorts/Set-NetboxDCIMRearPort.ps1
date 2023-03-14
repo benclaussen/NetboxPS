@@ -20,6 +20,7 @@ function Set-NetboxDCIMRearPort
 
         [string]$Type,
 
+        [ValidatePattern('^[0-9a-f]{6}$')]
         [string]$Color,
 
         [uint16]$Positions,
