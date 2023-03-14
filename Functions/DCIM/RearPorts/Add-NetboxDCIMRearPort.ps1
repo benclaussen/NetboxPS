@@ -24,6 +24,8 @@ function Add-NetboxDCIMRearPort
 
         [string]$Description,
 
+        [bool]$Mark_Connected,
+
         [uint16[]]$Tags
 
     )
