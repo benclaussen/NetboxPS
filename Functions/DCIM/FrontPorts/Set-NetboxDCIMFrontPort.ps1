@@ -1,6 +1,4 @@
-﻿
-function Set-NetboxDCIMFrontPort
-{
+﻿function Set-NetboxDCIMFrontPort {
     [CmdletBinding(ConfirmImpact = 'Medium',
         SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
@@ -36,15 +34,12 @@ function Set-NetboxDCIMFrontPort
         [switch]$Force
     )
 
-    begin
-    {
+    begin {
 
     }
 
-    process
-    {
-        foreach ($FrontPortID in $Id)
-        {
+    process {
+        foreach ($FrontPortID in $Id) {
             $CurrentPort = Get-NetboxDCIMFrontPort -Id $FrontPortID -ErrorAction Stop
 
             $Segments = [System.Collections.ArrayList]::new(@('dcim', 'front-ports', $CurrentPort.Id))
@@ -53,15 +48,13 @@ function Set-NetboxDCIMFrontPort
 
             $URI = BuildNewURI -Segments $Segments
 
-            if ($Force -or $pscmdlet.ShouldProcess("Front Port ID $($CurrentPort.Id)", "Set"))
-            {
+            if ($Force -or $pscmdlet.ShouldProcess("Front Port ID $($CurrentPort.Id)", "Set")) {
                 InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
             }
         }
     }
 
-    end
-    {
+    end {
 
     }
 }

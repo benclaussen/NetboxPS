@@ -1,6 +1,5 @@
 ﻿
-function Get-NetboxTag
-{
+function Get-NetboxTag {
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param
@@ -19,8 +18,7 @@ function Get-NetboxTag
         [switch]$Raw
     )
 
-    process
-    {
+    process {
 
         $Segments = [System.Collections.ArrayList]::new(@('extras', 'tags'))
 

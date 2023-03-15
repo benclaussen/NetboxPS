@@ -1,6 +1,4 @@
-﻿
-function Get-NetboxDCIMRearPort
-{
+﻿function Get-NetboxDCIMRearPort {
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param
@@ -23,8 +21,7 @@ function Get-NetboxDCIMRearPort
         [switch]$Raw
     )
 
-    process
-    {
+    process {
 
         $Segments = [System.Collections.ArrayList]::new(@('dcim', 'rear-ports'))
 

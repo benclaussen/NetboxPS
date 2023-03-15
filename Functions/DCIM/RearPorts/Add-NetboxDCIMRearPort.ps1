@@ -1,6 +1,4 @@
-﻿
-function Add-NetboxDCIMRearPort
-{
+﻿function Add-NetboxDCIMRearPort {
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param
@@ -27,15 +25,35 @@ function Add-NetboxDCIMRearPort
 
         [bool]$Mark_Connected,
 
-        [uint16[]]$Tags
+        [uint16[]]$Tags,
+
+        [string[]]$Tags_Slug
 
     )
 
-    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'rear-ports'))
+    begin {
+        if (-not [System.String]::IsNullOrWhiteSpace($Tags_Slug)) {
+            if ([System.String]::IsNullOrWhiteSpace($Tags)) {
+                $PSBoundParameters.Tags = @()
+            }
+            foreach ($CurrentTagSlug in $Tags_Slug) {
+                $CurrentTagID = (Get-NetboxTag -slug $CurrentTagSlug -ErrorAction Stop).Id
+                $PSBoundParameters.Tags += $CurrentTagID
+            }
+        }
+    }
 
-    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('dcim', 'rear-ports'))
 
-    $URI = BuildNewURI -Segments $URIComponents.Segments
+        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Tags_Slug'
 
-    InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
+        $URI = BuildNewURI -Segments $URIComponents.Segments
+
+        InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
+    }
+
+    end {
+
+    }
 }

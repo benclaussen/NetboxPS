@@ -1,6 +1,4 @@
-﻿
-function Get-NetboxDCIMCableTermination
-{
+﻿function Get-NetboxDCIMCableTermination {
     [CmdletBinding()]
     #region Parameters
     param
@@ -25,8 +23,7 @@ function Get-NetboxDCIMCableTermination
 
     #endregion Parameters
 
-    process
-    {
+    process {
         $Segments = [System.Collections.ArrayList]::new(@('dcim', 'cable-terminations'))
 
         $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'

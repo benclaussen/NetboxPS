@@ -1,6 +1,4 @@
-﻿
-function Add-NetboxDCIMFrontPort
-{
+﻿function Add-NetboxDCIMFrontPort {
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param

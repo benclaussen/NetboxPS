@@ -1,6 +1,4 @@
-﻿
-function Get-NetboxDCIMFrontPort
-{
+﻿function Get-NetboxDCIMFrontPort {
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param
@@ -23,8 +21,7 @@ function Get-NetboxDCIMFrontPort
         [switch]$Raw
     )
 
-    process
-    {
+    process {
 
         $Segments = [System.Collections.ArrayList]::new(@('dcim', 'front-ports'))
 

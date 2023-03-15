@@ -1,6 +1,4 @@
-﻿
-function Set-NetboxDCIMInterface
-{
+﻿function Set-NetboxDCIMInterface {
     [CmdletBinding(ConfirmImpact = 'Medium',
         SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
@@ -43,42 +41,33 @@ function Set-NetboxDCIMInterface
         [switch]$Force
     )
 
-    begin
-    {
-        if (-not [System.String]::IsNullOrWhiteSpace($Mode))
-        {
-            $PSBoundParameters.Mode = switch ($Mode)
-            {
-                'Access'
-                {
+    begin {
+        if (-not [System.String]::IsNullOrWhiteSpace($Mode)) {
+            $PSBoundParameters.Mode = switch ($Mode) {
+                'Access' {
                     100
                     break
                 }
 
-                'Tagged'
-                {
+                'Tagged' {
                     200
                     break
                 }
 
-                'Tagged All'
-                {
+                'Tagged All' {
                     300
                     break
                 }
 
-                default
-                {
+                default {
                     $_
                 }
             }
         }
     }
 
-    process
-    {
-        foreach ($InterfaceId in $Id)
-        {
+    process {
+        foreach ($InterfaceId in $Id) {
             $CurrentInterface = Get-NetboxDCIMInterface -Id $InterfaceId -ErrorAction Stop
 
             $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces', $CurrentInterface.Id))
@@ -87,15 +76,13 @@ function Set-NetboxDCIMInterface
 
             $URI = BuildNewURI -Segments $Segments
 
-            if ($Force -or $pscmdlet.ShouldProcess("Interface ID $($CurrentInterface.Id)", "Set"))
-            {
+            if ($Force -or $pscmdlet.ShouldProcess("Interface ID $($CurrentInterface.Id)", "Set")) {
                 InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
             }
         }
     }
 
-    end
-    {
+    end {
 
     }
 }

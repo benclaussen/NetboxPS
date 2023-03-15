@@ -1,6 +1,4 @@
-﻿
-function Remove-NetboxDCIMFrontPort
-{
+﻿function Remove-NetboxDCIMFrontPort {
 
     [CmdletBinding(ConfirmImpact = 'High',
         SupportsShouldProcess = $true)]
@@ -13,19 +11,15 @@ function Remove-NetboxDCIMFrontPort
         [switch]$Force
     )
 
-    begin
-    {
+    begin {
 
     }
 
-    process
-    {
-        foreach ($FrontPortID in $Id)
-        {
+    process {
+        foreach ($FrontPortID in $Id) {
             $CurrentPort = Get-NetboxDCIMFrontPort -Id $FrontPortID -ErrorAction Stop
 
-            if ($Force -or $pscmdlet.ShouldProcess("Name: $($CurrentPort.Name) | ID: $($CurrentPort.Id)", "Remove"))
-            {
+            if ($Force -or $pscmdlet.ShouldProcess("Name: $($CurrentPort.Name) | ID: $($CurrentPort.Id)", "Remove")) {
                 $Segments = [System.Collections.ArrayList]::new(@('dcim', 'front-ports', $CurrentPort.Id))
 
                 $URI = BuildNewURI -Segments $Segments
@@ -35,8 +29,7 @@ function Remove-NetboxDCIMFrontPort
         }
     }
 
-    end
-    {
+    end {
 
     }
 }
