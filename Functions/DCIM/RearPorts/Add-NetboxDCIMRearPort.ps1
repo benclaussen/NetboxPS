@@ -25,28 +25,17 @@
 
         [bool]$Mark_Connected,
 
-        [uint16[]]$Tags,
-
-        [string[]]$Tags_Slug
-
+        [uint16[]]$Tags
     )
 
     begin {
-        if (-not [System.String]::IsNullOrWhiteSpace($Tags_Slug)) {
-            if ([System.String]::IsNullOrWhiteSpace($Tags)) {
-                $PSBoundParameters.Tags = @()
-            }
-            foreach ($CurrentTagSlug in $Tags_Slug) {
-                $CurrentTagID = (Get-NetboxTag -slug $CurrentTagSlug -ErrorAction Stop).Id
-                $PSBoundParameters.Tags += $CurrentTagID
-            }
-        }
+
     }
 
     process {
         $Segments = [System.Collections.ArrayList]::new(@('dcim', 'rear-ports'))
 
-        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Tags_Slug'
+        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
 
         $URI = BuildNewURI -Segments $URIComponents.Segments
 
