@@ -1,5 +1,4 @@
-﻿
-function Get-NetboxDCIMInterface {
+﻿function Get-NetboxDCIMInterface {
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param
