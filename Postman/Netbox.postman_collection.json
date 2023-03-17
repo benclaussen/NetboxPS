@@ -954,6 +954,50 @@
 					"response": []
 				},
 				{
+					"name": "Get Device Rear Ports",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/rear-ports/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"dcim",
+								"rear-ports",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Device Front Ports",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/front-ports/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"dcim",
+								"rear-ports",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Add Interface",
 					"request": {
 						"method": "POST",
@@ -978,6 +1022,64 @@
 								"api",
 								"dcim",
 								"interfaces",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Rear Port",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"device\": 62,\r\n  \"name\": \"RearPort1\",\r\n  \"type\": 110-punch\r\n}"
+						},
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/dcim/rear-ports/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"dcim",
+								"rear-ports",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Extras",
+			"item": [
+				{
+					"name": "Get Tags",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SCHEME}}://{{HOSTNAME}}:{{PORT}}/api/extras/tags/",
+							"protocol": "{{SCHEME}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"api",
+								"extras",
+								"tags",
 								""
 							]
 						}

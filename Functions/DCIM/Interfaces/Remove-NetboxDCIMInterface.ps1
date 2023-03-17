@@ -1,6 +1,5 @@
-﻿
-function Remove-NetboxDCIMInterface {
-<#
+﻿function Remove-NetboxDCIMInterface {
+    <#
     .SYNOPSIS
         Removes an interface
 
@@ -21,11 +20,11 @@ function Remove-NetboxDCIMInterface {
 #>
 
     [CmdletBinding(ConfirmImpact = 'High',
-                   SupportsShouldProcess = $true)]
+        SupportsShouldProcess = $true)]
     param
     (
         [Parameter(Mandatory = $true,
-                   ValueFromPipelineByPropertyName = $true)]
+            ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
 
         [switch]$Force

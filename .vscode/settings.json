@@ -6,5 +6,6 @@
     "powershell.codeFormatting.newLineAfterCloseBrace": false,
     "[markdown]": {
         "files.trimTrailingWhitespace": false,
-    }
+    },
+    "powershell.codeFormatting.openBraceOnSameLine": true
 }
