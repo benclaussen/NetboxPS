@@ -34,6 +34,10 @@
     <Folder>Functions\Tenancy\Tenants</Folder>
     <Folder>Functions\Tenancy\ContactRoles</Folder>
     <Folder>Functions\Tenancy\ContactAssignment</Folder>
+    <Folder>Functions\DCIM\Cable Terminations</Folder>
+    <Folder>Functions\DCIM\Cables</Folder>
+    <Folder>Functions\DCIM\FrontPorts</Folder>
+    <Folder>Functions\DCIM\RearPorts</Folder>
   </Folders>
   <Files>
     <File Build="2">NetboxPS.psd1</File>
@@ -126,10 +130,22 @@
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxContactRole_ps1" ExportFunctions="True">Functions\Tenancy\ContactRoles\New-NetboxContactRole.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxTenant_ps1" ExportFunctions="True">Functions\Tenancy\Tenants\New-NetboxTenant.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxContactAssignment_ps1" ExportFunctions="True">Functions\Tenancy\ContactAssignment\Get-NetboxContactAssignment.ps1</File>
-    <File Build="2" Shared="True" ReferenceFunction="Invoke-Get-NetboxContentType_ps1" ExportFunctions="False">Functions\Setup\Support\Get-NetboxContentType.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxContentType_ps1" ExportFunctions="False">Functions\Setup\Support\Get-NetboxContentType.ps1</File>
     <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxContactAssignment_ps1" ExportFunctions="True">Functions\Tenancy\ContactAssignment\New-NetboxContactAssignment.ps1</File>
-    <File Build="0" Shared="False" ReferenceFunction="Invoke-Set-NetboxContact_ps1" ExportFunctions="False">Functions\Tenancy\Contacts\Set-NetboxContact.ps1</File>
-    <File Build="2" Shared="True" ReferenceFunction="Invoke-Test-NetboxAPIConnected_ps1" ExportFunctions="False">Functions\Setup\Support\Test-NetboxAPIConnected.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxContact_ps1" ExportFunctions="False">Functions\Tenancy\Contacts\Set-NetboxContact.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Test-NetboxAPIConnected_ps1" ExportFunctions="False">Functions\Setup\Support\Test-NetboxAPIConnected.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMCableTermination_ps1" ExportFunctions="False">Functions\DCIM\Cable Terminations\Get-NetboxDCIMCableTermination.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMCable_ps1" ExportFunctions="False">Functions\DCIM\Cables\Get-NetboxDCIMCable.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Add-NetboxDCIMFrontPort_ps1" ExportFunctions="False">Functions\DCIM\FrontPorts\Add-NetboxDCIMFrontPort.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMFrontPort_ps1" ExportFunctions="False">Functions\DCIM\FrontPorts\Get-NetboxDCIMFrontPort.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Remove-NetboxDCIMFrontPort_ps1" ExportFunctions="False">Functions\DCIM\FrontPorts\Remove-NetboxDCIMFrontPort.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxDCIMFrontPort_ps1" ExportFunctions="False">Functions\DCIM\FrontPorts\Set-NetboxDCIMFrontPort.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Add-NetboxDCIMRearPort_ps1" ExportFunctions="False">Functions\DCIM\RearPorts\Add-NetboxDCIMRearPort.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Get-NetboxDCIMRearPort_ps1" ExportFunctions="False">Functions\DCIM\RearPorts\Get-NetboxDCIMRearPort.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Remove-NetboxDCIMRearPort_ps1" ExportFunctions="False">Functions\DCIM\RearPorts\Remove-NetboxDCIMRearPort.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Set-NetboxDCIMRearPort_ps1" ExportFunctions="False">Functions\DCIM\RearPorts\Set-NetboxDCIMRearPort.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-New-NetboxDCIMSite_ps1" ExportFunctions="False">Functions\DCIM\Sites\New-NetboxDCIMSite.ps1</File>
+    <File Build="0" Shared="True" ReferenceFunction="Invoke-Remove-NetboxDCIMSite_ps1" ExportFunctions="False">Functions\DCIM\Sites\Remove-NetboxDCIMSite.ps1</File>
   </Files>
   <StartupScript>R:\Netbox\NetboxPS\Test-Module.ps1</StartupScript>
 </Project>
