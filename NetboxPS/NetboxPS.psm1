@@ -1,5 +1,52 @@
 ﻿
 
+#region File Add-NetboxDCIMFrontPort.ps1
+
+function Add-NetboxDCIMFrontPort {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [uint16]$Device,
+
+        [uint16]$Module,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [string]$Label,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Type,
+
+        [ValidatePattern('^[0-9a-f]{6}$')]
+        [string]$Color,
+
+        [Parameter(Mandatory = $true)]
+        [uint16]$Rear_Port,
+
+        [uint16]$Rear_Port_Position,
+
+        [string]$Description,
+
+        [bool]$Mark_Connected,
+
+        [uint16[]]$Tags
+
+    )
+
+    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'front-ports'))
+
+    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+    $URI = BuildNewURI -Segments $URIComponents.Segments
+
+    InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
+}
+
+#endregion
+
 #region File Add-NetboxDCIMInterface.ps1
 
 
@@ -126,6 +173,59 @@ function Add-NetboxDCIMInterfaceConnection {
     $URI = BuildNewURI -Segments $URIComponents.Segments
 
     InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
+}
+
+#endregion
+
+#region File Add-NetboxDCIMRearPort.ps1
+
+function Add-NetboxDCIMRearPort {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [uint16]$Device,
+
+        [uint16]$Module,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [string]$Label,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Type,
+
+        [ValidatePattern('^[0-9a-f]{6}$')]
+        [string]$Color,
+
+        [uint16]$Positions = 1,
+
+        [string]$Description,
+
+        [bool]$Mark_Connected,
+
+        [uint16[]]$Tags
+    )
+
+    begin {
+
+    }
+
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('dcim', 'rear-ports'))
+
+        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+        $URI = BuildNewURI -Segments $URIComponents.Segments
+
+        InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
+    }
+
+    end {
+
+    }
 }
 
 #endregion
@@ -1415,6 +1515,106 @@ function Get-NetboxCredential {
 
 #endregion
 
+#region File Get-NetboxDCIMCable.ps1
+
+function Get-NetboxDCIMCable {
+    [CmdletBinding()]
+    #region Parameters
+    param
+    (
+        [uint16]$Limit,
+
+        [uint16]$Offset,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [uint16[]]$Id,
+
+        [string]$Label,
+
+        [string]$Termination_A_Type,
+
+        [uint16]$Termination_A_ID,
+
+        [string]$Termination_B_Type,
+
+        [UInt16]$Termination_B_ID,
+
+        [string]$Type,
+
+        [string]$Status,
+
+        [string]$Color,
+
+        [UInt16]$Device_ID,
+
+        [string]$Device,
+
+        [uint16]$Rack_Id,
+
+        [string]$Rack,
+
+        [uint16]$Location_ID,
+
+        [string]$Location,
+
+        [switch]$Raw
+    )
+
+    #endregion Parameters
+
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('dcim', 'cables'))
+
+        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'
+
+        $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+        InvokeNetboxRequest -URI $URI -Raw:$Raw
+    }
+}
+
+#endregion
+
+#region File Get-NetboxDCIMCableTermination.ps1
+
+function Get-NetboxDCIMCableTermination {
+    [CmdletBinding()]
+    #region Parameters
+    param
+    (
+        [uint16]$Limit,
+
+        [uint16]$Offset,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [uint16[]]$Id,
+
+        [uint16]$Cable,
+
+        [string]$Cable_End,
+
+        [string]$Termination_Type,
+
+        [uint16]$Termination_ID,
+
+        [switch]$Raw
+    )
+
+    #endregion Parameters
+
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('dcim', 'cable-terminations'))
+
+        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'
+
+        $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+        InvokeNetboxRequest -URI $URI -Raw:$Raw
+    }
+}
+
+#endregion
+
 #region File Get-NetboxDCIMDevice.ps1
 
 
@@ -1611,8 +1811,46 @@ function Get-NetboxDCIMDeviceType {
 
 #endregion
 
-#region File Get-NetboxDCIMInterface.ps1
+#region File Get-NetboxDCIMFrontPort.ps1
 
+function Get-NetboxDCIMFrontPort {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [uint16]$Limit,
+
+        [uint16]$Offset,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [uint16]$Id,
+
+        [string]$Name,
+
+        [string]$Device,
+
+        [uint16]$Device_Id,
+
+        [string]$Type,
+
+        [switch]$Raw
+    )
+
+    process {
+
+        $Segments = [System.Collections.ArrayList]::new(@('dcim', 'front-ports'))
+
+        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+        $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+        InvokeNetboxRequest -URI $URI -Raw:$Raw
+    }
+}
+
+#endregion
+
+#region File Get-NetboxDCIMInterface.ps1
 
 function Get-NetboxDCIMInterface {
     [CmdletBinding()]
@@ -1747,6 +1985,45 @@ function Get-NetboxDCIMPlatform {
 
             InvokeNetboxRequest -URI $URI -Raw:$Raw
         }
+    }
+}
+
+#endregion
+
+#region File Get-NetboxDCIMRearPort.ps1
+
+function Get-NetboxDCIMRearPort {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [uint16]$Limit,
+
+        [uint16]$Offset,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [uint16]$Id,
+
+        [string]$Name,
+
+        [string]$Device,
+
+        [uint16]$Device_Id,
+
+        [string]$Type,
+
+        [switch]$Raw
+    )
+
+    process {
+
+        $Segments = [System.Collections.ArrayList]::new(@('dcim', 'rear-ports'))
+
+        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+        $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+        InvokeNetboxRequest -URI $URI -Raw:$Raw
     }
 }
 
@@ -2546,6 +2823,42 @@ function Get-NetboxIPAMVLAN {
 
 
 
+
+#endregion
+
+#region File Get-NetboxTag.ps1
+
+
+function Get-NetboxTag {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [uint16]$Limit,
+
+        [uint16]$Offset,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [uint16]$Id,
+
+        [string]$Name,
+
+        [string]$Slug,
+
+        [switch]$Raw
+    )
+
+    process {
+
+        $Segments = [System.Collections.ArrayList]::new(@('extras', 'tags'))
+
+        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+        $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+        InvokeNetboxRequest -URI $URI -Raw:$Raw
+    }
+}
 
 #endregion
 
@@ -4141,11 +4454,50 @@ function Remove-NetboxDCIMDevice {
 
 #endregion
 
+#region File Remove-NetboxDCIMFrontPort.ps1
+
+function Remove-NetboxDCIMFrontPort {
+
+    [CmdletBinding(ConfirmImpact = 'High',
+        SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true)]
+        [uint16[]]$Id,
+
+        [switch]$Force
+    )
+
+    begin {
+
+    }
+
+    process {
+        foreach ($FrontPortID in $Id) {
+            $CurrentPort = Get-NetboxDCIMFrontPort -Id $FrontPortID -ErrorAction Stop
+
+            if ($Force -or $pscmdlet.ShouldProcess("Name: $($CurrentPort.Name) | ID: $($CurrentPort.Id)", "Remove")) {
+                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'front-ports', $CurrentPort.Id))
+
+                $URI = BuildNewURI -Segments $Segments
+
+                InvokeNetboxRequest -URI $URI -Method DELETE
+            }
+        }
+    }
+
+    end {
+
+    }
+}
+
+#endregion
+
 #region File Remove-NetboxDCIMInterface.ps1
 
-
 function Remove-NetboxDCIMInterface {
-<#
+    <#
     .SYNOPSIS
         Removes an interface
 
@@ -4166,11 +4518,11 @@ function Remove-NetboxDCIMInterface {
 #>
 
     [CmdletBinding(ConfirmImpact = 'High',
-                   SupportsShouldProcess = $true)]
+        SupportsShouldProcess = $true)]
     param
     (
         [Parameter(Mandatory = $true,
-                   ValueFromPipelineByPropertyName = $true)]
+            ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
 
         [switch]$Force
@@ -4231,6 +4583,46 @@ function Remove-NetboxDCIMInterfaceConnection {
                 $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
 
                 $URI = BuildNewURI -Segments $URIComponents.Segments
+
+                InvokeNetboxRequest -URI $URI -Method DELETE
+            }
+        }
+    }
+
+    end {
+
+    }
+}
+
+#endregion
+
+#region File Remove-NetboxDCIMRearPort.ps1
+
+function Remove-NetboxDCIMRearPort {
+
+    [CmdletBinding(ConfirmImpact = 'High',
+        SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true)]
+        [uint16[]]$Id,
+
+        [switch]$Force
+    )
+
+    begin {
+
+    }
+
+    process {
+        foreach ($RearPortID in $Id) {
+            $CurrentPort = Get-NetboxDCIMRearPort -Id $RearPortID -ErrorAction Stop
+
+            if ($Force -or $pscmdlet.ShouldProcess("Name: $($CurrentPort.Name) | ID: $($CurrentPort.Id)", "Remove")) {
+                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'rear-ports', $CurrentPort.Id))
+
+                $URI = BuildNewURI -Segments $Segments
 
                 InvokeNetboxRequest -URI $URI -Method DELETE
             }
@@ -4681,8 +5073,72 @@ function Set-NetboxDCIMDevice {
 
 #endregion
 
-#region File Set-NetboxDCIMInterface.ps1
+#region File Set-NetboxDCIMFrontPort.ps1
 
+function Set-NetboxDCIMFrontPort {
+    [CmdletBinding(ConfirmImpact = 'Medium',
+        SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true)]
+        [uint16[]]$Id,
+
+        [uint16]$Device,
+
+        [uint16]$Module,
+
+        [string]$Name,
+
+        [string]$Label,
+
+        [string]$Type,
+
+        [ValidatePattern('^[0-9a-f]{6}$')]
+        [string]$Color,
+
+        [uint16]$Rear_Port,
+
+        [uint16]$Rear_Port_Position,
+
+        [string]$Description,
+
+        [bool]$Mark_Connected,
+
+        [uint16[]]$Tags,
+
+        [switch]$Force
+    )
+
+    begin {
+
+    }
+
+    process {
+        foreach ($FrontPortID in $Id) {
+            $CurrentPort = Get-NetboxDCIMFrontPort -Id $FrontPortID -ErrorAction Stop
+
+            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'front-ports', $CurrentPort.Id))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+
+            $URI = BuildNewURI -Segments $Segments
+
+            if ($Force -or $pscmdlet.ShouldProcess("Front Port ID $($CurrentPort.Id)", "Set")) {
+                InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+            }
+        }
+    }
+
+    end {
+
+    }
+}
+
+#endregion
+
+#region File Set-NetboxDCIMInterface.ps1
 
 function Set-NetboxDCIMInterface {
     [CmdletBinding(ConfirmImpact = 'Medium',
@@ -4722,7 +5178,9 @@ function Set-NetboxDCIMInterface {
         [uint16]$Untagged_VLAN,
 
         [ValidateRange(1, 4094)]
-        [uint16[]]$Tagged_VLANs
+        [uint16[]]$Tagged_VLANs,
+
+        [switch]$Force
     )
 
     begin {
@@ -4841,6 +5299,70 @@ function Set-NetboxDCIMInterfaceConnection {
 
                 $URI = BuildNewURI -Segments $URIComponents.Segments
 
+                InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+            }
+        }
+    }
+
+    end {
+
+    }
+}
+
+#endregion
+
+#region File Set-NetboxDCIMRearPort.ps1
+
+
+function Set-NetboxDCIMRearPort {
+    [CmdletBinding(ConfirmImpact = 'Medium',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint16[]]$Id,
+
+        [uint16]$Device,
+
+        [uint16]$Module,
+
+        [string]$Name,
+
+        [string]$Label,
+
+        [string]$Type,
+
+        [ValidatePattern('^[0-9a-f]{6}$')]
+        [string]$Color,
+
+        [uint16]$Positions,
+
+        [string]$Description,
+
+        [bool]$Mark_Connected,
+
+        [uint16[]]$Tags,
+
+        [switch]$Force
+    )
+
+    begin {
+
+    }
+
+    process {
+        foreach ($RearPortID in $Id) {
+            $CurrentPort = Get-NetboxDCIMRearPort -Id $RearPortID -ErrorAction Stop
+
+            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'rear-ports', $CurrentPort.Id))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+
+            $URI = BuildNewURI -Segments $Segments
+
+            if ($Force -or $pscmdlet.ShouldProcess("Rear Port ID $($CurrentPort.Id)", "Set")) {
                 InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
             }
         }
