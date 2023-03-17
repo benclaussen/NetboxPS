@@ -4,8 +4,19 @@
     "files.trimTrailingWhitespace": true,
     "powershell.scriptAnalysis.settingsPath": ".vscode/PSScriptAnalyzerSettings.psd1",
     "powershell.codeFormatting.newLineAfterCloseBrace": false,
+    "powershell.codeFormatting.useCorrectCasing": true,
+    "powershell.codeFormatting.preset": "OTBS",
+    "powershell.codeFormatting.addWhitespaceAroundPipe": true,
+    "powershell.codeFormatting.autoCorrectAliases": true,
+    "powershell.codeFormatting.newLineAfterCloseBrace": true,
+    "powershell.codeFormatting.newLineAfterOpenBrace": true,
+    "powershell.codeFormatting.openBraceOnSameLine": true,
+    "powershell.codeFormatting.whitespaceAfterSeparator": true,
+    "powershell.codeFormatting.whitespaceAroundOperator": true,
+    "powershell.codeFormatting.whitespaceBeforeOpenBrace": true,
+    "powershell.codeFormatting.whitespaceBeforeOpenParen": true,
+    "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
     "[markdown]": {
         "files.trimTrailingWhitespace": false,
-    },
-    "powershell.codeFormatting.openBraceOnSameLine": true
+    }
 }
