@@ -271,7 +271,7 @@ function Add-NetboxVirtualMachineInterface {
 
 
 function BuildNewURI {
-<#
+    <#
     .SYNOPSIS
         Create a new URI for Netbox
 
@@ -323,11 +323,17 @@ function BuildNewURI {
         $null = CheckNetboxIsConnected
     }
 
-    # Begin a URI builder with HTTP/HTTPS and the provided hostname
-    $uriBuilder = [System.UriBuilder]::new($script:NetboxConfig.HostScheme, $script:NetboxConfig.Hostname, $script:NetboxConfig.HostPort)
+    # Begin a URI builder with HTTP/HTTPS and the provided hostname, and url path if required
+    if (-not $script:NetboxConfig.URLPath) {
+        throw "Netbox Credentials not set! You may set with Set-NetboxCredential"
+        $uriBuilder = [System.UriBuilder]::new($script:NetboxConfig.HostScheme, $script:NetboxConfig.Hostname, $script:NetboxConfig.HostPort)
+    } else {
+        $uriBuilder = [System.UriBuilder]::new($script:NetboxConfig.HostScheme, $script:NetboxConfig.Hostname, $script:NetboxConfig.HostPort, "/$($script:NetboxConfig.URLPath.trim('/'))")
+    }
+
 
     # Generate the path by trimming excess slashes and whitespace from the $segments[] and joining together
-    $uriBuilder.Path = "api/{0}/" -f ($Segments.ForEach({
+    $uriBuilder.Path += "/api/{0}/" -f ($Segments.ForEach({
                 $_.trim('/').trim()
             }) -join '/')
 
@@ -466,7 +472,7 @@ function Clear-NetboxCredential {
 #region File Connect-NetboxAPI.ps1
 
 function Connect-NetboxAPI {
-<#
+    <#
     .SYNOPSIS
         Connects to the Netbox API and ensures Credential work properly
 
@@ -507,7 +513,7 @@ function Connect-NetboxAPI {
     param
     (
         [Parameter(ParameterSetName = 'Manual',
-                   Mandatory = $true)]
+            Mandatory = $true)]
         [string]$Hostname,
 
         [Parameter(Mandatory = $false)]
@@ -521,7 +527,7 @@ function Connect-NetboxAPI {
         [uint16]$Port = 443,
 
         [Parameter(ParameterSetName = 'URI',
-                   Mandatory = $true)]
+            Mandatory = $true)]
         [string]$URI,
 
         [Parameter(Mandatory = $false)]
@@ -579,6 +585,7 @@ function Connect-NetboxAPI {
     $null = Set-NetboxCredential -Credential $Credential
     $null = Set-NetboxHostScheme -Scheme $uriBuilder.Scheme
     $null = Set-NetboxHostPort -Port $uriBuilder.Port
+    $null = Set-NetboxURLPath -Path $uriBuilder.Path
     $null = Set-NetboxInvokeParams -invokeParams $invokeParams
     $null = Set-NetboxTimeout -TimeoutSeconds $TimeoutSeconds
 
@@ -595,12 +602,12 @@ function Connect-NetboxAPI {
         }
     }
 
-#    Write-Verbose "Caching API definition"
-#    $script:NetboxConfig.APIDefinition = Get-NetboxAPIDefinition
-#
-#    if ([version]$script:NetboxConfig.APIDefinition.info.version -lt 2.8) {
-#        $Script:NetboxConfig.Connected = $false
-#        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.APIDefinition.info.version)"
+    #    Write-Verbose "Caching API definition"
+    #    $script:NetboxConfig.APIDefinition = Get-NetboxAPIDefinition
+    #
+    #    if ([version]$script:NetboxConfig.APIDefinition.info.version -lt 2.8) {
+    #        $Script:NetboxConfig.Connected = $false
+    #        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.APIDefinition.info.version)"
     #    }
 
     Write-Verbose "Checking Netbox version compatibility"
@@ -3065,6 +3072,22 @@ function Get-NetboxTimeout {
     }
 
     $script:NetboxConfig.Timeout
+}
+
+#endregion
+
+#region File Get-NetboxURLPath.ps1
+
+function Get-NetboxURLPath {
+    [CmdletBinding()]
+    param ()
+
+    Write-Verbose "Getting Netbox URL Path"
+    if ($null -eq $script:NetboxConfig.URLPath) {
+        throw "Netbox URL Path is not set! You may set it with Set-NetboxURLPath -Path 'netbox/'"
+    }
+
+    $script:NetboxConfig.URLPath
 }
 
 #endregion
@@ -5881,6 +5904,26 @@ Function Set-NetboxUntrustedSSL {
 
     [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
 
+}
+
+#endregion
+
+#region File Set-NetboxURLPath.ps1
+
+function Set-NetboxURLPath {
+    [CmdletBinding(ConfirmImpact = 'Low',
+        SupportsShouldProcess = $true)]
+    [OutputType([string])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    if ($PSCmdlet.ShouldProcess('Netbox URL Path', 'Set')) {
+        $script:NetboxConfig.URLPath = $Path.Trim()
+        $script:NetboxConfig.URLPath
+    }
 }
 
 #endregion

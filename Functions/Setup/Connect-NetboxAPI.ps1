@@ -1,5 +1,5 @@
 ﻿function Connect-NetboxAPI {
-<#
+    <#
     .SYNOPSIS
         Connects to the Netbox API and ensures Credential work properly
 
@@ -40,7 +40,7 @@
     param
     (
         [Parameter(ParameterSetName = 'Manual',
-                   Mandatory = $true)]
+            Mandatory = $true)]
         [string]$Hostname,
 
         [Parameter(Mandatory = $false)]
@@ -54,7 +54,7 @@
         [uint16]$Port = 443,
 
         [Parameter(ParameterSetName = 'URI',
-                   Mandatory = $true)]
+            Mandatory = $true)]
         [string]$URI,
 
         [Parameter(Mandatory = $false)]
@@ -112,6 +112,7 @@
     $null = Set-NetboxCredential -Credential $Credential
     $null = Set-NetboxHostScheme -Scheme $uriBuilder.Scheme
     $null = Set-NetboxHostPort -Port $uriBuilder.Port
+    $null = Set-NetboxURLPath -Path $uriBuilder.Path
     $null = Set-NetboxInvokeParams -invokeParams $invokeParams
     $null = Set-NetboxTimeout -TimeoutSeconds $TimeoutSeconds
 
@@ -128,12 +129,12 @@
         }
     }
 
-#    Write-Verbose "Caching API definition"
-#    $script:NetboxConfig.APIDefinition = Get-NetboxAPIDefinition
-#
-#    if ([version]$script:NetboxConfig.APIDefinition.info.version -lt 2.8) {
-#        $Script:NetboxConfig.Connected = $false
-#        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.APIDefinition.info.version)"
+    #    Write-Verbose "Caching API definition"
+    #    $script:NetboxConfig.APIDefinition = Get-NetboxAPIDefinition
+    #
+    #    if ([version]$script:NetboxConfig.APIDefinition.info.version -lt 2.8) {
+    #        $Script:NetboxConfig.Connected = $false
+    #        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.APIDefinition.info.version)"
     #    }
 
     Write-Verbose "Checking Netbox version compatibility"

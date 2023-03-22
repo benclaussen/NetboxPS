@@ -91,8 +91,8 @@ FunctionsToExport = 'Add-NetboxDCIMFrontPort', 'Add-NetboxDCIMInterface',
                'Get-NetboxIPAMAddress', 'Get-NetboxIPAMAggregate',
                'Get-NetboxIPAMAvailableIP', 'Get-NetboxIPAMPrefix',
                'Get-NetboxIPAMRole', 'Get-NetboxIPAMVLAN', 'Get-NetboxTag',
-               'Get-NetboxTenant', 'Get-NetboxTimeout', 'Get-NetboxVersion',
-               'Get-NetboxVirtualizationCluster',
+               'Get-NetboxTenant', 'Get-NetboxTimeout', 'Get-NetboxURLPath',
+               'Get-NetboxVersion', 'Get-NetboxVirtualizationCluster',
                'Get-NetboxVirtualizationClusterGroup', 'Get-NetboxVirtualMachine',
                'Get-NetboxVirtualMachineInterface', 'InvokeNetboxRequest',
                'New-NetboxCircuit', 'New-NetboxContact',
@@ -112,10 +112,10 @@ FunctionsToExport = 'Add-NetboxDCIMFrontPort', 'Add-NetboxDCIMInterface',
                'Set-NetboxHostName', 'Set-NetboxHostPort', 'Set-NetboxHostScheme',
                'Set-NetboxInvokeParams', 'Set-NetboxIPAMAddress',
                'Set-NetboxIPAMPrefix', 'Set-NetboxTimeout',
-               'Set-NetboxUnstrustedSSL', 'Set-NetboxVirtualMachine',
-               'Set-NetboxVirtualMachineInterface', 'SetupNetboxConfigVariable',
-               'Test-NetboxAPIConnected', 'ThrowNetboxRESTError',
-               'VerifyAPIConnectivity'
+               'Set-NetboxUnstrustedSSL', 'Set-NetboxURLPath',
+               'Set-NetboxVirtualMachine', 'Set-NetboxVirtualMachineInterface',
+               'SetupNetboxConfigVariable', 'Test-NetboxAPIConnected',
+               'ThrowNetboxRESTError', 'VerifyAPIConnectivity'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
