@@ -8,7 +8,7 @@
             ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
 
-        [uint16]$Device,
+        [uint64]$Device,
 
         [string]$Name,
 
@@ -25,7 +25,7 @@
 
         [bool]$MGMT_Only,
 
-        [uint16]$LAG,
+        [uint64]$LAG,
 
         [string]$Description,
 

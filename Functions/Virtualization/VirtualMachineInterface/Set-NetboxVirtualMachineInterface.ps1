@@ -19,7 +19,7 @@ function Set-NetboxVirtualMachineInterface {
 
         [boolean]$Enabled,
 
-        [uint16]$Virtual_Machine,
+        [uint64]$Virtual_Machine,
 
         [switch]$Force
     )

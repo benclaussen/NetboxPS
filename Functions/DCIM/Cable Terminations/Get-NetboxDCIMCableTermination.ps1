@@ -16,7 +16,7 @@
 
         [string]$Termination_Type,
 
-        [uint16]$Termination_ID,
+        [uint64]$Termination_ID,
 
         [switch]$Raw
     )

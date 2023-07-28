@@ -8,13 +8,13 @@ function Get-NetboxDCIMInterfaceConnection {
 
         [uint16]$Offset,
 
-        [uint16]$Id,
+        [uint64]$Id,
 
         [object]$Connection_Status,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$Device,
+        [uint64]$Device,
 
         [switch]$Raw
     )

@@ -79,7 +79,7 @@ function Get-NetboxContact {
         [string]$Group,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$GroupID,
+        [uint64]$GroupID,
 
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,

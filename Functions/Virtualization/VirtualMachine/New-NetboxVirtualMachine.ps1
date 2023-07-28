@@ -9,17 +9,17 @@ function New-NetboxVirtualMachine {
         [string]$Name,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$Cluster,
+        [uint64]$Cluster,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
         [object]$Status = 'Active',
 
-        [uint16]$Role,
+        [uint64]$Role,
 
-        [uint16]$Platform,
+        [uint64]$Platform,
 
         [uint16]$vCPUs,
 
@@ -27,9 +27,9 @@ function New-NetboxVirtualMachine {
 
         [uint16]$Disk,
 
-        [uint16]$Primary_IP4,
+        [uint64]$Primary_IP4,
 
-        [uint16]$Primary_IP6,
+        [uint64]$Primary_IP6,
 
         [hashtable]$Custom_Fields,
 

@@ -15,7 +15,7 @@ function Get-NetboxDCIMPlatform {
 
         [string]$Slug,
 
-        [uint16]$Manufacturer_Id,
+        [uint64]$Manufacturer_Id,
 
         [string]$Manufacturer,
 

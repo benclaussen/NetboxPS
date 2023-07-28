@@ -4,9 +4,9 @@
     param
     (
         [Parameter(Mandatory = $true)]
-        [uint16]$Device,
+        [uint64]$Device,
 
-        [uint16]$Module,
+        [uint64]$Module,
 
         [Parameter(Mandatory = $true)]
         [string]$Name,
@@ -20,9 +20,9 @@
         [string]$Color,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Rear_Port,
+        [uint64]$Rear_Port,
 
-        [uint16]$Rear_Port_Position,
+        [uint64]$Rear_Port_Position,
 
         [string]$Description,
 

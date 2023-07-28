@@ -9,9 +9,9 @@ function Set-NetboxDCIMRearPort {
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
 
-        [uint16]$Device,
+        [uint64]$Device,
 
-        [uint16]$Module,
+        [uint64]$Module,
 
         [string]$Name,
 

@@ -64,7 +64,7 @@ function Get-NetboxTenant {
         [string]$Group,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$GroupID,
+        [uint64]$GroupID,
 
         [Parameter(ParameterSetName = 'Query')]
         [hashtable]$CustomFields,

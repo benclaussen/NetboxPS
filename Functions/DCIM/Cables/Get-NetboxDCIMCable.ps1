@@ -14,11 +14,11 @@
 
         [string]$Termination_A_Type,
 
-        [uint16]$Termination_A_ID,
+        [uint64]$Termination_A_ID,
 
         [string]$Termination_B_Type,
 
-        [UInt16]$Termination_B_ID,
+        [uint64]$Termination_B_ID,
 
         [string]$Type,
 
@@ -26,15 +26,15 @@
 
         [string]$Color,
 
-        [UInt16]$Device_ID,
+        [uint64]$Device_ID,
 
         [string]$Device,
 
-        [uint16]$Rack_Id,
+        [uint64]$Rack_Id,
 
         [string]$Rack,
 
-        [uint16]$Location_ID,
+        [uint64]$Location_ID,
 
         [string]$Location,
 

@@ -12,13 +12,13 @@ function Set-NetboxIPAMPrefix {
 
         [string]$Status,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$VRF,
+        [uint64]$VRF,
 
-        [uint16]$VLAN,
+        [uint64]$VLAN,
 
         [object]$Role,
 

@@ -6,21 +6,21 @@ function Set-NetboxVirtualMachine {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
-        [uint16]$Role,
+        [uint64]$Role,
 
-        [uint16]$Cluster,
+        [uint64]$Cluster,
 
         [object]$Status,
 
-        [uint16]$Platform,
+        [uint64]$Platform,
 
-        [uint16]$Primary_IP4,
+        [uint64]$Primary_IP4,
 
-        [uint16]$Primary_IP6,
+        [uint64]$Primary_IP6,
 
         [byte]$VCPUs,
 
@@ -28,7 +28,7 @@ function Set-NetboxVirtualMachine {
 
         [uint16]$Disk,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
         [string]$Comments,
 

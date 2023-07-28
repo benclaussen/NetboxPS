@@ -25,7 +25,7 @@ function Set-NetboxIPAMAddress {
         [ValidateSet('dcim.interface', 'virtualization.vminterface', IgnoreCase = $true)]
         [string]$Assigned_Object_Type,
 
-        [uint16]$Assigned_Object_Id,
+        [uint64]$Assigned_Object_Id,
 
         [string]$Description,
 

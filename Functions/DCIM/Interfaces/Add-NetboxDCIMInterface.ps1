@@ -5,7 +5,7 @@ function Add-NetboxDCIMInterface {
     param
     (
         [Parameter(Mandatory = $true)]
-        [uint16]$Device,
+        [uint64]$Device,
 
         [Parameter(Mandatory = $true)]
         [string]$Name,

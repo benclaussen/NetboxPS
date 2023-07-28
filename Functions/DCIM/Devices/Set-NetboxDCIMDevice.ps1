@@ -13,17 +13,17 @@ function Set-NetboxDCIMDevice {
 
         [object]$Device_Type,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
         [object]$Status,
 
-        [uint16]$Platform,
+        [uint64]$Platform,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
-        [uint16]$Cluster,
+        [uint64]$Cluster,
 
-        [uint16]$Rack,
+        [uint64]$Rack,
 
         [uint16]$Position,
 
@@ -33,15 +33,15 @@ function Set-NetboxDCIMDevice {
 
         [string]$Asset_Tag,
 
-        [uint16]$Virtual_Chassis,
+        [uint64]$Virtual_Chassis,
 
-        [uint16]$VC_Priority,
+        [uint64]$VC_Priority,
 
-        [uint16]$VC_Position,
+        [uint64]$VC_Position,
 
-        [uint16]$Primary_IP4,
+        [uint64]$Primary_IP4,
 
-        [uint16]$Primary_IP6,
+        [uint64]$Primary_IP6,
 
         [string]$Comments,
 

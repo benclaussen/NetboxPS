@@ -15,37 +15,37 @@ function Get-NetboxDCIMDevice {
 
         [string]$Name,
 
-        [uint16]$Manufacturer_Id,
+        [uint64]$Manufacturer_Id,
 
         [string]$Manufacturer,
 
-        [uint16]$Device_Type_Id,
+        [uint64]$Device_Type_Id,
 
-        [uint16]$Role_Id,
+        [uint64]$Role_Id,
 
         [string]$Role,
 
-        [uint16]$Tenant_Id,
+        [uint64]$Tenant_Id,
 
         [string]$Tenant,
 
-        [uint16]$Platform_Id,
+        [uint64]$Platform_Id,
 
         [string]$Platform,
 
         [string]$Asset_Tag,
 
-        [uint16]$Site_Id,
+        [uint64]$Site_Id,
 
         [string]$Site,
 
-        [uint16]$Rack_Group_Id,
+        [uint64]$Rack_Group_Id,
 
-        [uint16]$Rack_Id,
+        [uint64]$Rack_Id,
 
-        [uint16]$Cluster_Id,
+        [uint64]$Cluster_Id,
 
-        [uint16]$Model,
+        [uint64]$Model,
 
         [object]$Status,
 
@@ -61,7 +61,7 @@ function Get-NetboxDCIMDevice {
 
         [bool]$Has_Primary_IP,
 
-        [uint16]$Virtual_Chassis_Id,
+        [uint64]$Virtual_Chassis_Id,
 
         [uint16]$Position,
 

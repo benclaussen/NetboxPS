@@ -16,7 +16,7 @@ function Get-NetboxDCIMDeviceType {
 
         [string]$Manufacturer,
 
-        [uint16]$Manufacturer_Id,
+        [uint64]$Manufacturer_Id,
 
         [string]$Model,
 
