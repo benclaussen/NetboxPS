@@ -271,7 +271,7 @@ function Add-NetboxVirtualMachineInterface {
 
 
 function BuildNewURI {
-<#
+    <#
     .SYNOPSIS
         Create a new URI for Netbox
 
@@ -323,11 +323,17 @@ function BuildNewURI {
         $null = CheckNetboxIsConnected
     }
 
-    # Begin a URI builder with HTTP/HTTPS and the provided hostname
-    $uriBuilder = [System.UriBuilder]::new($script:NetboxConfig.HostScheme, $script:NetboxConfig.Hostname, $script:NetboxConfig.HostPort)
+    # Begin a URI builder with HTTP/HTTPS and the provided hostname, and url path if required
+    if (-not $script:NetboxConfig.URLPath) {
+        throw "Netbox Credentials not set! You may set with Set-NetboxCredential"
+        $uriBuilder = [System.UriBuilder]::new($script:NetboxConfig.HostScheme, $script:NetboxConfig.Hostname, $script:NetboxConfig.HostPort)
+    } else {
+        $uriBuilder = [System.UriBuilder]::new($script:NetboxConfig.HostScheme, $script:NetboxConfig.Hostname, $script:NetboxConfig.HostPort, "/$($script:NetboxConfig.URLPath.trim('/'))")
+    }
+
 
     # Generate the path by trimming excess slashes and whitespace from the $segments[] and joining together
-    $uriBuilder.Path = "api/{0}/" -f ($Segments.ForEach({
+    $uriBuilder.Path += "/api/{0}/" -f ($Segments.ForEach({
                 $_.trim('/').trim()
             }) -join '/')
 
@@ -466,7 +472,7 @@ function Clear-NetboxCredential {
 #region File Connect-NetboxAPI.ps1
 
 function Connect-NetboxAPI {
-<#
+    <#
     .SYNOPSIS
         Connects to the Netbox API and ensures Credential work properly
 
@@ -507,7 +513,7 @@ function Connect-NetboxAPI {
     param
     (
         [Parameter(ParameterSetName = 'Manual',
-                   Mandatory = $true)]
+            Mandatory = $true)]
         [string]$Hostname,
 
         [Parameter(Mandatory = $false)]
@@ -521,7 +527,7 @@ function Connect-NetboxAPI {
         [uint16]$Port = 443,
 
         [Parameter(ParameterSetName = 'URI',
-                   Mandatory = $true)]
+            Mandatory = $true)]
         [string]$URI,
 
         [Parameter(Mandatory = $false)]
@@ -579,6 +585,7 @@ function Connect-NetboxAPI {
     $null = Set-NetboxCredential -Credential $Credential
     $null = Set-NetboxHostScheme -Scheme $uriBuilder.Scheme
     $null = Set-NetboxHostPort -Port $uriBuilder.Port
+    $null = Set-NetboxURLPath -Path $uriBuilder.Path
     $null = Set-NetboxInvokeParams -invokeParams $invokeParams
     $null = Set-NetboxTimeout -TimeoutSeconds $TimeoutSeconds
 
@@ -595,12 +602,12 @@ function Connect-NetboxAPI {
         }
     }
 
-#    Write-Verbose "Caching API definition"
-#    $script:NetboxConfig.APIDefinition = Get-NetboxAPIDefinition
-#
-#    if ([version]$script:NetboxConfig.APIDefinition.info.version -lt 2.8) {
-#        $Script:NetboxConfig.Connected = $false
-#        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.APIDefinition.info.version)"
+    #    Write-Verbose "Caching API definition"
+    #    $script:NetboxConfig.APIDefinition = Get-NetboxAPIDefinition
+    #
+    #    if ([version]$script:NetboxConfig.APIDefinition.info.version -lt 2.8) {
+    #        $Script:NetboxConfig.Connected = $false
+    #        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.APIDefinition.info.version)"
     #    }
 
     Write-Verbose "Checking Netbox version compatibility"
@@ -651,6 +658,27 @@ public enum $EnumName
     } else {
         Write-Warning "EnumType $EnumName already exists."
     }
+}
+
+#endregion
+
+#region File GenerateSlug.ps1
+
+function GenerateSlug {
+  [CmdletBinding()]
+  [OutputType([string])]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$Slug
+  )
+
+  Write-Verbose "Generating slug"
+
+  $Slug = $Slug.Replace("-", "").Replace(" ", "-").ToLower()
+
+  Write-Verbose " Completed building URIBuilder"
+  # Return the entire UriBuilder object
+  $Slug
 }
 
 #endregion
@@ -1807,6 +1835,61 @@ function Get-NetboxDCIMDeviceType {
     $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
 
     InvokeNetboxRequest -URI $URI -Raw:$Raw
+}
+
+#endregion
+
+#region File Get-NetboxDCIMDManufacture.ps1
+
+
+function Get-NetboxDCIMManufacture {
+    [CmdletBinding()]
+    #region Parameters
+    param
+    (
+        [uint16]$Offset,
+
+        [uint16]$Limit,
+
+        [Parameter(ParameterSetName = 'ById')]
+        [uint16[]]$Id,
+
+        [string]$Name,
+
+        [string]$Slug,
+
+        [switch]$Raw
+    )
+    #endregion Parameters
+
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($ManuID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'manufacturers', $ManuID))
+
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Raw'
+
+                $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+                InvokeNetboxRequest -URI $URI -Raw:$Raw
+            }
+
+            break
+        }
+
+        default {
+
+            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'manufacturers'))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'
+
+            $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+            InvokeNetboxRequest -URI $URI -Raw:$Raw
+
+        }
+    }
+
 }
 
 #endregion
@@ -2993,6 +3076,22 @@ function Get-NetboxTimeout {
 
 #endregion
 
+#region File Get-NetboxURLPath.ps1
+
+function Get-NetboxURLPath {
+    [CmdletBinding()]
+    param ()
+
+    Write-Verbose "Getting Netbox URL Path"
+    if ($null -eq $script:NetboxConfig.URLPath) {
+        throw "Netbox URL Path is not set! You may set it with Set-NetboxURLPath -Path 'netbox/'"
+    }
+
+    $script:NetboxConfig.URLPath
+}
+
+#endregion
+
 #region File Get-NetboxVersion.ps1
 
 
@@ -3895,6 +3994,138 @@ function New-NetboxDCIMDevice {
 
     if ($PSCmdlet.ShouldProcess($Name, 'Create new Device')) {
         InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
+    }
+}
+
+#endregion
+
+#region File New-NetboxDCIMDeviceRole.ps1
+
+
+function New-NetboxDCIMDeviceRole {
+    [CmdletBinding(ConfirmImpact = 'low',
+        SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [string]$Name,
+
+        [string]$Color,
+
+        [bool]$VM_Role,
+
+        [string]$Description,
+
+        [hashtable]$Custom_Fields
+    )
+
+    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'device-roles'))
+    $Method = 'POST'
+
+    if (-not $PSBoundParameters.ContainsKey('slug')) {
+        $PSBoundParameters.Add('slug', (GenerateSlug -Slug $Name))
+    }
+
+    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+    $URI = BuildNewURI -Segments $URIComponents.Segments
+
+    if ($PSCmdlet.ShouldProcess($Name, 'Create new Device Role')) {
+        InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters
+    }
+}
+
+#endregion
+
+#region File New-NetboxDCIMDeviceType.ps1
+
+
+function New-NetboxDCIMDeviceType {
+    [CmdletBinding(ConfirmImpact = 'low',
+        SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    #region Parameters
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$Manufacturer,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Model,
+
+        [string]$Part_Number,
+
+        [uint16]$U_Height,
+
+        [bool]$Is_Full_Depth,
+
+        [string]$Subdevice_Role,
+
+        [string]$Airflow,
+
+        [uint16]$Weight,
+
+        [string]$Weight_Unit,
+
+        [string]$Description,
+
+        [string]$Comments,
+
+        [hashtable]$Custom_Fields
+    )
+    #endregion Parameters
+
+    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'device-types'))
+    $Method = 'POST'
+
+    if (-not $PSBoundParameters.ContainsKey('slug')) {
+        $PSBoundParameters.Add('slug', (GenerateSlug -Slug $Model))
+    }
+
+    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+    $URI = BuildNewURI -Segments $URIComponents.Segments
+
+    if ($PSCmdlet.ShouldProcess($Name, 'Create new Device Types')) {
+        InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters
+    }
+}
+
+#endregion
+
+#region File New-NetboxDCIMManufacture.ps1
+
+
+function New-NetboxDCIMManufacture {
+    [CmdletBinding(ConfirmImpact = 'low',
+        SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    #region Parameters
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [string]$Description,
+
+        [hashtable]$Custom_Fields
+
+    )
+    #endregion Parameters
+
+    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'manufacturers'))
+    $Method = 'POST'
+
+    if (-not $PSBoundParameters.ContainsKey('slug')) {
+        $PSBoundParameters.Add('slug', (GenerateSlug -Slug $name))
+    }
+
+    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+    $URI = BuildNewURI -Segments $URIComponents.Segments
+
+    if ($PSCmdlet.ShouldProcess($Name, 'Create new Manufacture')) {
+        InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters
     }
 }
 
@@ -5673,6 +5904,26 @@ Function Set-NetboxUntrustedSSL {
 
     [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
 
+}
+
+#endregion
+
+#region File Set-NetboxURLPath.ps1
+
+function Set-NetboxURLPath {
+    [CmdletBinding(ConfirmImpact = 'Low',
+        SupportsShouldProcess = $true)]
+    [OutputType([string])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    if ($PSCmdlet.ShouldProcess('Netbox URL Path', 'Set')) {
+        $script:NetboxConfig.URLPath = $Path.Trim()
+        $script:NetboxConfig.URLPath
+    }
 }
 
 #endregion

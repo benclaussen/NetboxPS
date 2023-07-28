@@ -1,6 +1,6 @@
 ﻿
 function BuildNewURI {
-<#
+    <#
     .SYNOPSIS
         Create a new URI for Netbox
 
@@ -52,11 +52,17 @@ function BuildNewURI {
         $null = CheckNetboxIsConnected
     }
 
-    # Begin a URI builder with HTTP/HTTPS and the provided hostname
-    $uriBuilder = [System.UriBuilder]::new($script:NetboxConfig.HostScheme, $script:NetboxConfig.Hostname, $script:NetboxConfig.HostPort)
+    # Begin a URI builder with HTTP/HTTPS and the provided hostname, and url path if required
+    if (-not $script:NetboxConfig.URLPath) {
+        throw "Netbox Credentials not set! You may set with Set-NetboxCredential"
+        $uriBuilder = [System.UriBuilder]::new($script:NetboxConfig.HostScheme, $script:NetboxConfig.Hostname, $script:NetboxConfig.HostPort)
+    } else {
+        $uriBuilder = [System.UriBuilder]::new($script:NetboxConfig.HostScheme, $script:NetboxConfig.Hostname, $script:NetboxConfig.HostPort, "/$($script:NetboxConfig.URLPath.trim('/'))")
+    }
+
 
     # Generate the path by trimming excess slashes and whitespace from the $segments[] and joining together
-    $uriBuilder.Path = "api/{0}/" -f ($Segments.ForEach({
+    $uriBuilder.Path += "/api/{0}/" -f ($Segments.ForEach({
                 $_.trim('/').trim()
             }) -join '/')
 
