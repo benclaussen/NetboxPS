@@ -9,7 +9,7 @@ function Get-NetboxIPAMVLAN {
         [uint16]$VID,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
@@ -21,13 +21,13 @@ function Get-NetboxIPAMVLAN {
         [string]$Tenant,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Tenant_Id,
+        [uint64]$Tenant_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$TenantGroup,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$TenantGroup_Id,
+        [uint64]$TenantGroup_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [object]$Status,
@@ -39,19 +39,19 @@ function Get-NetboxIPAMVLAN {
         [string]$Site,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Site_Id,
+        [uint64]$Site_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Group,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Group_Id,
+        [uint64]$Group_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Role,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Role_Id,
+        [uint64]$Role_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,

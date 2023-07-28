@@ -40,10 +40,10 @@ function Get-NetboxIPAMAvailableIP {
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
         [Alias('Id')]
-        [int]$Prefix_ID,
+        [uint64]$Prefix_ID,
 
         [Alias('NumberOfIPs')]
-        [int]$Limit,
+        [uint64]$Limit,
 
         [switch]$Raw
     )

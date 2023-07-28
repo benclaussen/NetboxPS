@@ -40,7 +40,7 @@ function New-NetboxDCIMSite {
 
         [string]$Facility,
 
-        [uint32]$ASN,
+        [uint64]$ASN,
 
         [decimal]$Latitude,
 
@@ -52,13 +52,13 @@ function New-NetboxDCIMSite {
 
         [string]$Contact_Email,
 
-        [int]$Tenant_Group,
+        [uint64]$Tenant_Group,
 
-        [int]$Tenant,
+        [uint64]$Tenant,
 
         [string]$Status,
 
-        [uint32]$Region,
+        [uint64]$Region,
 
         [string]$Description,
 

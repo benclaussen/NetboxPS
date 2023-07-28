@@ -23,16 +23,16 @@ function Get-NetboxCircuit {
         A raw search query... As if you were searching the web site
 
     .PARAMETER Provider
-        The name or ID of the provider. Provide either [string] or [int]. String will search provider names, integer will search database IDs
+        The name or ID of the provider. Provide either [string] or [uint64]. String will search provider names, integer will search database IDs
 
     .PARAMETER Type
-        Type of circuit. Provide either [string] or [int]. String will search provider type names, integer will search database IDs
+        Type of circuit. Provide either [string] or [uint64]. String will search provider type names, integer will search database IDs
 
     .PARAMETER Site
-        Location/site of circuit. Provide either [string] or [int]. String will search site names, integer will search database IDs
+        Location/site of circuit. Provide either [string] or [uint64]. String will search site names, integer will search database IDs
 
     .PARAMETER Tenant
-        Tenant assigned to circuit. Provide either [string] or [int]. String will search tenant names, integer will search database IDs
+        Tenant assigned to circuit. Provide either [string] or [uint64]. String will search tenant names, integer will search database IDs
 
     .PARAMETER Limit
         A description of the Limit parameter.
@@ -57,7 +57,7 @@ function Get-NetboxCircuit {
     param
     (
         [Parameter(ParameterSetName = 'ById')]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$CID,
@@ -66,7 +66,7 @@ function Get-NetboxCircuit {
         [datetime]$InstallDate,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$CommitRate,
+        [uint64]$CommitRate,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,

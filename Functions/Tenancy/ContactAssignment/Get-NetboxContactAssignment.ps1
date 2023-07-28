@@ -52,22 +52,22 @@ function Get-NetboxContactAssignment {
         [string]$Name,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Content_Type_Id,
+        [uint64]$Content_Type_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Content_Type,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Object_Id,
+        [uint64]$Object_Id,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Contact_Id,
+        [uint64]$Contact_Id,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Role_Id,
+        [uint64]$Role_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,

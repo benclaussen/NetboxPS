@@ -49,7 +49,7 @@ function Get-NetboxIPAMRole {
         [string]$Query,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Slug,

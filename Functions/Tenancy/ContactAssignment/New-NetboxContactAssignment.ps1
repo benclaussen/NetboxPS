@@ -42,13 +42,13 @@ function New-NetboxContactRole {
         [object]$Content_Type,
 
         [Parameter(Mandatory = $true)]
-        [uint32]$Object_Id,
+        [uint64]$Object_Id,
 
         [Parameter(Mandatory = $true)]
-        [uint32]$Contact,
+        [uint64]$Contact,
 
         [Parameter(Mandatory = $true)]
-        [uint32]$Role,
+        [uint64]$Role,
 
         [ValidateSet('primary', 'secondary', 'tertiary', 'inactive', IgnoreCase = $true)]
         [string]$Priority,

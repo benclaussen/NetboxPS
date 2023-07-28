@@ -6,7 +6,7 @@ function Set-NetboxIPAMPrefix {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Prefix,
 

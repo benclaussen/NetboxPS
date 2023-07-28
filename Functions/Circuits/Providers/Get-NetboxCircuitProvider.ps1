@@ -5,7 +5,7 @@ function Get-NetboxCircuitProvider {
     (
         [Parameter(ParameterSetName = 'ById',
                    Mandatory = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query',
                    Mandatory = $false)]

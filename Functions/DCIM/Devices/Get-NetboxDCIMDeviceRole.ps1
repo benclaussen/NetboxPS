@@ -8,7 +8,7 @@ function Get-NetboxDCIMDeviceRole {
         [uint16]$Offset,
 
         [Parameter(ParameterSetName = 'ById')]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Name,
 

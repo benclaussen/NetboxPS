@@ -8,7 +8,7 @@
         [uint16]$Offset,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [uint16]$Cable,
 

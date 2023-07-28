@@ -8,7 +8,7 @@ function Get-NetboxDCIMDeviceType {
 
         [uint16]$Limit,
 
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Query,
 

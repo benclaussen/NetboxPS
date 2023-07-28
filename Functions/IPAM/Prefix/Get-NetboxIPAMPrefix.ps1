@@ -91,7 +91,7 @@ function Get-NetboxIPAMPrefix {
         [string]$Query,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [object]$Family,
@@ -116,25 +116,25 @@ function Get-NetboxIPAMPrefix {
         [string]$VRF,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$VRF_Id,
+        [uint64]$VRF_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Tenant_Id,
+        [uint64]$Tenant_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Site,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Site_Id,
+        [uint64]$Site_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Vlan_VId,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Vlan_Id,
+        [uint64]$Vlan_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [object]$Status,
@@ -143,7 +143,7 @@ function Get-NetboxIPAMPrefix {
         [string]$Role,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Role_Id,
+        [uint64]$Role_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,

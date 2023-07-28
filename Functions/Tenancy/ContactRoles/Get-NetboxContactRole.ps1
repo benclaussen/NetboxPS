@@ -40,7 +40,7 @@ function Get-NetboxContactRole {
         [string]$Name,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,

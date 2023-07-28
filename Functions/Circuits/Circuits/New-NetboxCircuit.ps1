@@ -10,17 +10,17 @@ function New-NetboxCircuit {
         [string]$CID,
 
         [Parameter(Mandatory = $true)]
-        [uint32]$Provider,
+        [uint64]$Provider,
 
         [Parameter(Mandatory = $true)]
-        [uint32]$Type,
+        [uint64]$Type,
 
         #[ValidateSet('Active', 'Planned', 'Provisioning', 'Offline', 'Deprovisioning', 'Decommissioned ')]
         [uint16]$Status = 'Active',
 
         [string]$Description,
 
-        [uint32]$Tenant,
+        [uint64]$Tenant,
 
         [string]$Termination_A,
 
@@ -29,7 +29,7 @@ function New-NetboxCircuit {
         [string]$Termination_Z,
 
         [ValidateRange(0, 2147483647)]
-        [uint32]$Commit_Rate,
+        [uint64]$Commit_Rate,
 
         [string]$Comments,
 

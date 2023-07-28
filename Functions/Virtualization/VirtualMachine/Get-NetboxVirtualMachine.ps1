@@ -91,7 +91,7 @@ function Get-NetboxVirtualMachine {
 
         [string]$Name,
 
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [object]$Status,
 
