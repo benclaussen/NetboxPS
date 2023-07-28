@@ -8,9 +8,9 @@ function Add-NetboxDCIMFrontPort {
     param
     (
         [Parameter(Mandatory = $true)]
-        [uint16]$Device,
+        [uint64]$Device,
 
-        [uint16]$Module,
+        [uint64]$Module,
 
         [Parameter(Mandatory = $true)]
         [string]$Name,
@@ -24,9 +24,9 @@ function Add-NetboxDCIMFrontPort {
         [string]$Color,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Rear_Port,
+        [uint64]$Rear_Port,
 
-        [uint16]$Rear_Port_Position,
+        [uint64]$Rear_Port_Position,
 
         [string]$Description,
 
@@ -56,7 +56,7 @@ function Add-NetboxDCIMInterface {
     param
     (
         [Parameter(Mandatory = $true)]
-        [uint16]$Device,
+        [uint64]$Device,
 
         [Parameter(Mandatory = $true)]
         [string]$Name,
@@ -156,10 +156,10 @@ function Add-NetboxDCIMInterfaceConnection {
         [object]$Connection_Status,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Interface_A,
+        [uint64]$Interface_A,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Interface_B
+        [uint64]$Interface_B
     )
 
     # Verify if both Interfaces exist
@@ -185,9 +185,9 @@ function Add-NetboxDCIMRearPort {
     param
     (
         [Parameter(Mandatory = $true)]
-        [uint16]$Device,
+        [uint64]$Device,
 
-        [uint16]$Module,
+        [uint64]$Module,
 
         [Parameter(Mandatory = $true)]
         [string]$Name,
@@ -241,7 +241,7 @@ function Add-NetboxVirtualMachineInterface {
         [string]$Name,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Virtual_Machine,
+        [uint64]$Virtual_Machine,
 
         [boolean]$Enabled = $true,
 
@@ -1155,7 +1155,7 @@ function Get-NetboxContact {
         [string]$Group,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$GroupID,
+        [uint64]$GroupID,
 
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
@@ -1533,11 +1533,11 @@ function Get-NetboxDCIMCable {
 
         [string]$Termination_A_Type,
 
-        [uint16]$Termination_A_ID,
+        [uint64]$Termination_A_ID,
 
         [string]$Termination_B_Type,
 
-        [UInt16]$Termination_B_ID,
+        [uint64]$Termination_B_ID,
 
         [string]$Type,
 
@@ -1545,15 +1545,15 @@ function Get-NetboxDCIMCable {
 
         [string]$Color,
 
-        [UInt16]$Device_ID,
+        [uint64]$Device_ID,
 
         [string]$Device,
 
-        [uint16]$Rack_Id,
+        [uint64]$Rack_Id,
 
         [string]$Rack,
 
-        [uint16]$Location_ID,
+        [uint64]$Location_ID,
 
         [string]$Location,
 
@@ -1595,7 +1595,7 @@ function Get-NetboxDCIMCableTermination {
 
         [string]$Termination_Type,
 
-        [uint16]$Termination_ID,
+        [uint64]$Termination_ID,
 
         [switch]$Raw
     )
@@ -1634,37 +1634,37 @@ function Get-NetboxDCIMDevice {
 
         [string]$Name,
 
-        [uint16]$Manufacturer_Id,
+        [uint64]$Manufacturer_Id,
 
         [string]$Manufacturer,
 
-        [uint16]$Device_Type_Id,
+        [uint64]$Device_Type_Id,
 
-        [uint16]$Role_Id,
+        [uint64]$Role_Id,
 
         [string]$Role,
 
-        [uint16]$Tenant_Id,
+        [uint64]$Tenant_Id,
 
         [string]$Tenant,
 
-        [uint16]$Platform_Id,
+        [uint64]$Platform_Id,
 
         [string]$Platform,
 
         [string]$Asset_Tag,
 
-        [uint16]$Site_Id,
+        [uint64]$Site_Id,
 
         [string]$Site,
 
-        [uint16]$Rack_Group_Id,
+        [uint64]$Rack_Group_Id,
 
-        [uint16]$Rack_Id,
+        [uint64]$Rack_Id,
 
-        [uint16]$Cluster_Id,
+        [uint64]$Cluster_Id,
 
-        [uint16]$Model,
+        [uint64]$Model,
 
         [object]$Status,
 
@@ -1680,7 +1680,7 @@ function Get-NetboxDCIMDevice {
 
         [bool]$Has_Primary_IP,
 
-        [uint16]$Virtual_Chassis_Id,
+        [uint64]$Virtual_Chassis_Id,
 
         [uint16]$Position,
 
@@ -1778,7 +1778,7 @@ function Get-NetboxDCIMDeviceType {
 
         [string]$Manufacturer,
 
-        [uint16]$Manufacturer_Id,
+        [uint64]$Manufacturer_Id,
 
         [string]$Model,
 
@@ -1862,9 +1862,9 @@ function Get-NetboxDCIMInterface {
         [uint16]$Offset,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
-        [uint16]$Name,
+        [uint64]$Name,
 
         [object]$Form_Factor,
 
@@ -1876,12 +1876,12 @@ function Get-NetboxDCIMInterface {
 
         [string]$Device,
 
-        [uint16]$Device_Id,
+        [uint64]$Device_Id,
 
         [ValidateSet('virtual', 'bridge', 'lag', '100base-tx', '1000base-t', '2.5gbase-t', '5gbase-t', '10gbase-t', '10gbase-cx4', '1000base-x-gbic', '1000base-x-sfp', '10gbase-x-sfpp', '10gbase-x-xfp', '10gbase-x-xenpak', '10gbase-x-x2', '25gbase-x-sfp28', '50gbase-x-sfp56', '40gbase-x-qsfpp', '50gbase-x-sfp28', '100gbase-x-cfp', '100gbase-x-cfp2', '200gbase-x-cfp2', '100gbase-x-cfp4', '100gbase-x-cpak', '100gbase-x-qsfp28', '200gbase-x-qsfp56', '400gbase-x-qsfpdd', '400gbase-x-osfp', '1000base-kx', '10gbase-kr', '10gbase-kx4', '25gbase-kr', '40gbase-kr4', '50gbase-kr', '100gbase-kp4', '100gbase-kr2', '100gbase-kr4', 'ieee802.11a', 'ieee802.11g', 'ieee802.11n', 'ieee802.11ac', 'ieee802.11ad', 'ieee802.11ax', 'ieee802.11ay', 'ieee802.15.1', 'other-wireless', 'gsm', 'cdma', 'lte', 'sonet-oc3', 'sonet-oc12', 'sonet-oc48', 'sonet-oc192', 'sonet-oc768', 'sonet-oc1920', 'sonet-oc3840', '1gfc-sfp', '2gfc-sfp', '4gfc-sfp', '8gfc-sfpp', '16gfc-sfpp', '32gfc-sfp28', '64gfc-qsfpp', '128gfc-qsfp28', 'infiniband-sdr', 'infiniband-ddr', 'infiniband-qdr', 'infiniband-fdr10', 'infiniband-fdr', 'infiniband-edr', 'infiniband-hdr', 'infiniband-ndr', 'infiniband-xdr', 't1', 'e1', 't3', 'e3', 'xdsl', 'docsis', 'gpon', 'xg-pon', 'xgs-pon', 'ng-pon2', 'epon', '10g-epon', 'cisco-stackwise', 'cisco-stackwise-plus', 'cisco-flexstack', 'cisco-flexstack-plus', 'cisco-stackwise-80', 'cisco-stackwise-160', 'cisco-stackwise-320', 'cisco-stackwise-480', 'juniper-vcp', 'extreme-summitstack', 'extreme-summitstack-128', 'extreme-summitstack-256', 'extreme-summitstack-512', 'other', IgnoreCase = $true)]
         [string]$Type,
 
-        [uint16]$LAG_Id,
+        [uint64]$LAG_Id,
 
         [string]$MAC_Address,
 
@@ -1913,13 +1913,13 @@ function Get-NetboxDCIMInterfaceConnection {
 
         [uint16]$Offset,
 
-        [uint16]$Id,
+        [uint64]$Id,
 
         [object]$Connection_Status,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$Device,
+        [uint64]$Device,
 
         [switch]$Raw
     )
@@ -1954,7 +1954,7 @@ function Get-NetboxDCIMPlatform {
 
         [string]$Slug,
 
-        [uint16]$Manufacturer_Id,
+        [uint64]$Manufacturer_Id,
 
         [string]$Manufacturer,
 
@@ -2002,13 +2002,13 @@ function Get-NetboxDCIMRearPort {
         [uint16]$Offset,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
         [string]$Device,
 
-        [uint16]$Device_Id,
+        [uint64]$Device_Id,
 
         [string]$Type,
 
@@ -2839,7 +2839,7 @@ function Get-NetboxTag {
         [uint16]$Offset,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
@@ -2930,7 +2930,7 @@ function Get-NetboxTenant {
         [string]$Group,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$GroupID,
+        [uint64]$GroupID,
 
         [Parameter(ParameterSetName = 'Query')]
         [hashtable]$CustomFields,
@@ -3079,7 +3079,7 @@ function Get-NetboxVirtualizationCluster {
 
         [string]$Group,
 
-        [uint16]$Group_Id,
+        [uint64]$Group_Id,
 
         [string]$Type,
 
@@ -3087,7 +3087,7 @@ function Get-NetboxVirtualizationCluster {
 
         [string]$Site,
 
-        [uint16]$Site_Id,
+        [uint64]$Site_Id,
 
         [uint16]$Limit,
 
@@ -3243,29 +3243,29 @@ function Get-NetboxVirtualMachine {
 
         [string]$Tenant,
 
-        [uint16]$Tenant_ID,
+        [uint64]$Tenant_ID,
 
         [string]$Platform,
 
-        [uint16]$Platform_ID,
+        [uint64]$Platform_ID,
 
         [string]$Cluster_Group,
 
-        [uint16]$Cluster_Group_Id,
+        [uint64]$Cluster_Group_Id,
 
         [string]$Cluster_Type,
 
-        [uint16]$Cluster_Type_Id,
+        [uint64]$Cluster_Type_Id,
 
-        [uint16]$Cluster_Id,
+        [uint64]$Cluster_Id,
 
         [string]$Site,
 
-        [uint16]$Site_Id,
+        [uint64]$Site_Id,
 
         [string]$Role,
 
-        [uint16]$Role_Id,
+        [uint64]$Role_Id,
 
         [uint16]$Limit,
 
@@ -3343,7 +3343,7 @@ function Get-NetboxVirtualMachineInterface {
     param
     (
         [Parameter(ValueFromPipeline = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
@@ -3353,7 +3353,7 @@ function Get-NetboxVirtualMachineInterface {
 
         [uint16]$MTU,
 
-        [uint16]$Virtual_Machine_Id,
+        [uint64]$Virtual_Machine_Id,
 
         [string]$Virtual_Machine,
 
@@ -3851,17 +3851,17 @@ function New-NetboxDCIMDevice {
         [object]$Device_Type,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Site,
+        [uint64]$Site,
 
         [object]$Status = 'Active',
 
-        [uint16]$Platform,
+        [uint64]$Platform,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
-        [uint16]$Cluster,
+        [uint64]$Cluster,
 
-        [uint16]$Rack,
+        [uint64]$Rack,
 
         [uint16]$Position,
 
@@ -3871,15 +3871,15 @@ function New-NetboxDCIMDevice {
 
         [string]$Asset_Tag,
 
-        [uint16]$Virtual_Chassis,
+        [uint64]$Virtual_Chassis,
 
-        [uint16]$VC_Priority,
+        [uint64]$VC_Priority,
 
-        [uint16]$VC_Position,
+        [uint64]$VC_Position,
 
-        [uint16]$Primary_IP4,
+        [uint64]$Primary_IP4,
 
-        [uint16]$Primary_IP6,
+        [uint64]$Primary_IP6,
 
         [string]$Comments,
 
@@ -4120,7 +4120,7 @@ function New-NetboxIPAMPrefix {
 
         [object]$Status = 'Active',
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
         [object]$Role,
 
@@ -4128,11 +4128,11 @@ function New-NetboxIPAMPrefix {
 
         [string]$Description,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$VRF,
+        [uint64]$VRF,
 
-        [uint16]$VLAN,
+        [uint64]$VLAN,
 
         [hashtable]$Custom_Fields,
 
@@ -4218,7 +4218,7 @@ function New-NetboxIPAMVLAN {
 
         [object]$Status = 'Active',
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
         [object]$Role,
 
@@ -4337,17 +4337,17 @@ function New-NetboxVirtualMachine {
         [string]$Name,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$Cluster,
+        [uint64]$Cluster,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
         [object]$Status = 'Active',
 
-        [uint16]$Role,
+        [uint64]$Role,
 
-        [uint16]$Platform,
+        [uint64]$Platform,
 
         [uint16]$vCPUs,
 
@@ -4355,9 +4355,9 @@ function New-NetboxVirtualMachine {
 
         [uint16]$Disk,
 
-        [uint16]$Primary_IP4,
+        [uint64]$Primary_IP4,
 
-        [uint16]$Primary_IP6,
+        [uint64]$Primary_IP6,
 
         [hashtable]$Custom_Fields,
 
@@ -5009,17 +5009,17 @@ function Set-NetboxDCIMDevice {
 
         [object]$Device_Type,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
         [object]$Status,
 
-        [uint16]$Platform,
+        [uint64]$Platform,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
-        [uint16]$Cluster,
+        [uint64]$Cluster,
 
-        [uint16]$Rack,
+        [uint64]$Rack,
 
         [uint16]$Position,
 
@@ -5029,15 +5029,15 @@ function Set-NetboxDCIMDevice {
 
         [string]$Asset_Tag,
 
-        [uint16]$Virtual_Chassis,
+        [uint64]$Virtual_Chassis,
 
-        [uint16]$VC_Priority,
+        [uint64]$VC_Priority,
 
-        [uint16]$VC_Position,
+        [uint64]$VC_Position,
 
-        [uint16]$Primary_IP4,
+        [uint64]$Primary_IP4,
 
-        [uint16]$Primary_IP6,
+        [uint64]$Primary_IP6,
 
         [string]$Comments,
 
@@ -5150,7 +5150,7 @@ function Set-NetboxDCIMInterface {
             ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
 
-        [uint16]$Device,
+        [uint64]$Device,
 
         [string]$Name,
 
@@ -5167,7 +5167,7 @@ function Set-NetboxDCIMInterface {
 
         [bool]$MGMT_Only,
 
-        [uint16]$LAG,
+        [uint64]$LAG,
 
         [string]$Description,
 
@@ -5274,9 +5274,9 @@ function Set-NetboxDCIMInterfaceConnection {
 
         [object]$Connection_Status,
 
-        [uint16]$Interface_A,
+        [uint64]$Interface_A,
 
-        [uint16]$Interface_B,
+        [uint64]$Interface_B,
 
         [switch]$Force
     )
@@ -5324,9 +5324,9 @@ function Set-NetboxDCIMRearPort {
                    ValueFromPipelineByPropertyName = $true)]
         [uint16[]]$Id,
 
-        [uint16]$Device,
+        [uint64]$Device,
 
-        [uint16]$Module,
+        [uint64]$Module,
 
         [string]$Name,
 
@@ -5488,7 +5488,7 @@ function Set-NetboxIPAMAddress {
         [ValidateSet('dcim.interface', 'virtualization.vminterface', IgnoreCase = $true)]
         [string]$Assigned_Object_Type,
 
-        [uint16]$Assigned_Object_Id,
+        [uint64]$Assigned_Object_Id,
 
         [string]$Description,
 
@@ -5563,13 +5563,13 @@ function Set-NetboxIPAMPrefix {
 
         [string]$Status,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$VRF,
+        [uint64]$VRF,
 
-        [uint16]$VLAN,
+        [uint64]$VLAN,
 
         [object]$Role,
 
@@ -5687,21 +5687,21 @@ function Set-NetboxVirtualMachine {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
-        [uint16]$Role,
+        [uint64]$Role,
 
-        [uint16]$Cluster,
+        [uint64]$Cluster,
 
         [object]$Status,
 
-        [uint16]$Platform,
+        [uint64]$Platform,
 
-        [uint16]$Primary_IP4,
+        [uint64]$Primary_IP4,
 
-        [uint16]$Primary_IP6,
+        [uint64]$Primary_IP6,
 
         [byte]$VCPUs,
 
@@ -5709,7 +5709,7 @@ function Set-NetboxVirtualMachine {
 
         [uint16]$Disk,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
         [string]$Comments,
 
@@ -5766,7 +5766,7 @@ function Set-NetboxVirtualMachineInterface {
 
         [boolean]$Enabled,
 
-        [uint16]$Virtual_Machine,
+        [uint64]$Virtual_Machine,
 
         [switch]$Force
     )
