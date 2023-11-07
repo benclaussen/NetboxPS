@@ -23,7 +23,7 @@ function Add-NetboxDCIMInterface {
 
         [bool]$MGMT_Only,
 
-        [uint16]$LAG,
+        [uint64]$LAG,
 
         [string]$Description,
 

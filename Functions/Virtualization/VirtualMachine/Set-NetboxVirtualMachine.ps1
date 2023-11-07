@@ -24,9 +24,9 @@ function Set-NetboxVirtualMachine {
 
         [byte]$VCPUs,
 
-        [uint16]$Memory,
+        [uint64]$Memory,
 
-        [uint16]$Disk,
+        [uint64]$Disk,
 
         [uint64]$Tenant,
 

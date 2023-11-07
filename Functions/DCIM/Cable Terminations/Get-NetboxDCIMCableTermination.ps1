@@ -10,7 +10,7 @@
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
 
-        [uint16]$Cable,
+        [uint64]$Cable,
 
         [string]$Cable_End,
 

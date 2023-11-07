@@ -23,9 +23,9 @@ function New-NetboxVirtualMachine {
 
         [uint16]$vCPUs,
 
-        [uint16]$Memory,
+        [uint64]$Memory,
 
-        [uint16]$Disk,
+        [uint64]$Disk,
 
         [uint64]$Primary_IP4,
 

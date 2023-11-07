@@ -66,7 +66,7 @@ function Get-NetboxVirtualizationCluster {
 
         [string]$Type,
 
-        [uint16]$Type_Id,
+        [uint64]$Type_Id,
 
         [string]$Site,
 

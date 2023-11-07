@@ -21,7 +21,7 @@
         [ValidatePattern('^[0-9a-f]{6}$')]
         [string]$Color,
 
-        [uint16]$Rear_Port,
+        [uint64]$Rear_Port,
 
         [uint16]$Rear_Port_Position,
 
@@ -29,7 +29,7 @@
 
         [bool]$Mark_Connected,
 
-        [uint16[]]$Tags,
+        [uint64[]]$Tags,
 
         [switch]$Force
     )
