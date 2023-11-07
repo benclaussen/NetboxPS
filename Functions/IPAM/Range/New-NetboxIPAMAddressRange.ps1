@@ -72,11 +72,9 @@ function New-NetboxIPAMAddressRange {
         [uint64]$VRF,
 
         [object]$Role,
-
+        
         [hashtable]$Custom_Fields,
-
-        [uint64]$Interface,
-
+        
         [string]$Description,
 
         [string]$Comments,
