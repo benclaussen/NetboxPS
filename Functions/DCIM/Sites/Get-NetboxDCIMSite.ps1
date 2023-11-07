@@ -5,7 +5,7 @@ function Get-NetboxDCIMSite {
     param
     (
         [Parameter(ParameterSetName = 'ByID', ValueFromPipelineByPropertyName = $true)]
-        [uint32]$Id,
+        [uint64]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Name,
@@ -20,7 +20,7 @@ function Get-NetboxDCIMSite {
         [string]$Facility,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$ASN,
+        [uint64]$ASN,
 
         [Parameter(ParameterSetName = 'Query')]
         [decimal]$Latitude,
@@ -38,13 +38,13 @@ function Get-NetboxDCIMSite {
         [string]$Contact_Email,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Tenant_Group_ID,
+        [uint64]$Tenant_Group_ID,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant_Group,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Tenant_ID,
+        [uint64]$Tenant_ID,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
@@ -53,7 +53,7 @@ function Get-NetboxDCIMSite {
         [string]$Status,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Region_ID,
+        [uint64]$Region_ID,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Region,

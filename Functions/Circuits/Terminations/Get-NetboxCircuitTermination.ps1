@@ -5,7 +5,7 @@ function Get-NetboxCircuitTermination {
     (
         [Parameter(ParameterSetName = 'ById',
                    ValueFromPipelineByPropertyName = $true)]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Circuit_ID,
@@ -14,7 +14,7 @@ function Get-NetboxCircuitTermination {
         [string]$Term_Side,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Port_Speed,
+        [uint64]$Port_Speed,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,

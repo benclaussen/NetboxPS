@@ -8,13 +8,13 @@
         [uint16]$Offset,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
         [string]$Device,
 
-        [uint16]$Device_Id,
+        [uint64]$Device_Id,
 
         [string]$Type,
 

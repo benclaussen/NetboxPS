@@ -6,26 +6,26 @@ function Set-NetboxIPAMAddress {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [int[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Address,
 
         [string]$Status,
 
-        [int]$Tenant,
+        [uint64]$Tenant,
 
-        [int]$VRF,
+        [uint64]$VRF,
 
         [object]$Role,
 
-        [int]$NAT_Inside,
+        [uint64]$NAT_Inside,
 
         [hashtable]$Custom_Fields,
 
         [ValidateSet('dcim.interface', 'virtualization.vminterface', IgnoreCase = $true)]
         [string]$Assigned_Object_Type,
 
-        [uint16]$Assigned_Object_Id,
+        [uint64]$Assigned_Object_Id,
 
         [string]$Description,
 

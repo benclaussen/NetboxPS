@@ -35,13 +35,13 @@ function Set-NetboxDCIMInterfaceConnection {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [object]$Connection_Status,
 
-        [uint16]$Interface_A,
+        [uint64]$Interface_A,
 
-        [uint16]$Interface_B,
+        [uint64]$Interface_B,
 
         [switch]$Force
     )

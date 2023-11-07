@@ -91,35 +91,35 @@ function Get-NetboxVirtualMachine {
 
         [string]$Name,
 
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [object]$Status,
 
         [string]$Tenant,
 
-        [uint16]$Tenant_ID,
+        [uint64]$Tenant_ID,
 
         [string]$Platform,
 
-        [uint16]$Platform_ID,
+        [uint64]$Platform_ID,
 
         [string]$Cluster_Group,
 
-        [uint16]$Cluster_Group_Id,
+        [uint64]$Cluster_Group_Id,
 
         [string]$Cluster_Type,
 
-        [uint16]$Cluster_Type_Id,
+        [uint64]$Cluster_Type_Id,
 
-        [uint16]$Cluster_Id,
+        [uint64]$Cluster_Id,
 
         [string]$Site,
 
-        [uint16]$Site_Id,
+        [uint64]$Site_Id,
 
         [string]$Role,
 
-        [uint16]$Role_Id,
+        [uint64]$Role_Id,
 
         [uint16]$Limit,
 

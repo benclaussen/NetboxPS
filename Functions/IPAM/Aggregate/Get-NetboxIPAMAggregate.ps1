@@ -7,7 +7,7 @@ function Get-NetboxIPAMAggregate {
         [string]$Query,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Prefix,
@@ -16,7 +16,7 @@ function Get-NetboxIPAMAggregate {
         [object]$Family,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$RIR_Id,
+        [uint64]$RIR_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$RIR,

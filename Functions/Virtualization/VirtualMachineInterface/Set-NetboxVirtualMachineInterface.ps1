@@ -7,7 +7,7 @@ function Set-NetboxVirtualMachineInterface {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Name,
 
@@ -19,7 +19,7 @@ function Set-NetboxVirtualMachineInterface {
 
         [boolean]$Enabled,
 
-        [uint16]$Virtual_Machine,
+        [uint64]$Virtual_Machine,
 
         [switch]$Force
     )

@@ -4,16 +4,16 @@ function Get-NetboxTag {
     [OutputType([pscustomobject])]
     param
     (
-        [uint16]$Limit,
-
-        [uint16]$Offset,
-
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
         [string]$Slug,
+
+        [uint16]$Limit,
+
+        [uint16]$Offset,
 
         [switch]$Raw
     )

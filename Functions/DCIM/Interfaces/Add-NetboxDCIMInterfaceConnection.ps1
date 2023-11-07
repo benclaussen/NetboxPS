@@ -30,10 +30,10 @@ function Add-NetboxDCIMInterfaceConnection {
         [object]$Connection_Status,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Interface_A,
+        [uint64]$Interface_A,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Interface_B
+        [uint64]$Interface_B
     )
 
     # Verify if both Interfaces exist

@@ -7,7 +7,7 @@ function Add-NetboxVirtualMachineInterface {
         [string]$Name,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Virtual_Machine,
+        [uint64]$Virtual_Machine,
 
         [boolean]$Enabled = $true,
 

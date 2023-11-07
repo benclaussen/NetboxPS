@@ -58,19 +58,19 @@ function Get-NetboxVirtualizationCluster {
         [Alias('q')]
         [string]$Query,
 
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Group,
 
-        [uint16]$Group_Id,
+        [uint64]$Group_Id,
 
         [string]$Type,
 
-        [uint16]$Type_Id,
+        [uint64]$Type_Id,
 
         [string]$Site,
 
-        [uint16]$Site_Id,
+        [uint64]$Site_Id,
 
         [uint16]$Limit,
 

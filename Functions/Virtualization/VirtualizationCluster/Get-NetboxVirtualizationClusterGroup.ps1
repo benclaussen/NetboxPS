@@ -11,7 +11,7 @@ function Get-NetboxVirtualizationClusterGroup {
 
         [string]$Query,
 
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [uint16]$Limit,
 

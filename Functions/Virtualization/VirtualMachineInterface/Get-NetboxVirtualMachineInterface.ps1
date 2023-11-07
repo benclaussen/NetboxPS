@@ -48,7 +48,7 @@ function Get-NetboxVirtualMachineInterface {
     param
     (
         [Parameter(ValueFromPipeline = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
@@ -58,7 +58,7 @@ function Get-NetboxVirtualMachineInterface {
 
         [uint16]$MTU,
 
-        [uint16]$Virtual_Machine_Id,
+        [uint64]$Virtual_Machine_Id,
 
         [string]$Virtual_Machine,
 

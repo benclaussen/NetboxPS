@@ -60,7 +60,7 @@ function Set-NetboxContact {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [ValidateLength(1, 100)]
         [string]$Name,
@@ -68,7 +68,7 @@ function Set-NetboxContact {
         [ValidateLength(0, 254)]
         [string]$Email,
 
-        [uint32]$Group,
+        [uint64]$Group,
 
         [ValidateLength(0, 100)]
         [string]$Title,

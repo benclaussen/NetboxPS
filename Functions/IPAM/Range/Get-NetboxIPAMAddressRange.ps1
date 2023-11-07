@@ -1,43 +1,11 @@
 ﻿
-function Get-NetboxContactRole {
-<#
-    .SYNOPSIS
-        Get a contact role from Netbox
-
-    .DESCRIPTION
-        A detailed description of the Get-NetboxContactRole function.
-
-    .PARAMETER Name
-        The specific name of the contact role. Must match exactly as is defined in Netbox
-
-    .PARAMETER Id
-        The database ID of the contact role
-
-    .PARAMETER Query
-        A standard search query that will match one or more contact roles.
-
-    .PARAMETER Limit
-        Limit the number of results to this number
-
-    .PARAMETER Offset
-        Start the search at this index in results
-
-    .PARAMETER Raw
-        Return the unparsed data from the HTTP request
-
-    .EXAMPLE
-        PS C:\> Get-NetboxContactRole
-
-    .NOTES
-        Additional information about the function.
-#>
-
+function Get-NetboxIPAMAddressRange {
     [CmdletBinding(DefaultParameterSetName = 'Query')]
     param
     (
         [Parameter(ParameterSetName = 'Query',
                    Position = 0)]
-        [string]$Name,
+        [string]$Range,
 
         [Parameter(ParameterSetName = 'ByID')]
         [uint64[]]$Id,
@@ -46,10 +14,25 @@ function Get-NetboxContactRole {
         [string]$Query,
 
         [Parameter(ParameterSetName = 'Query')]
-        [string]$Slug,
+        [object]$Family,
 
         [Parameter(ParameterSetName = 'Query')]
-        [string]$Description,
+        [string]$VRF,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$VRF_Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Tenant,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$Tenant_Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [object]$Status,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [object]$Role,
 
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
@@ -62,8 +45,8 @@ function Get-NetboxContactRole {
 
     switch ($PSCmdlet.ParameterSetName) {
         'ById' {
-            foreach ($ContactRole_ID in $Id) {
-                $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-roles', $ContactRole_ID))
+            foreach ($Range_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-ranges', $Range_ID))
 
                 $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
 
@@ -76,7 +59,7 @@ function Get-NetboxContactRole {
         }
 
         default {
-            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-roles'))
+            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-ranges'))
 
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
 

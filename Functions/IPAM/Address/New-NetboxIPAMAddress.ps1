@@ -66,17 +66,17 @@ function New-NetboxIPAMAddress {
 
         [object]$Status = 'Active',
 
-        [int]$Tenant,
+        [uint64]$Tenant,
 
-        [int]$VRF,
+        [uint64]$VRF,
 
         [object]$Role,
 
-        [int]$NAT_Inside,
+        [uint64]$NAT_Inside,
 
         [hashtable]$Custom_Fields,
 
-        [int]$Interface,
+        [uint64]$Interface,
 
         [string]$Description,
 
@@ -85,7 +85,7 @@ function New-NetboxIPAMAddress {
         [ValidateSet('dcim.interface', 'virtualization.vminterface', IgnoreCase = $true)]
         [string]$Assigned_Object_Type,
 
-        [int]$Assigned_Object_Id,
+        [uint64]$Assigned_Object_Id,
 
         [switch]$Raw
     )

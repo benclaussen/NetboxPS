@@ -10,7 +10,7 @@ function New-NetboxIPAMPrefix {
 
         [object]$Status = 'Active',
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
         [object]$Role,
 
@@ -18,11 +18,11 @@ function New-NetboxIPAMPrefix {
 
         [string]$Description,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$VRF,
+        [uint64]$VRF,
 
-        [uint16]$VLAN,
+        [uint64]$VLAN,
 
         [hashtable]$Custom_Fields,
 

@@ -6,19 +6,19 @@ function Set-NetboxIPAMPrefix {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Prefix,
 
         [string]$Status,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$VRF,
+        [uint64]$VRF,
 
-        [uint16]$VLAN,
+        [uint64]$VLAN,
 
         [object]$Role,
 

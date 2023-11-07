@@ -4,7 +4,7 @@ function Get-NetboxCircuitType {
     param
     (
         [Parameter(ParameterSetName = 'ById')]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Name,

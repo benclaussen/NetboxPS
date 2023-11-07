@@ -9,13 +9,13 @@ function Get-NetboxDCIMPlatform {
         [uint16]$Offset,
 
         [Parameter(ParameterSetName = 'ById')]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Name,
 
         [string]$Slug,
 
-        [uint16]$Manufacturer_Id,
+        [uint64]$Manufacturer_Id,
 
         [string]$Manufacturer,
 

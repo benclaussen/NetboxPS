@@ -8,9 +8,9 @@ function Add-NetboxDCIMFrontPort {
     param
     (
         [Parameter(Mandatory = $true)]
-        [uint16]$Device,
+        [uint64]$Device,
 
-        [uint16]$Module,
+        [uint64]$Module,
 
         [Parameter(Mandatory = $true)]
         [string]$Name,
@@ -24,9 +24,9 @@ function Add-NetboxDCIMFrontPort {
         [string]$Color,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Rear_Port,
+        [uint64]$Rear_Port,
 
-        [uint16]$Rear_Port_Position,
+        [uint64]$Rear_Port_Position,
 
         [string]$Description,
 
@@ -56,7 +56,7 @@ function Add-NetboxDCIMInterface {
     param
     (
         [Parameter(Mandatory = $true)]
-        [uint16]$Device,
+        [uint64]$Device,
 
         [Parameter(Mandatory = $true)]
         [string]$Name,
@@ -74,7 +74,7 @@ function Add-NetboxDCIMInterface {
 
         [bool]$MGMT_Only,
 
-        [uint16]$LAG,
+        [uint64]$LAG,
 
         [string]$Description,
 
@@ -156,10 +156,10 @@ function Add-NetboxDCIMInterfaceConnection {
         [object]$Connection_Status,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Interface_A,
+        [uint64]$Interface_A,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Interface_B
+        [uint64]$Interface_B
     )
 
     # Verify if both Interfaces exist
@@ -185,9 +185,9 @@ function Add-NetboxDCIMRearPort {
     param
     (
         [Parameter(Mandatory = $true)]
-        [uint16]$Device,
+        [uint64]$Device,
 
-        [uint16]$Module,
+        [uint64]$Module,
 
         [Parameter(Mandatory = $true)]
         [string]$Name,
@@ -241,7 +241,7 @@ function Add-NetboxVirtualMachineInterface {
         [string]$Name,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Virtual_Machine,
+        [uint64]$Virtual_Machine,
 
         [boolean]$Enabled = $true,
 
@@ -778,16 +778,16 @@ function Get-NetboxCircuit {
         A raw search query... As if you were searching the web site
 
     .PARAMETER Provider
-        The name or ID of the provider. Provide either [string] or [int]. String will search provider names, integer will search database IDs
+        The name or ID of the provider. Provide either [string] or [uint64]. String will search provider names, integer will search database IDs
 
     .PARAMETER Type
-        Type of circuit. Provide either [string] or [int]. String will search provider type names, integer will search database IDs
+        Type of circuit. Provide either [string] or [uint64]. String will search provider type names, integer will search database IDs
 
     .PARAMETER Site
-        Location/site of circuit. Provide either [string] or [int]. String will search site names, integer will search database IDs
+        Location/site of circuit. Provide either [string] or [uint64]. String will search site names, integer will search database IDs
 
     .PARAMETER Tenant
-        Tenant assigned to circuit. Provide either [string] or [int]. String will search tenant names, integer will search database IDs
+        Tenant assigned to circuit. Provide either [string] or [uint64]. String will search tenant names, integer will search database IDs
 
     .PARAMETER Limit
         A description of the Limit parameter.
@@ -812,7 +812,7 @@ function Get-NetboxCircuit {
     param
     (
         [Parameter(ParameterSetName = 'ById')]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$CID,
@@ -821,7 +821,7 @@ function Get-NetboxCircuit {
         [datetime]$InstallDate,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$CommitRate,
+        [uint64]$CommitRate,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
@@ -885,7 +885,7 @@ function Get-NetboxCircuitProvider {
     (
         [Parameter(ParameterSetName = 'ById',
                    Mandatory = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query',
                    Mandatory = $false)]
@@ -948,7 +948,7 @@ function Get-NetboxCircuitTermination {
     (
         [Parameter(ParameterSetName = 'ById',
                    ValueFromPipelineByPropertyName = $true)]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Circuit_ID,
@@ -957,7 +957,7 @@ function Get-NetboxCircuitTermination {
         [string]$Term_Side,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Port_Speed,
+        [uint64]$Port_Speed,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
@@ -1017,7 +1017,7 @@ function Get-NetboxCircuitType {
     param
     (
         [Parameter(ParameterSetName = 'ById')]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Name,
@@ -1134,7 +1134,7 @@ function Get-NetboxContact {
         [string]$Name,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
@@ -1155,7 +1155,7 @@ function Get-NetboxContact {
         [string]$Group,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$GroupID,
+        [uint64]$GroupID,
 
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
@@ -1253,22 +1253,22 @@ function Get-NetboxContactAssignment {
         [string]$Name,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Content_Type_Id,
+        [uint64]$Content_Type_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Content_Type,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Object_Id,
+        [uint64]$Object_Id,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Contact_Id,
+        [uint64]$Contact_Id,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Role_Id,
+        [uint64]$Role_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
@@ -1354,7 +1354,7 @@ function Get-NetboxContactRole {
         [string]$Name,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
@@ -1451,7 +1451,7 @@ function Get-NetboxContentType {
         [string]$Model,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$App_Label,
@@ -1527,17 +1527,17 @@ function Get-NetboxDCIMCable {
         [uint16]$Offset,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Label,
 
         [string]$Termination_A_Type,
 
-        [uint16]$Termination_A_ID,
+        [uint64]$Termination_A_ID,
 
         [string]$Termination_B_Type,
 
-        [UInt16]$Termination_B_ID,
+        [uint64]$Termination_B_ID,
 
         [string]$Type,
 
@@ -1545,15 +1545,15 @@ function Get-NetboxDCIMCable {
 
         [string]$Color,
 
-        [UInt16]$Device_ID,
+        [uint64]$Device_ID,
 
         [string]$Device,
 
-        [uint16]$Rack_Id,
+        [uint64]$Rack_Id,
 
         [string]$Rack,
 
-        [uint16]$Location_ID,
+        [uint64]$Location_ID,
 
         [string]$Location,
 
@@ -1587,15 +1587,15 @@ function Get-NetboxDCIMCableTermination {
         [uint16]$Offset,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
-        [uint16]$Cable,
+        [uint64]$Cable,
 
         [string]$Cable_End,
 
         [string]$Termination_Type,
 
-        [uint16]$Termination_ID,
+        [uint64]$Termination_ID,
 
         [switch]$Raw
     )
@@ -1628,43 +1628,43 @@ function Get-NetboxDCIMDevice {
         [uint16]$Offset,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Query,
 
         [string]$Name,
 
-        [uint16]$Manufacturer_Id,
+        [uint64]$Manufacturer_Id,
 
         [string]$Manufacturer,
 
-        [uint16]$Device_Type_Id,
+        [uint64]$Device_Type_Id,
 
-        [uint16]$Role_Id,
+        [uint64]$Role_Id,
 
         [string]$Role,
 
-        [uint16]$Tenant_Id,
+        [uint64]$Tenant_Id,
 
         [string]$Tenant,
 
-        [uint16]$Platform_Id,
+        [uint64]$Platform_Id,
 
         [string]$Platform,
 
         [string]$Asset_Tag,
 
-        [uint16]$Site_Id,
+        [uint64]$Site_Id,
 
         [string]$Site,
 
-        [uint16]$Rack_Group_Id,
+        [uint64]$Rack_Group_Id,
 
-        [uint16]$Rack_Id,
+        [uint64]$Rack_Id,
 
-        [uint16]$Cluster_Id,
+        [uint64]$Cluster_Id,
 
-        [uint16]$Model,
+        [uint64]$Model,
 
         [object]$Status,
 
@@ -1680,7 +1680,7 @@ function Get-NetboxDCIMDevice {
 
         [bool]$Has_Primary_IP,
 
-        [uint16]$Virtual_Chassis_Id,
+        [uint64]$Virtual_Chassis_Id,
 
         [uint16]$Position,
 
@@ -1716,7 +1716,7 @@ function Get-NetboxDCIMDeviceRole {
         [uint16]$Offset,
 
         [Parameter(ParameterSetName = 'ById')]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Name,
 
@@ -1770,7 +1770,7 @@ function Get-NetboxDCIMDeviceType {
 
         [uint16]$Limit,
 
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Query,
 
@@ -1778,7 +1778,7 @@ function Get-NetboxDCIMDeviceType {
 
         [string]$Manufacturer,
 
-        [uint16]$Manufacturer_Id,
+        [uint64]$Manufacturer_Id,
 
         [string]$Model,
 
@@ -1823,13 +1823,13 @@ function Get-NetboxDCIMFrontPort {
         [uint16]$Offset,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
         [string]$Device,
 
-        [uint16]$Device_Id,
+        [uint64]$Device_Id,
 
         [string]$Type,
 
@@ -1862,9 +1862,9 @@ function Get-NetboxDCIMInterface {
         [uint16]$Offset,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
-        [uint16]$Name,
+        [uint64]$Name,
 
         [object]$Form_Factor,
 
@@ -1876,12 +1876,12 @@ function Get-NetboxDCIMInterface {
 
         [string]$Device,
 
-        [uint16]$Device_Id,
+        [uint64]$Device_Id,
 
         [ValidateSet('virtual', 'bridge', 'lag', '100base-tx', '1000base-t', '2.5gbase-t', '5gbase-t', '10gbase-t', '10gbase-cx4', '1000base-x-gbic', '1000base-x-sfp', '10gbase-x-sfpp', '10gbase-x-xfp', '10gbase-x-xenpak', '10gbase-x-x2', '25gbase-x-sfp28', '50gbase-x-sfp56', '40gbase-x-qsfpp', '50gbase-x-sfp28', '100gbase-x-cfp', '100gbase-x-cfp2', '200gbase-x-cfp2', '100gbase-x-cfp4', '100gbase-x-cpak', '100gbase-x-qsfp28', '200gbase-x-qsfp56', '400gbase-x-qsfpdd', '400gbase-x-osfp', '1000base-kx', '10gbase-kr', '10gbase-kx4', '25gbase-kr', '40gbase-kr4', '50gbase-kr', '100gbase-kp4', '100gbase-kr2', '100gbase-kr4', 'ieee802.11a', 'ieee802.11g', 'ieee802.11n', 'ieee802.11ac', 'ieee802.11ad', 'ieee802.11ax', 'ieee802.11ay', 'ieee802.15.1', 'other-wireless', 'gsm', 'cdma', 'lte', 'sonet-oc3', 'sonet-oc12', 'sonet-oc48', 'sonet-oc192', 'sonet-oc768', 'sonet-oc1920', 'sonet-oc3840', '1gfc-sfp', '2gfc-sfp', '4gfc-sfp', '8gfc-sfpp', '16gfc-sfpp', '32gfc-sfp28', '64gfc-qsfpp', '128gfc-qsfp28', 'infiniband-sdr', 'infiniband-ddr', 'infiniband-qdr', 'infiniband-fdr10', 'infiniband-fdr', 'infiniband-edr', 'infiniband-hdr', 'infiniband-ndr', 'infiniband-xdr', 't1', 'e1', 't3', 'e3', 'xdsl', 'docsis', 'gpon', 'xg-pon', 'xgs-pon', 'ng-pon2', 'epon', '10g-epon', 'cisco-stackwise', 'cisco-stackwise-plus', 'cisco-flexstack', 'cisco-flexstack-plus', 'cisco-stackwise-80', 'cisco-stackwise-160', 'cisco-stackwise-320', 'cisco-stackwise-480', 'juniper-vcp', 'extreme-summitstack', 'extreme-summitstack-128', 'extreme-summitstack-256', 'extreme-summitstack-512', 'other', IgnoreCase = $true)]
         [string]$Type,
 
-        [uint16]$LAG_Id,
+        [uint64]$LAG_Id,
 
         [string]$MAC_Address,
 
@@ -1913,13 +1913,13 @@ function Get-NetboxDCIMInterfaceConnection {
 
         [uint16]$Offset,
 
-        [uint16]$Id,
+        [uint64]$Id,
 
         [object]$Connection_Status,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$Device,
+        [uint64]$Device,
 
         [switch]$Raw
     )
@@ -1948,13 +1948,13 @@ function Get-NetboxDCIMPlatform {
         [uint16]$Offset,
 
         [Parameter(ParameterSetName = 'ById')]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Name,
 
         [string]$Slug,
 
-        [uint16]$Manufacturer_Id,
+        [uint64]$Manufacturer_Id,
 
         [string]$Manufacturer,
 
@@ -2002,13 +2002,13 @@ function Get-NetboxDCIMRearPort {
         [uint16]$Offset,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
         [string]$Device,
 
-        [uint16]$Device_Id,
+        [uint64]$Device_Id,
 
         [string]$Type,
 
@@ -2038,7 +2038,7 @@ function Get-NetboxDCIMSite {
     param
     (
         [Parameter(ParameterSetName = 'ByID', ValueFromPipelineByPropertyName = $true)]
-        [uint32]$Id,
+        [uint64]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Name,
@@ -2053,7 +2053,7 @@ function Get-NetboxDCIMSite {
         [string]$Facility,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$ASN,
+        [uint64]$ASN,
 
         [Parameter(ParameterSetName = 'Query')]
         [decimal]$Latitude,
@@ -2071,13 +2071,13 @@ function Get-NetboxDCIMSite {
         [string]$Contact_Email,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Tenant_Group_ID,
+        [uint64]$Tenant_Group_ID,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant_Group,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Tenant_ID,
+        [uint64]$Tenant_ID,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
@@ -2086,7 +2086,7 @@ function Get-NetboxDCIMSite {
         [string]$Status,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Region_ID,
+        [uint64]$Region_ID,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Region,
@@ -2204,7 +2204,7 @@ function Get-NetboxIPAMAddress {
         [string]$Address,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
@@ -2222,28 +2222,28 @@ function Get-NetboxIPAMAddress {
         [string]$VRF,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$VRF_Id,
+        [uint64]$VRF_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Tenant_Id,
+        [uint64]$Tenant_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Device,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Device_ID,
+        [uint64]$Device_ID,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Virtual_Machine,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Virtual_Machine_Id,
+        [uint64]$Virtual_Machine_Id,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Interface_Id,
+        [uint64]$Interface_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [object]$Status,
@@ -2291,6 +2291,84 @@ function Get-NetboxIPAMAddress {
 
 #endregion
 
+#region File Get-NetboxIPAMAddressRange.ps1
+
+
+function Get-NetboxIPAMAddressRange {
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    param
+    (
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
+        [string]$Range,
+
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Query,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [object]$Family,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$VRF,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$VRF_Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Tenant,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint32]$Tenant_Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [object]$Status,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [object]$Role,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Limit,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Offset,
+
+        [switch]$Raw
+    )
+
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($Range_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-ranges', $Range_ID))
+
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+
+            break
+        }
+
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-ranges'))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+
+            break
+        }
+    }
+}
+
+#endregion
+
 #region File Get-NetboxIPAMAggregate.ps1
 
 
@@ -2302,7 +2380,7 @@ function Get-NetboxIPAMAggregate {
         [string]$Query,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Prefix,
@@ -2311,7 +2389,7 @@ function Get-NetboxIPAMAggregate {
         [object]$Family,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$RIR_Id,
+        [uint64]$RIR_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$RIR,
@@ -2406,10 +2484,10 @@ function Get-NetboxIPAMAvailableIP {
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
         [Alias('Id')]
-        [int]$Prefix_ID,
+        [uint64]$Prefix_ID,
 
         [Alias('NumberOfIPs')]
-        [int]$Limit,
+        [uint64]$Limit,
 
         [switch]$Raw
     )
@@ -2522,7 +2600,7 @@ function Get-NetboxIPAMPrefix {
         [string]$Query,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [object]$Family,
@@ -2547,25 +2625,25 @@ function Get-NetboxIPAMPrefix {
         [string]$VRF,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$VRF_Id,
+        [uint64]$VRF_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Tenant,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Tenant_Id,
+        [uint64]$Tenant_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Site,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Site_Id,
+        [uint64]$Site_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Vlan_VId,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Vlan_Id,
+        [uint64]$Vlan_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [object]$Status,
@@ -2574,7 +2652,7 @@ function Get-NetboxIPAMPrefix {
         [string]$Role,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Role_Id,
+        [uint64]$Role_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
@@ -2677,7 +2755,7 @@ function Get-NetboxIPAMRole {
         [string]$Query,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Slug,
@@ -2738,7 +2816,7 @@ function Get-NetboxIPAMVLAN {
         [uint16]$VID,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
@@ -2750,13 +2828,13 @@ function Get-NetboxIPAMVLAN {
         [string]$Tenant,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Tenant_Id,
+        [uint64]$Tenant_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$TenantGroup,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$TenantGroup_Id,
+        [uint64]$TenantGroup_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [object]$Status,
@@ -2768,19 +2846,19 @@ function Get-NetboxIPAMVLAN {
         [string]$Site,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Site_Id,
+        [uint64]$Site_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Group,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Group_Id,
+        [uint64]$Group_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Role,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint32]$Role_Id,
+        [uint64]$Role_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [uint16]$Limit,
@@ -2834,16 +2912,16 @@ function Get-NetboxTag {
     [OutputType([pscustomobject])]
     param
     (
-        [uint16]$Limit,
-
-        [uint16]$Offset,
-
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
         [string]$Slug,
+
+        [uint16]$Limit,
+
+        [uint16]$Offset,
 
         [switch]$Raw
     )
@@ -2918,7 +2996,7 @@ function Get-NetboxTenant {
         [string]$Name,
 
         [Parameter(ParameterSetName = 'ByID')]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [string]$Query,
@@ -2930,7 +3008,7 @@ function Get-NetboxTenant {
         [string]$Group,
 
         [Parameter(ParameterSetName = 'Query')]
-        [uint16]$GroupID,
+        [uint64]$GroupID,
 
         [Parameter(ParameterSetName = 'Query')]
         [hashtable]$CustomFields,
@@ -3075,19 +3153,19 @@ function Get-NetboxVirtualizationCluster {
         [Alias('q')]
         [string]$Query,
 
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Group,
 
-        [uint16]$Group_Id,
+        [uint64]$Group_Id,
 
         [string]$Type,
 
-        [uint16]$Type_Id,
+        [uint64]$Type_Id,
 
         [string]$Site,
 
-        [uint16]$Site_Id,
+        [uint64]$Site_Id,
 
         [uint16]$Limit,
 
@@ -3122,7 +3200,7 @@ function Get-NetboxVirtualizationClusterGroup {
 
         [string]$Query,
 
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [uint16]$Limit,
 
@@ -3237,35 +3315,35 @@ function Get-NetboxVirtualMachine {
 
         [string]$Name,
 
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [object]$Status,
 
         [string]$Tenant,
 
-        [uint16]$Tenant_ID,
+        [uint64]$Tenant_ID,
 
         [string]$Platform,
 
-        [uint16]$Platform_ID,
+        [uint64]$Platform_ID,
 
         [string]$Cluster_Group,
 
-        [uint16]$Cluster_Group_Id,
+        [uint64]$Cluster_Group_Id,
 
         [string]$Cluster_Type,
 
-        [uint16]$Cluster_Type_Id,
+        [uint64]$Cluster_Type_Id,
 
-        [uint16]$Cluster_Id,
+        [uint64]$Cluster_Id,
 
         [string]$Site,
 
-        [uint16]$Site_Id,
+        [uint64]$Site_Id,
 
         [string]$Role,
 
-        [uint16]$Role_Id,
+        [uint64]$Role_Id,
 
         [uint16]$Limit,
 
@@ -3343,7 +3421,7 @@ function Get-NetboxVirtualMachineInterface {
     param
     (
         [Parameter(ValueFromPipeline = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
@@ -3353,7 +3431,7 @@ function Get-NetboxVirtualMachineInterface {
 
         [uint16]$MTU,
 
-        [uint16]$Virtual_Machine_Id,
+        [uint64]$Virtual_Machine_Id,
 
         [string]$Virtual_Machine,
 
@@ -3492,17 +3570,17 @@ function New-NetboxCircuit {
         [string]$CID,
 
         [Parameter(Mandatory = $true)]
-        [uint32]$Provider,
+        [uint64]$Provider,
 
         [Parameter(Mandatory = $true)]
-        [uint32]$Type,
+        [uint64]$Type,
 
         #[ValidateSet('Active', 'Planned', 'Provisioning', 'Offline', 'Deprovisioning', 'Decommissioned ')]
         [uint16]$Status = 'Active',
 
         [string]$Description,
 
-        [uint32]$Tenant,
+        [uint64]$Tenant,
 
         [string]$Termination_A,
 
@@ -3511,7 +3589,7 @@ function New-NetboxCircuit {
         [string]$Termination_Z,
 
         [ValidateRange(0, 2147483647)]
-        [uint32]$Commit_Rate,
+        [uint64]$Commit_Rate,
 
         [string]$Comments,
 
@@ -3688,13 +3766,13 @@ function New-NetboxContactRole {
         [object]$Content_Type,
 
         [Parameter(Mandatory = $true)]
-        [uint32]$Object_Id,
+        [uint64]$Object_Id,
 
         [Parameter(Mandatory = $true)]
-        [uint32]$Contact,
+        [uint64]$Contact,
 
         [Parameter(Mandatory = $true)]
-        [uint32]$Role,
+        [uint64]$Role,
 
         [ValidateSet('primary', 'secondary', 'tertiary', 'inactive', IgnoreCase = $true)]
         [string]$Priority,
@@ -3851,17 +3929,17 @@ function New-NetboxDCIMDevice {
         [object]$Device_Type,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Site,
+        [uint64]$Site,
 
         [object]$Status = 'Active',
 
-        [uint16]$Platform,
+        [uint64]$Platform,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
-        [uint16]$Cluster,
+        [uint64]$Cluster,
 
-        [uint16]$Rack,
+        [uint64]$Rack,
 
         [uint16]$Position,
 
@@ -3871,15 +3949,15 @@ function New-NetboxDCIMDevice {
 
         [string]$Asset_Tag,
 
-        [uint16]$Virtual_Chassis,
+        [uint64]$Virtual_Chassis,
 
-        [uint16]$VC_Priority,
+        [uint64]$VC_Priority,
 
-        [uint16]$VC_Position,
+        [uint64]$VC_Position,
 
-        [uint16]$Primary_IP4,
+        [uint64]$Primary_IP4,
 
-        [uint16]$Primary_IP6,
+        [uint64]$Primary_IP6,
 
         [string]$Comments,
 
@@ -3944,7 +4022,7 @@ function New-NetboxDCIMSite {
 
         [string]$Facility,
 
-        [uint32]$ASN,
+        [uint64]$ASN,
 
         [decimal]$Latitude,
 
@@ -3956,13 +4034,13 @@ function New-NetboxDCIMSite {
 
         [string]$Contact_Email,
 
-        [int]$Tenant_Group,
+        [uint64]$Tenant_Group,
 
-        [int]$Tenant,
+        [uint64]$Tenant,
 
         [string]$Status,
 
-        [uint32]$Region,
+        [uint64]$Region,
 
         [string]$Description,
 
@@ -4061,17 +4139,17 @@ function New-NetboxIPAMAddress {
 
         [object]$Status = 'Active',
 
-        [int]$Tenant,
+        [uint64]$Tenant,
 
-        [int]$VRF,
+        [uint64]$VRF,
 
         [object]$Role,
 
-        [int]$NAT_Inside,
+        [uint64]$NAT_Inside,
 
         [hashtable]$Custom_Fields,
 
-        [int]$Interface,
+        [uint64]$Interface,
 
         [string]$Description,
 
@@ -4080,7 +4158,7 @@ function New-NetboxIPAMAddress {
         [ValidateSet('dcim.interface', 'virtualization.vminterface', IgnoreCase = $true)]
         [string]$Assigned_Object_Type,
 
-        [int]$Assigned_Object_Id,
+        [uint64]$Assigned_Object_Id,
 
         [switch]$Raw
     )
@@ -4094,6 +4172,117 @@ function New-NetboxIPAMAddress {
         $URI = BuildNewURI -Segments $URIComponents.Segments
 
         if ($PSCmdlet.ShouldProcess($Address, 'Create new IP address')) {
+            InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        }
+    }
+}
+
+
+
+
+
+
+#endregion
+
+#region File New-NetboxIPAMAddressRange.ps1
+
+
+
+function New-NetboxIPAMAddressRange {
+<#
+    .SYNOPSIS
+        Create a new IP address range to Netbox
+
+    .DESCRIPTION
+        Create a new IP address range to Netbox with a status of Active by default. The maximum supported
+        size of an IP range is 2^32 - 1.
+
+    .PARAMETER Start_Address
+        Starting IPv4 or IPv6 address (with mask). The maximum supported size of an IP range is 2^32 - 1.
+
+    .PARAMETER End_Address
+        Ending IPv4 or IPv6 address (with mask). The maximum supported size of an IP range is 2^32 - 1.
+
+    .PARAMETER Status
+        Operational status of this range. Defaults to Active
+
+    .PARAMETER Tenant
+        Tenant ID
+
+    .PARAMETER VRF
+        VRF ID
+
+    .PARAMETER Role
+        Role such as backup, customer, development, etc... Defaults to nothing
+
+    .PARAMETER Custom_Fields
+        Custom field hash table. Will be validated by the API service
+
+    .PARAMETER Description
+        Description of IP address range
+
+    .PARAMETER Comments
+        Extra comments (markdown supported).
+
+    .PARAMETER Tags
+        One or more tags.
+
+    .PARAMETER Mark_Utilized
+        Treat as 100% utilized
+
+    .PARAMETER Raw
+        Return raw results from API service
+
+    .EXAMPLE
+        New-NetboxIPAMAddressRange -Start_Address 192.0.2.20/24 -End_Address 192.0.2.20/24
+
+        Add new IP Address range from 192.0.2.20/24 to 192.0.2.20/24 with status active
+
+    .NOTES
+        https://netbox.neonet.org/static/docs/models/ipam/iprange/
+#>
+
+    [CmdletBinding(ConfirmImpact = 'Low',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$Start_Address,
+
+        [Parameter(Mandatory = $true)]
+        [string]$End_Address,
+
+        [object]$Status = 'Active',
+
+        [uint64]$Tenant,
+
+        [uint64]$VRF,
+
+        [object]$Role,
+
+        [hashtable]$Custom_Fields,
+
+        [string]$Description,
+
+        [string]$Comments,
+
+        [object[]]$Tags,
+
+        [switch]$Mark_Utilized,
+
+        [switch]$Raw
+    )
+
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-ranges'))
+        $Method = 'POST'
+
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+        $URI = BuildNewURI -Segments $URIComponents.Segments
+
+        if ($PSCmdlet.ShouldProcess($Start_Address, 'Create new IP address range')) {
             InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
         }
     }
@@ -4120,7 +4309,7 @@ function New-NetboxIPAMPrefix {
 
         [object]$Status = 'Active',
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
         [object]$Role,
 
@@ -4128,11 +4317,11 @@ function New-NetboxIPAMPrefix {
 
         [string]$Description,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$VRF,
+        [uint64]$VRF,
 
-        [uint16]$VLAN,
+        [uint64]$VLAN,
 
         [hashtable]$Custom_Fields,
 
@@ -4218,7 +4407,7 @@ function New-NetboxIPAMVLAN {
 
         [object]$Status = 'Active',
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
         [object]$Role,
 
@@ -4337,27 +4526,27 @@ function New-NetboxVirtualMachine {
         [string]$Name,
 
         [Parameter(Mandatory = $true)]
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$Cluster,
+        [uint64]$Cluster,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
         [object]$Status = 'Active',
 
-        [uint16]$Role,
+        [uint64]$Role,
 
-        [uint16]$Platform,
+        [uint64]$Platform,
 
         [uint16]$vCPUs,
 
-        [uint16]$Memory,
+        [uint64]$Memory,
 
-        [uint16]$Disk,
+        [uint64]$Disk,
 
-        [uint16]$Primary_IP4,
+        [uint64]$Primary_IP4,
 
-        [uint16]$Primary_IP6,
+        [uint64]$Primary_IP6,
 
         [hashtable]$Custom_Fields,
 
@@ -4424,7 +4613,7 @@ function Remove-NetboxDCIMDevice {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [switch]$Force
     )
@@ -4464,7 +4653,7 @@ function Remove-NetboxDCIMFrontPort {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [switch]$Force
     )
@@ -4523,7 +4712,7 @@ function Remove-NetboxDCIMInterface {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [switch]$Force
     )
@@ -4564,7 +4753,7 @@ function Remove-NetboxDCIMInterfaceConnection {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [switch]$Force
     )
@@ -4606,7 +4795,7 @@ function Remove-NetboxDCIMRearPort {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [switch]$Force
     )
@@ -4735,7 +4924,7 @@ function Remove-NetboxIPAMAddress {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [int[]]$Id,
+        [uint64[]]$Id,
 
         [switch]$Force
     )
@@ -4747,6 +4936,58 @@ function Remove-NetboxIPAMAddress {
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $IPId))
 
             if ($Force -or $pscmdlet.ShouldProcess($CurrentIP.Address, "Delete")) {
+                $URI = BuildNewURI -Segments $Segments
+
+                InvokeNetboxRequest -URI $URI -Method DELETE
+            }
+        }
+    }
+}
+
+#endregion
+
+#region File Remove-NetboxIPAMAddressRange.ps1
+
+
+function Remove-NetboxIPAMAddressRange {
+    <#
+    .SYNOPSIS
+        Remove an IP address range from Netbox
+
+    .DESCRIPTION
+        Removes/deletes an IP address range from Netbox by ID
+
+    .PARAMETER Id
+        Database ID of the IP address range object.
+
+    .PARAMETER Force
+        Do not confirm.
+
+    .EXAMPLE
+        PS C:\> Remove-NetboxIPAMAddressRange -Id 1234
+
+    .NOTES
+        Additional information about the function.
+#>
+
+    [CmdletBinding(ConfirmImpact = 'High',
+                   SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint64[]]$Id,
+
+        [switch]$Force
+    )
+
+    process {
+        foreach ($Range_Id in $Id) {
+            $CurrentRange = Get-NetboxIPAMAddressRange -Id $Range_Id -ErrorAction Stop
+
+            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-ranges', $Range_Id))
+
+            if ($Force -or $pscmdlet.ShouldProcess($CurrentRange.start_address, "Delete")) {
                 $URI = BuildNewURI -Segments $Segments
 
                 InvokeNetboxRequest -URI $URI -Method DELETE
@@ -4787,7 +5028,7 @@ function Remove-NetboxVirtualMachine {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [switch]$Force
     )
@@ -4894,7 +5135,7 @@ function Set-NetboxContact {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint32[]]$Id,
+        [uint64[]]$Id,
 
         [ValidateLength(1, 100)]
         [string]$Name,
@@ -4902,7 +5143,7 @@ function Set-NetboxContact {
         [ValidateLength(0, 254)]
         [string]$Email,
 
-        [uint32]$Group,
+        [uint64]$Group,
 
         [ValidateLength(0, 100)]
         [string]$Title,
@@ -5001,7 +5242,7 @@ function Set-NetboxDCIMDevice {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Name,
 
@@ -5009,17 +5250,17 @@ function Set-NetboxDCIMDevice {
 
         [object]$Device_Type,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
         [object]$Status,
 
-        [uint16]$Platform,
+        [uint64]$Platform,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
-        [uint16]$Cluster,
+        [uint64]$Cluster,
 
-        [uint16]$Rack,
+        [uint64]$Rack,
 
         [uint16]$Position,
 
@@ -5029,15 +5270,15 @@ function Set-NetboxDCIMDevice {
 
         [string]$Asset_Tag,
 
-        [uint16]$Virtual_Chassis,
+        [uint64]$Virtual_Chassis,
 
-        [uint16]$VC_Priority,
+        [uint64]$VC_Priority,
 
-        [uint16]$VC_Position,
+        [uint64]$VC_Position,
 
-        [uint16]$Primary_IP4,
+        [uint64]$Primary_IP4,
 
-        [uint16]$Primary_IP6,
+        [uint64]$Primary_IP6,
 
         [string]$Comments,
 
@@ -5083,7 +5324,7 @@ function Set-NetboxDCIMFrontPort {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [uint16]$Device,
 
@@ -5098,7 +5339,7 @@ function Set-NetboxDCIMFrontPort {
         [ValidatePattern('^[0-9a-f]{6}$')]
         [string]$Color,
 
-        [uint16]$Rear_Port,
+        [uint64]$Rear_Port,
 
         [uint16]$Rear_Port_Position,
 
@@ -5106,7 +5347,7 @@ function Set-NetboxDCIMFrontPort {
 
         [bool]$Mark_Connected,
 
-        [uint16[]]$Tags,
+        [uint64[]]$Tags,
 
         [switch]$Force
     )
@@ -5148,9 +5389,9 @@ function Set-NetboxDCIMInterface {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
-        [uint16]$Device,
+        [uint64]$Device,
 
         [string]$Name,
 
@@ -5167,7 +5408,7 @@ function Set-NetboxDCIMInterface {
 
         [bool]$MGMT_Only,
 
-        [uint16]$LAG,
+        [uint64]$LAG,
 
         [string]$Description,
 
@@ -5270,13 +5511,13 @@ function Set-NetboxDCIMInterfaceConnection {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [object]$Connection_Status,
 
-        [uint16]$Interface_A,
+        [uint64]$Interface_A,
 
-        [uint16]$Interface_B,
+        [uint64]$Interface_B,
 
         [switch]$Force
     )
@@ -5322,11 +5563,11 @@ function Set-NetboxDCIMRearPort {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
-        [uint16]$Device,
+        [uint64]$Device,
 
-        [uint16]$Module,
+        [uint64]$Module,
 
         [string]$Name,
 
@@ -5469,26 +5710,26 @@ function Set-NetboxIPAMAddress {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [int[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Address,
 
         [string]$Status,
 
-        [int]$Tenant,
+        [uint64]$Tenant,
 
-        [int]$VRF,
+        [uint64]$VRF,
 
         [object]$Role,
 
-        [int]$NAT_Inside,
+        [uint64]$NAT_Inside,
 
         [hashtable]$Custom_Fields,
 
         [ValidateSet('dcim.interface', 'virtualization.vminterface', IgnoreCase = $true)]
         [string]$Assigned_Object_Type,
 
-        [uint16]$Assigned_Object_Id,
+        [uint64]$Assigned_Object_Id,
 
         [string]$Description,
 
@@ -5547,6 +5788,69 @@ function Set-NetboxIPAMAddress {
 
 #endregion
 
+#region File Set-NetboxIPAMAddressRange.ps1
+
+
+function Set-NetboxIPAMAddressRange {
+    [CmdletBinding(ConfirmImpact = 'Medium',
+                   SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint64[]]$Id,
+
+        [string]$Start_Address,
+
+        [string]$End_Address,
+
+        [object]$Status,
+
+        [uint64]$Tenant,
+
+        [uint64]$VRF,
+
+        [object]$Role,
+
+        [hashtable]$Custom_Fields,
+
+        [string]$Description,
+
+        [string]$Comments,
+
+        [object[]]$Tags,
+
+        [switch]$Mark_Utilized,
+
+        [switch]$Force,
+
+        [switch]$Raw
+    )
+
+    begin {
+        $Method = 'PATCH'
+    }
+
+    process {
+        foreach ($RangeID in $Id) {
+            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-ranges', $RangeID))
+
+            Write-Verbose "Obtaining IP range from ID $RangeID"
+            $CurrentRange = Get-NetboxIPAMAddressRange -Id $RangeID -ErrorAction Stop
+
+            if ($Force -or $PSCmdlet.ShouldProcess("$($CurrentRange.Start_Address) - $($CurrentRange.End_Address)", 'Set')) {
+                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+
+                $URI = BuildNewURI -Segments $URIComponents.Segments
+
+                InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method $Method
+            }
+        }
+    }
+}
+
+#endregion
+
 #region File Set-NetboxIPAMPrefix.ps1
 
 
@@ -5557,19 +5861,19 @@ function Set-NetboxIPAMPrefix {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Prefix,
 
         [string]$Status,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
-        [uint16]$Site,
+        [uint64]$Site,
 
-        [uint16]$VRF,
+        [uint64]$VRF,
 
-        [uint16]$VLAN,
+        [uint64]$VLAN,
 
         [object]$Role,
 
@@ -5687,29 +5991,29 @@ function Set-NetboxVirtualMachine {
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [uint16]$Id,
+        [uint64]$Id,
 
         [string]$Name,
 
-        [uint16]$Role,
+        [uint64]$Role,
 
-        [uint16]$Cluster,
+        [uint64]$Cluster,
 
         [object]$Status,
 
-        [uint16]$Platform,
+        [uint64]$Platform,
 
-        [uint16]$Primary_IP4,
+        [uint64]$Primary_IP4,
 
-        [uint16]$Primary_IP6,
+        [uint64]$Primary_IP6,
 
         [byte]$VCPUs,
 
-        [uint16]$Memory,
+        [uint64]$Memory,
 
-        [uint16]$Disk,
+        [uint64]$Disk,
 
-        [uint16]$Tenant,
+        [uint64]$Tenant,
 
         [string]$Comments,
 
@@ -5754,7 +6058,7 @@ function Set-NetboxVirtualMachineInterface {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Name,
 
@@ -5766,7 +6070,7 @@ function Set-NetboxVirtualMachineInterface {
 
         [boolean]$Enabled,
 
-        [uint16]$Virtual_Machine,
+        [uint64]$Virtual_Machine,
 
         [switch]$Force
     )

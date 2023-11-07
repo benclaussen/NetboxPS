@@ -8,7 +8,7 @@ function Get-NetboxDCIMDeviceType {
 
         [uint16]$Limit,
 
-        [uint16[]]$Id,
+        [uint64[]]$Id,
 
         [string]$Query,
 
@@ -16,7 +16,7 @@ function Get-NetboxDCIMDeviceType {
 
         [string]$Manufacturer,
 
-        [uint16]$Manufacturer_Id,
+        [uint64]$Manufacturer_Id,
 
         [string]$Model,
 
