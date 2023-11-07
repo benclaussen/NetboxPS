@@ -1,4 +1,4 @@
-
+﻿
 function Remove-NetboxIPAMAddressRange {
     <#
     .SYNOPSIS
@@ -19,7 +19,7 @@ function Remove-NetboxIPAMAddressRange {
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'High',
                    SupportsShouldProcess = $true)]
     param
@@ -27,19 +27,19 @@ function Remove-NetboxIPAMAddressRange {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
-        
+
         [switch]$Force
     )
-    
+
     process {
         foreach ($Range_Id in $Id) {
             $CurrentRange = Get-NetboxIPAMAddressRange -Id $Range_Id -ErrorAction Stop
-            
+
             $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-ranges', $Range_Id))
-            
+
             if ($Force -or $pscmdlet.ShouldProcess($CurrentRange.start_address, "Delete")) {
                 $URI = BuildNewURI -Segments $Segments
-                
+
                 InvokeNetboxRequest -URI $URI -Method DELETE
             }
         }
