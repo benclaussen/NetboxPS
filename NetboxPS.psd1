@@ -12,7 +12,7 @@
 RootModule = 'NetboxPS.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.8.3'
+ModuleVersion = '1.8.4'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -106,7 +106,8 @@ FunctionsToExport = 'Add-NetboxDCIMFrontPort', 'Add-NetboxDCIMInterface',
                'Set-NetboxDCIMInterface', 'Set-NetboxDCIMInterfaceConnection',
                'Set-NetboxDCIMRearPort', 'Set-NetboxHostName', 'Set-NetboxHostPort',
                'Set-NetboxHostScheme', 'Set-NetboxInvokeParams',
-               'Set-NetboxIPAMAddress', 'Set-NetboxIPAMPrefix', 'Set-NetboxTimeout',
+               'Set-NetboxIPAMAddress', 'Set-NetboxIPAMAddressRange',
+               'Set-NetboxIPAMPrefix', 'Set-NetboxTimeout',
                'Set-NetboxUnstrustedSSL', 'Set-NetboxVirtualMachine',
                'Set-NetboxVirtualMachineInterface', 'Test-NetboxAPIConnected'
 
