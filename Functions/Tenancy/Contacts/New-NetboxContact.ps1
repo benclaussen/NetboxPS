@@ -88,7 +88,7 @@ function New-NetboxContact {
 
         $URI = BuildNewURI -Segments $URIComponents.Segments
 
-        if ($PSCmdlet.ShouldProcess($Address, 'Create new contact')) {
+        if ($PSCmdlet.ShouldProcess($Name, 'Create new contact')) {
             InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
         }
     }

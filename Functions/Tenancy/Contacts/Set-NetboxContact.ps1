@@ -106,7 +106,7 @@ function Set-NetboxContact {
 
             $URI = BuildNewURI -Segments $URIComponents.Segments
 
-            $CurrentContact = Get-NetboxContact -Id $ContactId
+            $CurrentContact = Get-NetboxContact -Id $ContactId -ErrorAction Stop
 
             if ($Force -or $PSCmdlet.ShouldProcess($CurrentContact.Name, 'Update contact')) {
                 InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
