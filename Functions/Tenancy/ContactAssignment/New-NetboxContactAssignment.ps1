@@ -1,32 +1,50 @@
-﻿
-function New-NetboxContactRole {
+﻿#enum NetboxContactAssignmentContentType {
+#    Circuit = 10
+#    CircuitProvider = 7
+#    CircuitProviderAccount = 132
+#    Device = 19
+#    Location = 25
+#    Manufacturer = 29
+#    PowerPanel = 77
+#    Rack = 20
+#    Region = 30
+#    Site = 18
+#    SiteGroup = 92
+#    Tenant = 58
+#    VirtualizationCluster = 63
+#    VirtualizationClusterGroup = 64
+#    VirtualMachine = 61
+#}
+
+
+function New-NetboxContactAssignment {
 <#
     .SYNOPSIS
-        Create a new contact role in Netbox
+        Create a new contact role assignment in Netbox
 
     .DESCRIPTION
-        Creates a new contact role object in Netbox
+        Creates a new contact role assignment in Netbox
 
     .PARAMETER Content_Type
-        A description of the Content_Type parameter.
+        The content type for this assignment.
 
     .PARAMETER Object_Id
-        A description of the Object_Id parameter.
+        ID of the object to assign.
 
     .PARAMETER Contact
-        A description of the Contact parameter.
+        ID of the contact to assign.
 
     .PARAMETER Role
-        A description of the Role parameter.
+        ID of the contact role to assign.
 
     .PARAMETER Priority
-        A description of the Priority parameter.
+        Piority of the contact assignment.
 
     .PARAMETER Raw
         Return the unparsed data from the HTTP request
 
     .EXAMPLE
-        PS C:\> New-NetboxContactAssignment -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+        PS C:\> New-NetboxContactAssignment -Content_Type Location -Object_id 10 -Contact 15 -Role 10 -Priority Primary
 
     .NOTES
         Additional information about the function.
@@ -40,6 +58,7 @@ function New-NetboxContactRole {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [object]$Content_Type,
+        #[NetboxContactAssignmentContentType]$Content_Type,
 
         [Parameter(Mandatory = $true)]
         [uint64]$Object_Id,
@@ -60,7 +79,8 @@ function New-NetboxContactRole {
         # https://docs.netbox.dev/en/stable/features/contacts/
         $AllowedContentTypes = @{
             10 = "circuits.circuit"
-            7  = "circuits.provider"
+            7 = "circuits.provider"
+            132 = "circuits.provideraccount"
             19 = "dcim.device"
             25 = "dcim.location"
             29 = "dcim.manufacturer"
