@@ -715,13 +715,19 @@ function Get-ModelDefinition {
 
 function Get-NetboxAPIDefinition {
     [CmdletBinding()]
-    param ()
+    param
+    (
+        [ValidateSet('json', 'yaml', IgnoreCase = $true)]
+        [string]$Format = 'json'
+    )
 
-    #$URI = "https://netbox.neonet.org/api/docs/?format=openapi"
+    #$URI = "https://netbox.neonet.org/api/schema/?format=json"
 
-    $Segments = [System.Collections.ArrayList]::new(@('docs'))
+    $Segments = [System.Collections.ArrayList]::new(@('schema'))
 
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary @{'format' = 'openapi' }
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary @{
+        'format' = $Format.ToLower()
+    }
 
     $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters -SkipConnectedCheck
 
@@ -3708,7 +3714,7 @@ function New-NetboxContact {
 
         $URI = BuildNewURI -Segments $URIComponents.Segments
 
-        if ($PSCmdlet.ShouldProcess($Address, 'Create new contact')) {
+        if ($PSCmdlet.ShouldProcess($Name, 'Create new contact')) {
             InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
         }
     }
@@ -3723,37 +3729,37 @@ function New-NetboxContact {
 #region File New-NetboxContactAssignment.ps1
 
 
-function New-NetboxContactRole {
+function New-NetboxContactAssignment {
 <#
     .SYNOPSIS
-        Create a new contact role in Netbox
+        Create a new contact role assignment in Netbox
 
     .DESCRIPTION
-        Creates a new contact role object in Netbox
+        Creates a new contact role assignment in Netbox
 
     .PARAMETER Content_Type
-        A description of the Content_Type parameter.
+        The content type for this assignment.
 
     .PARAMETER Object_Id
-        A description of the Object_Id parameter.
+        ID of the object to assign.
 
     .PARAMETER Contact
-        A description of the Contact parameter.
+        ID of the contact to assign.
 
     .PARAMETER Role
-        A description of the Role parameter.
+        ID of the contact role to assign.
 
     .PARAMETER Priority
-        A description of the Priority parameter.
+        Piority of the contact assignment.
 
     .PARAMETER Raw
         Return the unparsed data from the HTTP request
 
     .EXAMPLE
-        PS C:\> New-NetboxContactAssignment -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+        PS C:\> New-NetboxContactAssignment -Content_Type 'dcim.location' -Object_id 10 -Contact 15 -Role 10 -Priority 'Primary'
 
     .NOTES
-        Additional information about the function.
+        Valid content types: https://docs.netbox.dev/en/stable/features/contacts/#contacts_1
 #>
 
     [CmdletBinding(ConfirmImpact = 'Low',
@@ -3763,7 +3769,8 @@ function New-NetboxContactRole {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [object]$Content_Type,
+        [ValidateSet('circuits.circuit', 'circuits.provider', 'circuits.provideraccount', 'dcim.device', 'dcim.location', 'dcim.manufacturer', 'dcim.powerpanel', 'dcim.rack', 'dcim.region', 'dcim.site', 'dcim.sitegroup', 'tenancy.tenant', 'virtualization.cluster', 'virtualization.clustergroup', 'virtualization.virtualmachine', IgnoreCase = $true)]
+        [string]$Content_Type,
 
         [Parameter(Mandatory = $true)]
         [uint64]$Object_Id,
@@ -3781,47 +3788,17 @@ function New-NetboxContactRole {
     )
 
     begin {
-        # https://docs.netbox.dev/en/stable/features/contacts/
-        $AllowedContentTypes = @{
-            10 = "circuits.circuit"
-            7  = "circuits.provider"
-            19 = "dcim.device"
-            25 = "dcim.location"
-            29 = "dcim.manufacturer"
-            77 = "dcim.powerpanel"
-            20 = "dcim.rack"
-            30 = "dcim.region"
-            18 = "dcim.site"
-            92 = "dcim.sitegroup"
-            58 = "tenancy.tenant"
-            63 = "virtualization.cluster"
-            64 = "virtualization.clustergroup"
-            61 = "virtualization.virtualmachine"
-        }
+        $Method = 'POST'
     }
 
     process {
-        $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-assignment'))
-        $Method = 'POST'
-
-        if ($Content_Type -is [string]) {
-            # Need to convert this to an integer
-            $Content_Type = ($AllowedContentTypes.GetEnumerator() | Where-Object {
-                    $_.Value -eq $Content_Type
-                }).Key
-        } elseif ($Content_Type -is [int]) {
-            if ($Content_Type -notin $($AllowedContentTypes).Keys) {
-                throw "Invalid content type defined"
-            }
-        } else {
-            throw "Invalid content type defined"
-        }
+        $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-assignments'))
 
         $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
 
         $URI = BuildNewURI -Segments $URIComponents.Segments
 
-        if ($PSCmdlet.ShouldProcess($Address, 'Create new contact assignment')) {
+        if ($PSCmdlet.ShouldProcess($Content_Type, 'Create new contact assignment')) {
             InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
         }
     }
@@ -3897,7 +3874,7 @@ function New-NetboxContactRole {
 
         $URI = BuildNewURI -Segments $URIComponents.Segments
 
-        if ($PSCmdlet.ShouldProcess($Address, 'Create new contact')) {
+        if ($PSCmdlet.ShouldProcess($Name, 'Create new contact')) {
             InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
         }
     }
@@ -5181,9 +5158,183 @@ function Set-NetboxContact {
 
             $URI = BuildNewURI -Segments $URIComponents.Segments
 
-            $CurrentContact = Get-NetboxContact -Id $ContactId
+            $CurrentContact = Get-NetboxContact -Id $ContactId -ErrorAction Stop
 
             if ($Force -or $PSCmdlet.ShouldProcess($CurrentContact.Name, 'Update contact')) {
+                InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+            }
+        }
+    }
+}
+
+
+
+
+
+#endregion
+
+#region File Set-NetboxContactAssignment.ps1
+
+
+
+function Set-NetboxContactAssignment {
+<#
+    .SYNOPSIS
+        Update a contact role assignment in Netbox
+
+    .DESCRIPTION
+        Updates a contact role assignment in Netbox
+
+    .PARAMETER Content_Type
+        The content type for this assignment.
+
+    .PARAMETER Object_Id
+        ID of the object to assign.
+
+    .PARAMETER Contact
+        ID of the contact to assign.
+
+    .PARAMETER Role
+        ID of the contact role to assign.
+
+    .PARAMETER Priority
+        Priority of the contact assignment.
+
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+
+    .EXAMPLE
+        PS C:\> Set-NetboxContactAssignment -Id 11 -Content_Type 'dcim.location' -Object_id 10 -Contact 15 -Role 10 -Priority 'Primary'
+
+    .NOTES
+        Valid content types: https://docs.netbox.dev/en/stable/features/contacts/#contacts_1
+#>
+
+    [CmdletBinding(ConfirmImpact = 'Low',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint64[]]$Id,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [ValidateSet('circuits.circuit', 'circuits.provider', 'circuits.provideraccount', 'dcim.device', 'dcim.location', 'dcim.manufacturer', 'dcim.powerpanel', 'dcim.rack', 'dcim.region', 'dcim.site', 'dcim.sitegroup', 'tenancy.tenant', 'virtualization.cluster', 'virtualization.clustergroup', 'virtualization.virtualmachine', IgnoreCase = $true)]
+        [string]$Content_Type,
+
+        [uint64]$Object_Id,
+
+        [uint64]$Contact,
+
+        [uint64]$Role,
+
+        [ValidateSet('primary', 'secondary', 'tertiary', 'inactive', IgnoreCase = $true)]
+        [string]$Priority,
+
+        [switch]$Raw
+    )
+
+    begin {
+        $Method = 'Patch'
+    }
+
+    process {
+        foreach ($ContactAssignmentId in $Id) {
+            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-assignments', $ContactAssignmentId))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+
+            $URI = BuildNewURI -Segments $URIComponents.Segments
+
+            $CurrentContactAssignment = Get-NetboxContactAssignment -Id $ContactAssignmentId -ErrorAction Stop
+
+            if ($PSCmdlet.ShouldProcess($CurrentContactAssignment.Id, 'Update contact assignment')) {
+                InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+            }
+        }
+    }
+}
+
+
+
+
+
+#endregion
+
+#region File Set-NetboxContactRole.ps1
+
+
+function Set-NetboxContactRole {
+<#
+    .SYNOPSIS
+        Update a contact role in Netbox
+
+    .DESCRIPTION
+        Updates a contact role in Netbox
+
+    .PARAMETER Name
+        The contact role name, e.g "Network Support"
+
+    .PARAMETER Slug
+        The unique URL for the role. Can only contain hypens, A-Z, a-z, 0-9, and underscores
+
+    .PARAMETER Description
+        Short description of the contact role
+
+    .PARAMETER Custom_Fields
+        A description of the Custom_Fields parameter.
+
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+
+    .EXAMPLE
+        PS C:\> New-NetboxContact -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+
+    .NOTES
+        Additional information about the function.
+#>
+    
+    [CmdletBinding(ConfirmImpact = 'Low',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint64[]]$Id,
+        
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [ValidateLength(1, 100)]
+        [string]$Name,
+        
+        [ValidateLength(1, 100)]
+        [ValidatePattern('^[-a-zA-Z0-9_]+$')]
+        [string]$Slug,
+        
+        [ValidateLength(0, 200)]
+        [string]$Description,
+        
+        [hashtable]$Custom_Fields,
+        
+        [switch]$Raw
+    )
+    
+    begin {
+        $Method = 'PATCH'
+    }
+    
+    process {
+        foreach ($ContactRoleId in $Id) {
+            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts', $ContactRoleId))
+            
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+            
+            $URI = BuildNewURI -Segments $URIComponents.Segments
+            
+            $CurrentContactRole = Get-NetboxContactRole -Id $ContactRoleId -ErrorAction Stop
+            
+            if ($Force -or $PSCmdlet.ShouldProcess($CurrentContactRole.Name, 'Update contact role')) {
                 InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
             }
         }
