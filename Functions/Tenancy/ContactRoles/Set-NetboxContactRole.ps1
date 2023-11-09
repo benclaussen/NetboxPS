@@ -1,11 +1,11 @@
-﻿
-function New-NetboxContactRole {
+
+function Set-NetboxContactRole {
 <#
     .SYNOPSIS
-        Create a new contact role in Netbox
+        Update a contact role in Netbox
 
     .DESCRIPTION
-        Creates a new contact role object in Netbox
+        Updates a contact role in Netbox
 
     .PARAMETER Name
         The contact role name, e.g "Network Support"
@@ -28,7 +28,7 @@ function New-NetboxContactRole {
     .NOTES
         Additional information about the function.
 #>
-
+    
     [CmdletBinding(ConfirmImpact = 'Low',
                    SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
@@ -36,32 +36,41 @@ function New-NetboxContactRole {
     (
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
+        [uint64[]]$Id,
+        
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateLength(1, 100)]
         [string]$Name,
-
-        [Parameter(Mandatory = $true)]
+        
         [ValidateLength(1, 100)]
         [ValidatePattern('^[-a-zA-Z0-9_]+$')]
         [string]$Slug,
-
+        
         [ValidateLength(0, 200)]
         [string]$Description,
-
+        
         [hashtable]$Custom_Fields,
-
+        
         [switch]$Raw
     )
-
+    
+    begin {
+        $Method = 'PATCH'
+    }
+    
     process {
-        $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts'))
-        $Method = 'POST'
-
-        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
-        $URI = BuildNewURI -Segments $URIComponents.Segments
-
-        if ($PSCmdlet.ShouldProcess($Name, 'Create new contact')) {
-            InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+        foreach ($ContactRoleId in $Id) {
+            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts', $ContactRoleId))
+            
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+            
+            $URI = BuildNewURI -Segments $URIComponents.Segments
+            
+            $CurrentContactRole = Get-NetboxContactRole -Id $ContactRoleId -ErrorAction Stop
+            
+            if ($Force -or $PSCmdlet.ShouldProcess($CurrentContactRole.Name, 'Update contact role')) {
+                InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
+            }
         }
     }
 }
