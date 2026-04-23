@@ -1,3 +1,12 @@
+> [!WARNING]
+> This module is no longer maintained
+
+Please see [PowerNetbox](https://github.com/ctrl-alt-automate/PowerNetbox)
+
+
+---
+
+
 # NetboxPS
 ###### Powershell Netbox API module
 
