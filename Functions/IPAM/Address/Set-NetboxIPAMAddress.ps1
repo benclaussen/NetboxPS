@@ -14,6 +14,8 @@ function Set-NetboxIPAMAddress {
 
         [uint64]$Tenant,
 
+        [uint64][]$Tags,
+
         [uint64]$VRF,
 
         [object]$Role,
