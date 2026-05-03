@@ -8,12 +8,12 @@ Param()
 
 $script:pester_site1 = "pester_site1"
 
+. ../credential.ps1
+#TODO: Add check if no ipaddress/token info...
+
 $Credential = New-Object System.Management.Automation.PSCredential("username", (ConvertTo-SecureString $token -AsPlainText -Force))
 $script:invokeParams = @{
     hostname             = $hostname;
     Credential           = $Credential;
     SkipCertificateCheck = $true;
 }
-
-. ../credential.ps1
-#TODO: Add check if no ipaddress/token info...
