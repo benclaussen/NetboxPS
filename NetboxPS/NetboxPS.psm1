@@ -605,9 +605,9 @@ function Connect-NetboxAPI {
 
     Write-Verbose "Checking Netbox version compatibility"
     $script:NetboxConfig.NetboxVersion = Get-NetboxVersion
-    if ([version]$script:NetboxConfig.NetboxVersion.'netbox-version' -lt 2.8) {
+    if ([version]$script:NetboxConfig.NetboxVersion.'netbox-version' -lt 4.0.1) {
         $Script:NetboxConfig.Connected = $false
-        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.NetboxVersion.'netbox-version')"
+        throw "Netbox version is incompatible with this PS module. Requires >=4.0, found version $($script:NetboxConfig.NetboxVersion.'netbox-version')"
     } else {
         Write-Verbose "Found compatible version [$($script:NetboxConfig.NetboxVersion.'netbox-version')]!"
     }
@@ -615,7 +615,7 @@ function Connect-NetboxAPI {
     $script:NetboxConfig.Connected = $true
     Write-Verbose "Successfully connected!"
 
-    $script:NetboxConfig.ContentTypes = Get-NetboxContentType -Limit 500
+    $script:NetboxConfig.ObjectTypes = Get-NetboxObjectType -Limit 500
 
     Write-Verbose "Connection process completed"
 }
@@ -1397,100 +1397,6 @@ function Get-NetboxContactRole {
 
         default {
             $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-roles'))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
-            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-            InvokeNetboxRequest -URI $uri -Raw:$Raw
-
-            break
-        }
-    }
-}
-
-#endregion
-
-#region File Get-NetboxContentType.ps1
-
-function Get-NetboxContentType {
-<#
-    .SYNOPSIS
-        Get a content type definition from Netbox
-
-    .DESCRIPTION
-        A detailed description of the Get-NetboxContentType function.
-
-    .PARAMETER Model
-        A description of the Model parameter.
-
-    .PARAMETER Id
-        The database ID of the contact role
-
-    .PARAMETER App_Label
-        A description of the App_Label parameter.
-
-    .PARAMETER Query
-        A standard search query that will match one or more contact roles.
-
-    .PARAMETER Limit
-        Limit the number of results to this number
-
-    .PARAMETER Offset
-        Start the search at this index in results
-
-    .PARAMETER Raw
-        Return the unparsed data from the HTTP request
-
-    .EXAMPLE
-        PS C:\> Get-NetboxContentType
-
-    .NOTES
-        Additional information about the function.
-#>
-
-    [CmdletBinding(DefaultParameterSetName = 'Query')]
-    param
-    (
-        [Parameter(ParameterSetName = 'Query',
-                   Position = 0)]
-        [string]$Model,
-
-        [Parameter(ParameterSetName = 'ByID')]
-        [uint64[]]$Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$App_Label,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Query,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Limit,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Offset,
-
-        [switch]$Raw
-    )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'ById' {
-            foreach ($ContentType_ID in $Id) {
-                $Segments = [System.Collections.ArrayList]::new(@('extras', 'content-types', $ContentType_ID))
-
-                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-
-                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-                InvokeNetboxRequest -URI $uri -Raw:$Raw
-            }
-
-            break
-        }
-
-        default {
-            $Segments = [System.Collections.ArrayList]::new(@('extras', 'content-types'))
 
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
 
@@ -2907,6 +2813,175 @@ function Get-NetboxIPAMVLAN {
 
 
 
+
+#endregion
+
+#region File Get-NetboxIPAMVRF.ps1
+
+
+function Get-NetboxIPAMVRF {
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    param
+    (
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Name,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$RD,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Tenant,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint64]$Tenant_Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$TenantGroup,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint64]$TenantGroup_Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [object]$Status,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Limit,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Offset,
+
+        [switch]$Raw
+    )
+
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($VRF_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('ipam', 'vrfs', $VRF_ID))
+
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+
+            break
+        }
+
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'vrfs'))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+
+            break
+        }
+    }
+}
+
+
+
+
+
+#endregion
+
+#region File Get-NetboxObjectType.ps1
+
+function Get-NetboxObjectType {
+<#
+    .SYNOPSIS
+        Get a object type definition from Netbox
+
+    .DESCRIPTION
+        A detailed description of the Get-NetboxObjectType function.
+
+    .PARAMETER Model
+        A description of the Model parameter.
+
+    .PARAMETER Id
+        The database ID of the contact role
+
+    .PARAMETER App_Label
+        A description of the App_Label parameter.
+
+    .PARAMETER Query
+        A standard search query that will match one or more contact roles.
+
+    .PARAMETER Limit
+        Limit the number of results to this number
+
+    .PARAMETER Offset
+        Start the search at this index in results
+
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+
+    .EXAMPLE
+        PS C:\> Get-NetboxObjectType
+
+    .NOTES
+        Additional information about the function.
+#>
+
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    param
+    (
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
+        [string]$Model,
+
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$App_Label,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Query,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Limit,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Offset,
+
+        [switch]$Raw
+    )
+
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($ObjectType_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('extras', 'object-types', $ObjectType_ID))
+
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+
+            break
+        }
+
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('extras', 'object-types'))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+
+            break
+        }
+    }
+}
 
 #endregion
 
@@ -4414,6 +4489,88 @@ function New-NetboxIPAMVLAN {
 
 #endregion
 
+#region File New-NetboxIPAMVRF.ps1
+
+function New-NetboxIPAMVRF {
+    <#
+    .SYNOPSIS
+        Create a new VRF
+
+    .DESCRIPTION
+        Create a new VRF in Netbox.
+
+    .PARAMETER Name
+        The name of the VRF.
+
+    .PARAMETER RD
+        The Route Distinguisher (RFC 4364). Defaults to nothing
+
+    .PARAMETER Tenant
+        Tenant ID
+
+    .PARAMETER enforce_unique
+        Force unique IP Addresses in this VRF.
+
+    .PARAMETER import_targets
+        Arrays of Route Targest
+
+    .PARAMETER export_targets
+        Arrays of Route Targest
+
+    .PARAMETER Description
+        Description of VRF
+
+    .PARAMETER Custom_Fields
+        Custom field hash table. Will be validated by the API service
+
+    .PARAMETER Raw
+        Return raw results from API service
+
+    .EXAMPLE
+        PS C:\> New-NetboxIPAMVRF -Name MyVRF -Tenant 1 -import_targets @(1,2) -export_targets @(1,2) -RD 65000:100 -enforce_unique $false
+
+    .NOTES
+        Additional information about the function.
+#>
+
+    [CmdletBinding(ConfirmImpact = 'low',
+        SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [object]$RD,
+
+        [uint64]$Tenant,
+
+        [object]$enforce_unique = 1,
+
+        [string]$Description,
+
+        [uint64[]]$import_targets,
+
+        [uint64[]]$export_targets,
+
+        [hashtable]$Custom_Fields,
+
+        [switch]$Raw
+    )
+
+    $segments = [System.Collections.ArrayList]::new(@('ipam', 'vrfs'))
+
+    $URIComponents = BuildURIComponents -URISegments $segments -ParametersDictionary $PSBoundParameters
+
+    $URI = BuildNewURI -Segments $URIComponents.Segments
+
+    if ($PSCmdlet.ShouldProcess($nae, 'Create new VRF $($Name)')) {
+        InvokeNetboxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
+    }
+}
+
+#endregion
+
 #region File New-NetboxTenant.ps1
 
 
@@ -5294,7 +5451,7 @@ function Set-NetboxContactRole {
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'Low',
                    SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
@@ -5303,37 +5460,37 @@ function Set-NetboxContactRole {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
-        
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateLength(1, 100)]
         [string]$Name,
-        
+
         [ValidateLength(1, 100)]
         [ValidatePattern('^[-a-zA-Z0-9_]+$')]
         [string]$Slug,
-        
+
         [ValidateLength(0, 200)]
         [string]$Description,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [switch]$Raw
     )
-    
+
     begin {
         $Method = 'PATCH'
     }
-    
+
     process {
         foreach ($ContactRoleId in $Id) {
             $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts', $ContactRoleId))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-            
+
             $URI = BuildNewURI -Segments $URIComponents.Segments
-            
+
             $CurrentContactRole = Get-NetboxContactRole -Id $ContactRoleId -ErrorAction Stop
-            
+
             if ($Force -or $PSCmdlet.ShouldProcess($CurrentContactRole.Name, 'Update contact role')) {
                 InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
             }
@@ -6272,7 +6429,7 @@ function SetupNetboxConfigVariable {
             'Choices'       = @{
             }
             'APIDefinition' = $null
-            'ContentTypes' = $null
+            'ObjectTypes' = $null
         }
     }
 
