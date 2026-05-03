@@ -177,6 +177,45 @@ function Add-NetboxDCIMInterfaceConnection {
 
 #endregion
 
+#region File Add-NetboxDCIMPlatform.ps1
+
+function Add-NetboxDCIMPlatform {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [ValidateLength(1, 100)]
+        [ValidatePattern('^[-a-zA-Z0-9_]+$')]
+        [string]$Slug,
+
+        [uint64]$Manufacturer,
+
+        [uint64]$Config_Template,
+
+        [string]$Description,
+
+        [uint16[]]$Tags
+
+    )
+
+    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'platforms'))
+
+    if (-not $PSBoundParameters.ContainsKey('slug')) {
+        $PSBoundParameters.Add('slug', $($name | Get-NetboxSlug))
+    }
+
+    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+    $URI = BuildNewURI -Segments $URIComponents.Segments
+
+    InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
+}
+
+#endregion
+
 #region File Add-NetboxDCIMRearPort.ps1
 
 function Add-NetboxDCIMRearPort {
@@ -605,9 +644,9 @@ function Connect-NetboxAPI {
 
     Write-Verbose "Checking Netbox version compatibility"
     $script:NetboxConfig.NetboxVersion = Get-NetboxVersion
-    if ([version]$script:NetboxConfig.NetboxVersion.'netbox-version' -lt 2.8) {
+    if ([version]$script:NetboxConfig.NetboxVersion.'netbox-version' -lt 4.0.1) {
         $Script:NetboxConfig.Connected = $false
-        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.NetboxVersion.'netbox-version')"
+        throw "Netbox version is incompatible with this PS module. Requires >=4.0, found version $($script:NetboxConfig.NetboxVersion.'netbox-version')"
     } else {
         Write-Verbose "Found compatible version [$($script:NetboxConfig.NetboxVersion.'netbox-version')]!"
     }
@@ -615,7 +654,7 @@ function Connect-NetboxAPI {
     $script:NetboxConfig.Connected = $true
     Write-Verbose "Successfully connected!"
 
-    $script:NetboxConfig.ContentTypes = Get-NetboxContentType -Limit 500
+    $script:NetboxConfig.ObjectTypes = Get-NetboxObjectType -Limit 500
 
     Write-Verbose "Connection process completed"
 }
@@ -1397,100 +1436,6 @@ function Get-NetboxContactRole {
 
         default {
             $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-roles'))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
-            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-            InvokeNetboxRequest -URI $uri -Raw:$Raw
-
-            break
-        }
-    }
-}
-
-#endregion
-
-#region File Get-NetboxContentType.ps1
-
-function Get-NetboxContentType {
-<#
-    .SYNOPSIS
-        Get a content type definition from Netbox
-
-    .DESCRIPTION
-        A detailed description of the Get-NetboxContentType function.
-
-    .PARAMETER Model
-        A description of the Model parameter.
-
-    .PARAMETER Id
-        The database ID of the contact role
-
-    .PARAMETER App_Label
-        A description of the App_Label parameter.
-
-    .PARAMETER Query
-        A standard search query that will match one or more contact roles.
-
-    .PARAMETER Limit
-        Limit the number of results to this number
-
-    .PARAMETER Offset
-        Start the search at this index in results
-
-    .PARAMETER Raw
-        Return the unparsed data from the HTTP request
-
-    .EXAMPLE
-        PS C:\> Get-NetboxContentType
-
-    .NOTES
-        Additional information about the function.
-#>
-
-    [CmdletBinding(DefaultParameterSetName = 'Query')]
-    param
-    (
-        [Parameter(ParameterSetName = 'Query',
-                   Position = 0)]
-        [string]$Model,
-
-        [Parameter(ParameterSetName = 'ByID')]
-        [uint64[]]$Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$App_Label,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Query,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Limit,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Offset,
-
-        [switch]$Raw
-    )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'ById' {
-            foreach ($ContentType_ID in $Id) {
-                $Segments = [System.Collections.ArrayList]::new(@('extras', 'content-types', $ContentType_ID))
-
-                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-
-                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-                InvokeNetboxRequest -URI $uri -Raw:$Raw
-            }
-
-            break
-        }
-
-        default {
-            $Segments = [System.Collections.ArrayList]::new(@('extras', 'content-types'))
 
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
 
@@ -2907,6 +2852,121 @@ function Get-NetboxIPAMVLAN {
 
 
 
+
+#endregion
+
+#region File Get-NetboxObjectType.ps1
+
+function Get-NetboxObjectType {
+<#
+    .SYNOPSIS
+        Get a object type definition from Netbox
+
+    .DESCRIPTION
+        A detailed description of the Get-NetboxObjectType function.
+
+    .PARAMETER Model
+        A description of the Model parameter.
+
+    .PARAMETER Id
+        The database ID of the contact role
+
+    .PARAMETER App_Label
+        A description of the App_Label parameter.
+
+    .PARAMETER Query
+        A standard search query that will match one or more contact roles.
+
+    .PARAMETER Limit
+        Limit the number of results to this number
+
+    .PARAMETER Offset
+        Start the search at this index in results
+
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+
+    .EXAMPLE
+        PS C:\> Get-NetboxObjectType
+
+    .NOTES
+        Additional information about the function.
+#>
+
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    param
+    (
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
+        [string]$Model,
+
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$App_Label,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Query,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Limit,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Offset,
+
+        [switch]$Raw
+    )
+
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($ObjectType_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('extras', 'object-types', $ObjectType_ID))
+
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+
+            break
+        }
+
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('extras', 'object-types'))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+
+            break
+        }
+    }
+}
+
+#endregion
+
+#region File Get-NetboxSlug.ps1
+
+function Get-NetboxSlug {
+    param (
+        [Parameter(ValueFromPipeline)]
+        [string]$slug,
+
+        [uint16]$chars = 100
+    )
+
+    process {
+        return $slug -replace '[^\-.\w\s]', '' `
+                     -replace '[^a-zA-Z0-9-_ ]', '' `
+                     -replace '^[\s.]+|[\s.]+$', '' `
+                     -replace '[-.\s]+', '-' `
+                     | ForEach-Object { $_.ToLower().Substring(0, [Math]::Min($_.Length, $chars)) }
+    }
+}
 
 #endregion
 
@@ -4762,6 +4822,46 @@ function Remove-NetboxDCIMInterfaceConnection {
 
 #endregion
 
+#region File Remove-NetboxDCIMPlatform.ps1
+
+function Remove-NetboxDCIMPlatform {
+
+    [CmdletBinding(ConfirmImpact = 'High',
+        SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true)]
+        [uint64[]]$Id,
+
+        [switch]$Force
+    )
+
+    begin {
+
+    }
+
+    process {
+        foreach ($PlatformID in $Id) {
+            $CurrentPlatform = Get-NetboxDCIMPlatform -Id $PlatformID -ErrorAction Stop
+
+            if ($Force -or $pscmdlet.ShouldProcess("Name: $($CurrentPlatform.Name) | ID: $($CurrentPlatform.Id)", "Remove")) {
+                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'platforms', $CurrentPlatform.Id))
+
+                $URI = BuildNewURI -Segments $Segments
+
+                InvokeNetboxRequest -URI $URI -Method DELETE
+            }
+        }
+    }
+
+    end {
+
+    }
+}
+
+#endregion
+
 #region File Remove-NetboxDCIMRearPort.ps1
 
 function Remove-NetboxDCIMRearPort {
@@ -5294,7 +5394,7 @@ function Set-NetboxContactRole {
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'Low',
                    SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
@@ -5303,37 +5403,37 @@ function Set-NetboxContactRole {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
-        
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateLength(1, 100)]
         [string]$Name,
-        
+
         [ValidateLength(1, 100)]
         [ValidatePattern('^[-a-zA-Z0-9_]+$')]
         [string]$Slug,
-        
+
         [ValidateLength(0, 200)]
         [string]$Description,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [switch]$Raw
     )
-    
+
     begin {
         $Method = 'PATCH'
     }
-    
+
     process {
         foreach ($ContactRoleId in $Id) {
             $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts', $ContactRoleId))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-            
+
             $URI = BuildNewURI -Segments $URIComponents.Segments
-            
+
             $CurrentContactRole = Get-NetboxContactRole -Id $ContactRoleId -ErrorAction Stop
-            
+
             if ($Force -or $PSCmdlet.ShouldProcess($CurrentContactRole.Name, 'Update contact role')) {
                 InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
             }
@@ -5691,6 +5791,62 @@ function Set-NetboxDCIMInterfaceConnection {
 
                 $URI = BuildNewURI -Segments $URIComponents.Segments
 
+                InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+            }
+        }
+    }
+
+    end {
+
+    }
+}
+
+#endregion
+
+#region File Set-NetboxDCIMPlatform.ps1
+
+function Set-NetboxDCIMPlatform {
+    [CmdletBinding(ConfirmImpact = 'Medium',
+        SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true)]
+        [uint64[]]$Id,
+
+        [string]$Name,
+
+        [ValidateLength(1, 100)]
+        [ValidatePattern('^[-a-zA-Z0-9_]+$')]
+        [string]$Slug,
+
+        [uint64]$Manufacturer,
+
+        [uint64]$Config_Template,
+
+        [string]$Description,
+
+        [uint64[]]$Tags,
+
+        [switch]$Force
+    )
+
+    begin {
+
+    }
+
+    process {
+        foreach ($FrontPortID in $Id) {
+            $CurrentPlatform = Get-NetboxDCIMPlatform -Id $FrontPortID -ErrorAction Stop
+
+            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'platforms', $CurrentPlatform.Id))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+
+            $URI = BuildNewURI -Segments $Segments
+
+            if ($Force -or $pscmdlet.ShouldProcess("Platform ID $($CurrentPlatform.Id)", "Set")) {
                 InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
             }
         }
@@ -6272,7 +6428,7 @@ function SetupNetboxConfigVariable {
             'Choices'       = @{
             }
             'APIDefinition' = $null
-            'ContentTypes' = $null
+            'ObjectTypes' = $null
         }
     }
 
