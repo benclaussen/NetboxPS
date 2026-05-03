@@ -230,6 +230,47 @@ function Add-NetboxDCIMRearPort {
 
 #endregion
 
+#region File Add-NetboxDCIMVirtualDeviceContext.ps1
+
+function Add-NetboxDCIMVirtualDeviceContext {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [uint64]$Device,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [object]$Status = 'active',
+
+        [uint16]$Identifier,
+
+        [uint64]$Primary_IP4,
+
+        [uint64]$Primary_IP6,
+
+        [uint64]$Tenant,
+
+        [string]$Comments
+    )
+
+    if (-not $PSBoundParameters.ContainsKey('Status')) {
+        $PSBoundParameters['Status'] = $Status
+    }
+
+    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'virtual-device-contexts'))
+
+    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+    $URI = BuildNewURI -Segments $URIComponents.Segments
+
+    InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
+}
+
+#endregion
+
 #region File Add-NetboxVirtualMachineInterface.ps1
 
 
@@ -605,9 +646,9 @@ function Connect-NetboxAPI {
 
     Write-Verbose "Checking Netbox version compatibility"
     $script:NetboxConfig.NetboxVersion = Get-NetboxVersion
-    if ([version]$script:NetboxConfig.NetboxVersion.'netbox-version' -lt 2.8) {
+    if ([version]$script:NetboxConfig.NetboxVersion.'netbox-version' -lt 4.0.1) {
         $Script:NetboxConfig.Connected = $false
-        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.NetboxVersion.'netbox-version')"
+        throw "Netbox version is incompatible with this PS module. Requires >=4.0, found version $($script:NetboxConfig.NetboxVersion.'netbox-version')"
     } else {
         Write-Verbose "Found compatible version [$($script:NetboxConfig.NetboxVersion.'netbox-version')]!"
     }
@@ -615,7 +656,7 @@ function Connect-NetboxAPI {
     $script:NetboxConfig.Connected = $true
     Write-Verbose "Successfully connected!"
 
-    $script:NetboxConfig.ContentTypes = Get-NetboxContentType -Limit 500
+    $script:NetboxConfig.ObjectTypes = Get-NetboxObjectType -Limit 500
 
     Write-Verbose "Connection process completed"
 }
@@ -1411,100 +1452,6 @@ function Get-NetboxContactRole {
 
 #endregion
 
-#region File Get-NetboxContentType.ps1
-
-function Get-NetboxContentType {
-<#
-    .SYNOPSIS
-        Get a content type definition from Netbox
-
-    .DESCRIPTION
-        A detailed description of the Get-NetboxContentType function.
-
-    .PARAMETER Model
-        A description of the Model parameter.
-
-    .PARAMETER Id
-        The database ID of the contact role
-
-    .PARAMETER App_Label
-        A description of the App_Label parameter.
-
-    .PARAMETER Query
-        A standard search query that will match one or more contact roles.
-
-    .PARAMETER Limit
-        Limit the number of results to this number
-
-    .PARAMETER Offset
-        Start the search at this index in results
-
-    .PARAMETER Raw
-        Return the unparsed data from the HTTP request
-
-    .EXAMPLE
-        PS C:\> Get-NetboxContentType
-
-    .NOTES
-        Additional information about the function.
-#>
-
-    [CmdletBinding(DefaultParameterSetName = 'Query')]
-    param
-    (
-        [Parameter(ParameterSetName = 'Query',
-                   Position = 0)]
-        [string]$Model,
-
-        [Parameter(ParameterSetName = 'ByID')]
-        [uint64[]]$Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$App_Label,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Query,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Limit,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Offset,
-
-        [switch]$Raw
-    )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'ById' {
-            foreach ($ContentType_ID in $Id) {
-                $Segments = [System.Collections.ArrayList]::new(@('extras', 'content-types', $ContentType_ID))
-
-                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-
-                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-                InvokeNetboxRequest -URI $uri -Raw:$Raw
-            }
-
-            break
-        }
-
-        default {
-            $Segments = [System.Collections.ArrayList]::new(@('extras', 'content-types'))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
-            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-            InvokeNetboxRequest -URI $uri -Raw:$Raw
-
-            break
-        }
-    }
-}
-
-#endregion
-
 #region File Get-NetboxCredential.ps1
 
 function Get-NetboxCredential {
@@ -2130,6 +2077,50 @@ function Get-NetboxDCIMSite {
                 InvokeNetboxRequest -URI $URI -Raw:$Raw
             }
         }
+    }
+}
+
+#endregion
+
+#region File Get-NetboxDCIMVirtualDeviceContext.ps1
+
+function Get-NetboxDCIMVirtualDeviceContext {
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [uint64]$Id,
+
+        [string]$Name,
+
+        [object]$Status,
+
+        [uint16]$Identifier,
+
+        [string]$Device,
+
+        [uint64]$Device_Id,
+
+        [uint64]$Tenant_Id,
+
+        [string]$Tenant,
+
+        [uint16]$Limit,
+
+        [uint16]$Offset,
+
+        [switch]$Raw
+    )
+
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('dcim', 'virtual-device-contexts'))
+
+        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+
+        $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+        InvokeNetboxRequest -URI $URI -Raw:$Raw
     }
 }
 
@@ -2907,6 +2898,100 @@ function Get-NetboxIPAMVLAN {
 
 
 
+
+#endregion
+
+#region File Get-NetboxObjectType.ps1
+
+function Get-NetboxObjectType {
+<#
+    .SYNOPSIS
+        Get a object type definition from Netbox
+
+    .DESCRIPTION
+        A detailed description of the Get-NetboxObjectType function.
+
+    .PARAMETER Model
+        A description of the Model parameter.
+
+    .PARAMETER Id
+        The database ID of the contact role
+
+    .PARAMETER App_Label
+        A description of the App_Label parameter.
+
+    .PARAMETER Query
+        A standard search query that will match one or more contact roles.
+
+    .PARAMETER Limit
+        Limit the number of results to this number
+
+    .PARAMETER Offset
+        Start the search at this index in results
+
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+
+    .EXAMPLE
+        PS C:\> Get-NetboxObjectType
+
+    .NOTES
+        Additional information about the function.
+#>
+
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    param
+    (
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
+        [string]$Model,
+
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$App_Label,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Query,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Limit,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Offset,
+
+        [switch]$Raw
+    )
+
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($ObjectType_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('extras', 'object-types', $ObjectType_ID))
+
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+
+            break
+        }
+
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('extras', 'object-types'))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+
+            break
+        }
+    }
+}
 
 #endregion
 
@@ -4871,6 +4956,45 @@ function Remove-NetboxDCIMSite {
 
 #endregion
 
+#region File Remove-NetboxDCIMVirtualDeviceContext.ps1
+
+function Remove-NetboxDCIMVirtualDeviceContext {
+    [CmdletBinding(ConfirmImpact = 'High',
+        SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true)]
+        [uint64[]]$Id,
+
+        [switch]$Force
+    )
+
+    begin {
+
+    }
+
+    process {
+        foreach ($VirtualDeviceContextId in $Id) {
+            $CurrentVirtualDeviceContext = Get-NetboxDCIMVirtualDeviceContext -Id $VirtualDeviceContextId -ErrorAction Stop
+
+            if ($Force -or $pscmdlet.ShouldProcess("Name: $($CurrentVirtualDeviceContext.Name) | ID: $($CurrentVirtualDeviceContext.Id)", "Remove")) {
+                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'virtual-device-contexts', $CurrentVirtualDeviceContext.Id))
+
+                $URI = BuildNewURI -Segments $Segments
+
+                InvokeNetboxRequest -URI $URI -Method DELETE
+            }
+        }
+    }
+
+    end {
+
+    }
+}
+
+#endregion
+
 #region File Remove-NetboxIPAMAddress.ps1
 
 
@@ -5294,7 +5418,7 @@ function Set-NetboxContactRole {
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'Low',
                    SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
@@ -5303,37 +5427,37 @@ function Set-NetboxContactRole {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
-        
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateLength(1, 100)]
         [string]$Name,
-        
+
         [ValidateLength(1, 100)]
         [ValidatePattern('^[-a-zA-Z0-9_]+$')]
         [string]$Slug,
-        
+
         [ValidateLength(0, 200)]
         [string]$Description,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [switch]$Raw
     )
-    
+
     begin {
         $Method = 'PATCH'
     }
-    
+
     process {
         foreach ($ContactRoleId in $Id) {
             $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts', $ContactRoleId))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-            
+
             $URI = BuildNewURI -Segments $URIComponents.Segments
-            
+
             $CurrentContactRole = Get-NetboxContactRole -Id $ContactRoleId -ErrorAction Stop
-            
+
             if ($Force -or $PSCmdlet.ShouldProcess($CurrentContactRole.Name, 'Update contact role')) {
                 InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
             }
@@ -5762,6 +5886,56 @@ function Set-NetboxDCIMRearPort {
 
     end {
 
+    }
+}
+
+#endregion
+
+#region File Set-NetboxDCIMVirtualDeviceContext.ps1
+
+function Set-NetboxDCIMVirtualDeviceContext {
+    [CmdletBinding(ConfirmImpact = 'Medium',
+        SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true)]
+        [uint64[]]$Id,
+
+        [string]$Name,
+
+        [object]$Status,
+
+        [uint16]$Identifier,
+
+        [uint64]$Device,
+
+        [uint64]$Primary_IP4,
+
+        [uint64]$Primary_IP6,
+
+        [uint64]$Tenant,
+
+        [string]$Comments,
+
+        [switch]$Force
+    )
+
+    process {
+        foreach ($VirtualDeviceContextId in $Id) {
+            $CurrentVirtualDeviceContext = Get-NetboxDCIMVirtualDeviceContext -Id $VirtualDeviceContextId -ErrorAction Stop
+
+            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'virtual-device-contexts', $CurrentVirtualDeviceContext.Id))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+
+            $URI = BuildNewURI -Segments $Segments
+
+            if ($Force -or $pscmdlet.ShouldProcess("Virtual Device Context ID $($CurrentVirtualDeviceContext.Id)", "Set")) {
+                InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+            }
+        }
     }
 }
 
@@ -6272,7 +6446,7 @@ function SetupNetboxConfigVariable {
             'Choices'       = @{
             }
             'APIDefinition' = $null
-            'ContentTypes' = $null
+            'ObjectTypes' = $null
         }
     }
 
