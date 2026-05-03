@@ -1,4 +1,4 @@
-
+﻿
 function Set-NetboxContactRole {
 <#
     .SYNOPSIS
@@ -28,7 +28,7 @@ function Set-NetboxContactRole {
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'Low',
                    SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
@@ -37,37 +37,37 @@ function Set-NetboxContactRole {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
-        
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateLength(1, 100)]
         [string]$Name,
-        
+
         [ValidateLength(1, 100)]
         [ValidatePattern('^[-a-zA-Z0-9_]+$')]
         [string]$Slug,
-        
+
         [ValidateLength(0, 200)]
         [string]$Description,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [switch]$Raw
     )
-    
+
     begin {
         $Method = 'PATCH'
     }
-    
+
     process {
         foreach ($ContactRoleId in $Id) {
             $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts', $ContactRoleId))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-            
+
             $URI = BuildNewURI -Segments $URIComponents.Segments
-            
+
             $CurrentContactRole = Get-NetboxContactRole -Id $ContactRoleId -ErrorAction Stop
-            
+
             if ($Force -or $PSCmdlet.ShouldProcess($CurrentContactRole.Name, 'Update contact role')) {
                 InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
             }

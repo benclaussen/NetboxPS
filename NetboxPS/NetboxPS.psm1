@@ -230,6 +230,43 @@ function Add-NetboxDCIMRearPort {
 
 #endregion
 
+#region File Add-NetboxVirtualMachinedisk.ps1
+
+
+function Add-NetboxVirtualMachineDisk {
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [Parameter(Mandatory = $true)]
+        [uint64]$Virtual_Machine,
+
+        [string]$MAC_Address,
+
+        [uint64]$Size,
+
+        [string]$Description,
+
+        [hashtable]$Custom_Fields,
+
+        [switch]$Raw
+    )
+
+    $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-disks'))
+
+    $PSBoundParameters.Enabled = $Enabled
+
+    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+    $uri = BuildNewURI -Segments $URIComponents.Segments
+
+    InvokeNetboxRequest -URI $uri -Method POST -Body $URIComponents.Parameters
+}
+
+#endregion
+
 #region File Add-NetboxVirtualMachineInterface.ps1
 
 
@@ -605,9 +642,9 @@ function Connect-NetboxAPI {
 
     Write-Verbose "Checking Netbox version compatibility"
     $script:NetboxConfig.NetboxVersion = Get-NetboxVersion
-    if ([version]$script:NetboxConfig.NetboxVersion.'netbox-version' -lt 2.8) {
+    if ([version]$script:NetboxConfig.NetboxVersion.'netbox-version' -lt 4.0.1) {
         $Script:NetboxConfig.Connected = $false
-        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.NetboxVersion.'netbox-version')"
+        throw "Netbox version is incompatible with this PS module. Requires >=4.0, found version $($script:NetboxConfig.NetboxVersion.'netbox-version')"
     } else {
         Write-Verbose "Found compatible version [$($script:NetboxConfig.NetboxVersion.'netbox-version')]!"
     }
@@ -615,7 +652,7 @@ function Connect-NetboxAPI {
     $script:NetboxConfig.Connected = $true
     Write-Verbose "Successfully connected!"
 
-    $script:NetboxConfig.ContentTypes = Get-NetboxContentType -Limit 500
+    $script:NetboxConfig.ObjectTypes = Get-NetboxObjectType -Limit 500
 
     Write-Verbose "Connection process completed"
 }
@@ -1397,100 +1434,6 @@ function Get-NetboxContactRole {
 
         default {
             $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-roles'))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
-            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-            InvokeNetboxRequest -URI $uri -Raw:$Raw
-
-            break
-        }
-    }
-}
-
-#endregion
-
-#region File Get-NetboxContentType.ps1
-
-function Get-NetboxContentType {
-<#
-    .SYNOPSIS
-        Get a content type definition from Netbox
-
-    .DESCRIPTION
-        A detailed description of the Get-NetboxContentType function.
-
-    .PARAMETER Model
-        A description of the Model parameter.
-
-    .PARAMETER Id
-        The database ID of the contact role
-
-    .PARAMETER App_Label
-        A description of the App_Label parameter.
-
-    .PARAMETER Query
-        A standard search query that will match one or more contact roles.
-
-    .PARAMETER Limit
-        Limit the number of results to this number
-
-    .PARAMETER Offset
-        Start the search at this index in results
-
-    .PARAMETER Raw
-        Return the unparsed data from the HTTP request
-
-    .EXAMPLE
-        PS C:\> Get-NetboxContentType
-
-    .NOTES
-        Additional information about the function.
-#>
-
-    [CmdletBinding(DefaultParameterSetName = 'Query')]
-    param
-    (
-        [Parameter(ParameterSetName = 'Query',
-                   Position = 0)]
-        [string]$Model,
-
-        [Parameter(ParameterSetName = 'ByID')]
-        [uint64[]]$Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$App_Label,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Query,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Limit,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Offset,
-
-        [switch]$Raw
-    )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'ById' {
-            foreach ($ContentType_ID in $Id) {
-                $Segments = [System.Collections.ArrayList]::new(@('extras', 'content-types', $ContentType_ID))
-
-                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-
-                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-                InvokeNetboxRequest -URI $uri -Raw:$Raw
-            }
-
-            break
-        }
-
-        default {
-            $Segments = [System.Collections.ArrayList]::new(@('extras', 'content-types'))
 
             $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
 
@@ -2910,6 +2853,100 @@ function Get-NetboxIPAMVLAN {
 
 #endregion
 
+#region File Get-NetboxObjectType.ps1
+
+function Get-NetboxObjectType {
+<#
+    .SYNOPSIS
+        Get a object type definition from Netbox
+
+    .DESCRIPTION
+        A detailed description of the Get-NetboxObjectType function.
+
+    .PARAMETER Model
+        A description of the Model parameter.
+
+    .PARAMETER Id
+        The database ID of the contact role
+
+    .PARAMETER App_Label
+        A description of the App_Label parameter.
+
+    .PARAMETER Query
+        A standard search query that will match one or more contact roles.
+
+    .PARAMETER Limit
+        Limit the number of results to this number
+
+    .PARAMETER Offset
+        Start the search at this index in results
+
+    .PARAMETER Raw
+        Return the unparsed data from the HTTP request
+
+    .EXAMPLE
+        PS C:\> Get-NetboxObjectType
+
+    .NOTES
+        Additional information about the function.
+#>
+
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    param
+    (
+        [Parameter(ParameterSetName = 'Query',
+                   Position = 0)]
+        [string]$Model,
+
+        [Parameter(ParameterSetName = 'ByID')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$App_Label,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string]$Query,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Limit,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint16]$Offset,
+
+        [switch]$Raw
+    )
+
+    switch ($PSCmdlet.ParameterSetName) {
+        'ById' {
+            foreach ($ObjectType_ID in $Id) {
+                $Segments = [System.Collections.ArrayList]::new(@('extras', 'object-types', $ObjectType_ID))
+
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
+
+                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+                InvokeNetboxRequest -URI $uri -Raw:$Raw
+            }
+
+            break
+        }
+
+        default {
+            $Segments = [System.Collections.ArrayList]::new(@('extras', 'object-types'))
+
+            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+            InvokeNetboxRequest -URI $uri -Raw:$Raw
+
+            break
+        }
+    }
+}
+
+#endregion
+
 #region File Get-NetboxTag.ps1
 
 
@@ -3364,6 +3401,84 @@ function Get-NetboxVirtualMachine {
         }
 
         $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-machines'))
+
+        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
+
+        $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
+
+        InvokeNetboxRequest -URI $uri -Raw:$Raw
+    }
+}
+
+#endregion
+
+#region File Get-NetboxVirtualMachinedisk.ps1
+
+
+function Get-NetboxVirtualMachineDisk {
+    <#
+    .SYNOPSIS
+        Gets VM disks
+
+    .DESCRIPTION
+        Obtains the disk objects for one or more VMs
+
+    .PARAMETER Limit
+        Number of results to return per page.
+
+    .PARAMETER Offset
+        The initial index from which to return the results.
+
+    .PARAMETER Id
+        Database ID of the interface
+
+    .PARAMETER Name
+        Name of the disk
+
+    .PARAMETER Size
+        Size of the disk in GB
+
+    .PARAMETER Virtual_Machine_Id
+        ID of the virtual machine to which the interface(s) are assigned.
+
+    .PARAMETER Virtual_Machine
+        Name of the virtual machine to get interfaces
+
+    .PARAMETER Raw
+        A description of the Raw parameter.
+
+    .EXAMPLE
+        PS C:\> Get-NetboxVirtualMachineDisk
+
+    .NOTES
+        Additional information about the function.
+#>
+
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(ValueFromPipeline = $true)]
+        [uint64]$Id,
+
+        [string]$Name,
+
+        [string]$Query,
+
+        [uint64]$Size,
+
+        [uint64]$Virtual_Machine_Id,
+
+        [string]$Virtual_Machine,
+
+        [uint16]$Limit,
+
+        [uint16]$Offset,
+
+        [switch]$Raw
+    )
+
+    process {
+        $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-disks'))
 
         $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
 
@@ -5035,6 +5150,66 @@ function Remove-NetboxVirtualMachine {
 
 #endregion
 
+#region File Remove-NetboxVirtualMachinedisk.ps1
+
+
+function Remove-NetboxVirtualMachineDisk {
+<#
+    .SYNOPSIS
+        Delete a virtual machine disk
+
+    .DESCRIPTION
+        Deletes a virtual machine disk from Netbox by ID
+
+    .PARAMETER Id
+        Database ID of the virtual machine disk
+
+    .PARAMETER Force
+        Force deletion without any prompts
+
+    .EXAMPLE
+        PS C:\> Remove-NetboxVirtualMachineDisk -Id $value1
+
+    .NOTES
+        Additional information about the function.
+#>
+
+    [CmdletBinding(ConfirmImpact = 'High',
+                   SupportsShouldProcess = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint64[]]$Id,
+
+        [switch]$Force
+    )
+
+    begin {
+
+    }
+
+    process {
+        foreach ($DiskId in $Id) {
+            $CurrentDisk = Get-NetboxVirtualMachineDisk -Id $DiskId -ErrorAction Stop
+
+            if ($Force -or $pscmdlet.ShouldProcess("$($CurrentDisk.Name)/$($CurrentDisk.Id)", "Remove")) {
+                $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-disks', $CurrentDisk.Id))
+
+                $URI = BuildNewURI -Segments $Segments
+
+                InvokeNetboxRequest -URI $URI -Method DELETE
+            }
+        }
+    }
+
+    end {
+
+    }
+}
+
+#endregion
+
 #region File Set-NetboxCipherSSL.ps1
 
 Function Set-NetboxCipherSSL {
@@ -5294,7 +5469,7 @@ function Set-NetboxContactRole {
     .NOTES
         Additional information about the function.
 #>
-    
+
     [CmdletBinding(ConfirmImpact = 'Low',
                    SupportsShouldProcess = $true)]
     [OutputType([pscustomobject])]
@@ -5303,37 +5478,37 @@ function Set-NetboxContactRole {
         [Parameter(Mandatory = $true,
                    ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
-        
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateLength(1, 100)]
         [string]$Name,
-        
+
         [ValidateLength(1, 100)]
         [ValidatePattern('^[-a-zA-Z0-9_]+$')]
         [string]$Slug,
-        
+
         [ValidateLength(0, 200)]
         [string]$Description,
-        
+
         [hashtable]$Custom_Fields,
-        
+
         [switch]$Raw
     )
-    
+
     begin {
         $Method = 'PATCH'
     }
-    
+
     process {
         foreach ($ContactRoleId in $Id) {
             $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts', $ContactRoleId))
-            
+
             $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-            
+
             $URI = BuildNewURI -Segments $URIComponents.Segments
-            
+
             $CurrentContactRole = Get-NetboxContactRole -Id $ContactRoleId -ErrorAction Stop
-            
+
             if ($Force -or $PSCmdlet.ShouldProcess($CurrentContactRole.Name, 'Update contact role')) {
                 InvokeNetboxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
             }
@@ -6198,6 +6373,61 @@ function Set-NetboxVirtualMachine {
 
 #endregion
 
+#region File Set-NetboxVirtualMachinedisk.ps1
+
+
+function Set-NetboxVirtualMachineDisk {
+    [CmdletBinding(ConfirmImpact = 'Medium',
+                   SupportsShouldProcess = $true)]
+    [OutputType([pscustomobject])]
+    param
+    (
+        [Parameter(Mandatory = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [uint64[]]$Id,
+
+        [string]$Name,
+
+        [uint64]$Size,
+
+        [string]$Description,
+
+        [uint64]$Virtual_Machine,
+
+        [hashtable]$Custom_Fields,
+
+        [switch]$Force
+    )
+
+    begin {
+
+    }
+
+    process {
+        foreach ($VMI_ID in $Id) {
+            Write-Verbose "Obtaining VM virtual disk..."
+            $CurrentVMI = Get-NetboxVirtualMachinedisk -Id $VMI_ID -ErrorAction Stop
+            Write-Verbose "Finished obtaining VM disk"
+
+            $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'virtual-disks', $CurrentVMI.Id))
+
+            if ($Force -or $pscmdlet.ShouldProcess("Disk $($CurrentVMI.Id) on VM $($CurrentVMI.Virtual_Machine.Name)", "Set")) {
+                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
+
+                $URI = BuildNewURI -Segments $URIComponents.Segments
+
+                InvokeNetboxRequest -URI $URI -Body $URIComponents.Parameters -Method PATCH
+            }
+        }
+    }
+
+    end {
+
+    }
+}
+
+#endregion
+
 #region File Set-NetboxVirtualMachineInterface.ps1
 
 
@@ -6272,7 +6502,7 @@ function SetupNetboxConfigVariable {
             'Choices'       = @{
             }
             'APIDefinition' = $null
-            'ContentTypes' = $null
+            'ObjectTypes' = $null
         }
     }
 

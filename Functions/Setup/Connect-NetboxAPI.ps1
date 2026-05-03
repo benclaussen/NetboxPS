@@ -138,9 +138,9 @@
 
     Write-Verbose "Checking Netbox version compatibility"
     $script:NetboxConfig.NetboxVersion = Get-NetboxVersion
-    if ([version]$script:NetboxConfig.NetboxVersion.'netbox-version' -lt 2.8) {
+    if ([version]$script:NetboxConfig.NetboxVersion.'netbox-version' -lt 4.0.1) {
         $Script:NetboxConfig.Connected = $false
-        throw "Netbox version is incompatible with this PS module. Requires >=2.8.*, found version $($script:NetboxConfig.NetboxVersion.'netbox-version')"
+        throw "Netbox version is incompatible with this PS module. Requires >=4.0, found version $($script:NetboxConfig.NetboxVersion.'netbox-version')"
     } else {
         Write-Verbose "Found compatible version [$($script:NetboxConfig.NetboxVersion.'netbox-version')]!"
     }
@@ -148,7 +148,7 @@
     $script:NetboxConfig.Connected = $true
     Write-Verbose "Successfully connected!"
 
-    $script:NetboxConfig.ContentTypes = Get-NetboxContentType -Limit 500
+    $script:NetboxConfig.ObjectTypes = Get-NetboxObjectType -Limit 500
 
     Write-Verbose "Connection process completed"
 }
